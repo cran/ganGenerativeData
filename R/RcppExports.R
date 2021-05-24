@@ -49,7 +49,7 @@ dsAddValueRow <- function(valueVector) {
 
 #' Deactivate columns
 #'
-#' Deactivate columns of the data source in order to exclude them in generation of generative data.
+#' Deactivate columns of a data source in order to exclude them in generation of generative data.
 #' Note that in this version only columns with values of type double or float can be used in generation of generative data.
 #' All columns with values of other type have to be deactivated.
 #'
@@ -68,7 +68,7 @@ dsDeactivateColumns <- function(columnVector) {
 
 #' Activate columns
 #'
-#' Activate columns of the data source in order to include them in generation of generative data. By default columns are active.
+#' Activate columns of a data source in order to include them in generation of generative data. By default columns are active.
 #'
 #' @param columnVector Vector of column indices
 #'
@@ -88,7 +88,7 @@ dsActivateColumns <- function(columnVector) {
 
 #' Get active column names
 #'
-#' Get active column names of the data source
+#' Get active column names of a data source
 #'
 #' 
 #'
@@ -104,7 +104,7 @@ dsGetActiveColumnNames <- function() {
 
 #' Get inactive column names
 #'
-#' Get inactive column names of the data source
+#' Get inactive column names of a data source
 #'
 #' 
 #'

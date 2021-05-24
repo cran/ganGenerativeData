@@ -346,19 +346,29 @@ public:
 	}
   
     int getSize() {
-        if(_columnVector.size() > 0) {
-            return _columnVector.front()->getSize();
-        } else {
-            return 0;
+        int size = 0;
+        for(int i = 0; i < _columnVector.size(); i++) {
+            if(_columnVector[i]->getActive()) {
+                size = _columnVector[i]->getSize();
+                break;
+            }
         }
+        
+        return size;
     }
   
     int getNormalizedSize() {
-        if(_normalized && _columnVector.size() > 0) {
-            return _columnVector.front()->getNormalizedSize();
-        } else {
-            return 0;
+        int normalizedSize = 0;
+        if(_normalized) {
+            for(int i = 0; i < _columnVector.size(); i++) {
+                if(_columnVector[i]->getActive()) {
+                    normalizedSize = _columnVector[i]->getNormalizedSize();
+                    break;
+                }
+            }
         }
+        
+        return normalizedSize;
     }
     void setNormalized(bool normalized) {
         _normalized = normalized;
@@ -371,7 +381,7 @@ public:
       vector<float> numberVector;
       
       if(_pR == 0) {
-          _pR = new uniform_int_distribution<int>(0, getNormalizedSize() - 1);
+          _pR = new uniform_int_distribution<int>(0, getSize() - 1);
       }
       _indexVector.resize(rowCount, 0);
       for(int i = 0; i < (int)_indexVector.size(); i++) {

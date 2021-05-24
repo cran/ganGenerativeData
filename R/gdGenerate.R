@@ -1,5 +1,5 @@
 # Copyright 2021 Werner Mueller
-# Released under th
+# Released under the GPL (>= 2)
 
 library(tensorflow)
 library(Rcpp)

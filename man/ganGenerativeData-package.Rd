@@ -14,19 +14,19 @@ Generative Adversarial Networks are applied to generate generative data for a da
 \if{latex}{\figure{gd12d.png}}
 }
 \details{
-The API includes functions for topics "definition of data source" and "generation of generative data". Main function of the first topic is \strong{\code{dsCreateWithDataFrame()}} which creates a data source. Main function of the second topic is \strong{\code{gdGenerate()}} which generates generative data for a data source.\cr
+The API includes functions for topics "definition of data source" and "generation of generative data". Main function of first topic is \strong{\code{dsCreateWithDataFrame()}} which creates a data source with passed data frame. Main function of second topic is \strong{\code{gdGenerate()}} which generates generative data for a data source.\cr
 
 \strong{1. Definition of data source}\cr
 
 \strong{\code{dsCreateWithDataFrame()}} Create a data source with passed data frame.\cr
 
-\strong{\code{dsActivateColumns()}} Activate columns in order to include them in generation of generative data. By default columns are active.\cr
+\strong{\code{dsActivateColumns()}} Activate columns of a data source in order to include them in generation of generative data. By default columns are active.\cr
 
-\strong{\code{dsDeactivateColumns()}} Deactivate columns in order to exclude them in generation of generative data. Note that in this version only columns with values of type double or float can be used in generation of generative data. All columns with values of other type have to be deactivated.\cr
+\strong{\code{dsDeactivateColumns()}} Deactivate columns of a data source in order to exclude them in generation of generative data. Note that in this version only columns with values of type double or float can be used in generation of generative data. All columns with values of other type have to be deactivated.\cr
 
-\strong{\code{dsGetActiveColumnNames()}} Get names of active columns.\cr
+\strong{\code{dsGetActiveColumnNames()}} Get names of active columns of a data source.\cr
 
-\strong{\code{dsGetInactiveColumnNames()}} Get names of inactive columns.\cr
+\strong{\code{dsGetInactiveColumnNames()}} Get names of inactive columns of a data source.\cr
 
 \strong{\code{dsWrite()}} Write created data source including settings of active columns to a file in binary format. This file will be used as input in functions of topic "generation of generative data".\cr
 
@@ -90,7 +90,7 @@ dsWrite(iris4d)}\donttest{dsWrite("iris4d.bin")}
 # write generated generative data to file "gd.bin".
 \donttest{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
 
-# Read generative data from file "gd.bin" and data source from "iris_4d.bin"
+# Read generative data from file "gd.bin" and data source from "iris4d.bin"
 \donttest{gdRead("gd.bin", "iris4d.bin")}
 
 # Create an image showing a two-dimensional projection of generative data and

@@ -14,7 +14,6 @@ namespace gdInt {
     string inGenerativeDataFileName = "";
     string inDataSourceFileName = "";
     int batchSize = 256;
-    //int maxSize = batchSize * 100000;
     int maxSize = batchSize * 25000;
   
     const string cMaxSizeExceeded = "Max size of generative data exceeded";
@@ -85,7 +84,7 @@ int gdGetMaxSize() {
 void gdDataSourceRead(const std::string& inFileName) {
     try {
         ifstream is;
-        is.open(inFileName.c_str());
+        is.open(inFileName.c_str(), std::ios::binary);
         if(!is.is_open()) {
             throw string("File " + inFileName + " could not be opened");
         }
@@ -107,7 +106,7 @@ void gdDataSourceRead(const std::string& inFileName) {
 void gdGenerativeDataRead(const std::string& inFileName) {
     try {
         ifstream is;
-        is.open(inFileName.c_str());
+        is.open(inFileName.c_str(), std::ios::binary);
         if(!is.is_open()) {
             throw string("File " + inFileName + " could not be opened");
         }
@@ -137,7 +136,7 @@ void gdGenerativeDataWrite(const std::string& outFileName) {
         }
     
         ofstream outFile;
-        outFile.open(outFileName.c_str());
+        outFile.open(outFileName.c_str(), std::ios::binary);
         if(!outFile.is_open()) {
             throw string("File " + outFileName + " could not be opened");
         }

@@ -10,7 +10,7 @@ dsGetActiveColumnNames()
 Names of active columns
 }
 \description{
-Get active column names of the data source
+Get active column names of a data source
 }
 \examples{
 \donttest{dsCreateWithDataFrame(inDataFrame = iris) 

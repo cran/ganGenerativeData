@@ -36,7 +36,7 @@ void dsWrite(const std::string& outFileName) {
         }
     
         ofstream outFile;
-        outFile.open(outFileName.c_str());
+        outFile.open(outFileName.c_str(), std::ios::binary);
         if(!outFile.is_open()) {
             throw string("File " + outFileName + " could not be opened");
         }
@@ -71,7 +71,7 @@ void dsWrite(const std::string& outFileName) {
 void dsRead(const std::string& inFileName) {
     try {
         ifstream is;
-        is.open(inFileName.c_str());
+        is.open(inFileName.c_str(), std::ios::binary);
         if(!is.is_open()) {
             throw string("File " + inFileName + " could not be opened");
         }
@@ -126,7 +126,7 @@ void dsAddValueRow(const std::vector<std::wstring>& valueVector) {
 
 //' Deactivate columns
 //'
-//' Deactivate columns of the data source in order to exclude them in generation of generative data.
+//' Deactivate columns of a data source in order to exclude them in generation of generative data.
 //' Note that in this version only columns with values of type double or float can be used in generation of generative data.
 //' All columns with values of other type have to be deactivated.
 //'
@@ -161,7 +161,7 @@ void dsDeactivateColumns(const std::vector<int>& columnVector) {
 
 //' Activate columns
 //'
-//' Activate columns of the data source in order to include them in generation of generative data. By default columns are active.
+//' Activate columns of a data source in order to include them in generation of generative data. By default columns are active.
 //'
 //' @param columnVector Vector of column indices
 //'
@@ -197,7 +197,7 @@ void dsActivateColumns(const std::vector<int>& columnVector) {
 
 //' Get active column names
 //'
-//' Get active column names of the data source
+//' Get active column names of a data source
 //'
 //' 
 //'
@@ -224,7 +224,7 @@ std::vector<std::wstring> dsGetActiveColumnNames() {
 
 //' Get inactive column names
 //'
-//' Get inactive column names of the data source
+//' Get inactive column names of a data source
 //'
 //' 
 //'
