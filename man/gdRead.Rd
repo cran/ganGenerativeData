@@ -4,19 +4,19 @@
 \alias{gdRead}
 \title{Read generative data and data source}
 \usage{
-gdRead(inGenerativeDataFileName, inDataSourceFileName = "")
+gdRead(generativeDataFileName, dataSourceFileName = "")
 }
 \arguments{
-\item{inGenerativeDataFileName}{Name of generative data file}
+\item{generativeDataFileName}{Name of generative data file}
 
-\item{inDataSourceFileName}{Name of data source file}
+\item{dataSourceFileName}{Name of data source file}
 }
 \value{
 None
 }
 \description{
-Read generative data and data source from corresponding files. Read in generative data and data source are accessed in gdPlot2dProjection(),
-generative data in gdGetRow().
+Read generative data and data source from specified files. Read in generative data and data source are accessed in gdPlot2dProjection(),
+generative data is accessed in gdGetRow(), gdCalculateDensityValue() and gdCalculateDensityValueQuantile().
 }
 \examples{
 \donttest{gdRead("gd.bin", "iris4d.bin")}

@@ -7,12 +7,13 @@
 dsGetInactiveColumnNames()
 }
 \value{
-Names of inactive columns
+Vector of names of inactive columns
 }
 \description{
 Get inactive column names of a data source
 }
 \examples{
-\donttest{dsCreateWithDataFrame(inDataFrame = iris)
+\donttest{dsCreateWithDataFrame(dataFrame = iris)
+dsDeactivateColumns(c(5))
 dsGetInactiveColumnNames()}
 }

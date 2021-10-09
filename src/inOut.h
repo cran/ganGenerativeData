@@ -10,6 +10,9 @@
 
 using namespace std;
 
+const string cSeparator = "_";
+const string cPeriod = ".";
+
 class InOut {
 public:
 	static void Write(ofstream& os, const bool& x) {
@@ -191,4 +194,54 @@ public:
 	}
 };
 
+class BuildFileName {
+public:
+    string operator()(const string& name, float value, const string& extension) {
+        stringstream ss;
+        ss << name;
+        ss << cSeparator;
+        ss << value;
+        if(extension != "") {
+            ss << cPeriod;
+            ss << extension;
+        }
+            
+        return ss.str();
+    }
+};
+    
+class GetFileName {
+public:
+    string operator()(const string& name) {
+        size_t dotPos = name.find_last_of(".");
+        if(dotPos != string::npos) {
+            return name.substr(0, dotPos);
+        } else {
+            return name; 
+        }
+    }
+};
+    
+class GetExtension {
+public:
+    string operator()(const string& name) {
+        size_t dotPos = name.find_last_of(".");
+        if(dotPos != string::npos) {
+            return name.substr(dotPos + 1);
+        } else {
+            return ""; 
+        }
+    }
+};
+    
+class GetValue {
+public:
+    string operator()(float value) {
+        stringstream ss;
+        ss << value;
+            
+        return ss.str();
+    }
+};
+    
 #endif

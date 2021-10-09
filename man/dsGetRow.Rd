@@ -10,12 +10,12 @@ dsGetRow(index)
 \item{index}{Index of row}
 }
 \value{
-Row in data source
+List containing row in data source
 }
 \description{
-Get a row in a data source containing values of columns for a row index
+Get a row in a data source for a row index.
 }
 \examples{
-\donttest{dsCreateWithDataFrame(inDataFrame = iris)
-dsGetRow(1)}
+\donttest{dsCreateWithDataFrame(dataFrame = iris)
+dsGetRow(1000)}
 }

@@ -13,10 +13,11 @@ dsWrite(outFileName)
 None
 }
 \description{
-Write a data source to a file in binary format
+Write a data source including settings of active columns to a file in binary format.
+This file will be used as input in functions for generation of generative data.\cr
 }
 \examples{
-\donttest{dsCreateWithDataFrame(inDataFrame = iris)
+\donttest{dsCreateWithDataFrame(dataFrame = iris)
 dsDeactivateColumns(c(5))
 dsWrite("iris4d.bin")}
 }

@@ -28,9 +28,7 @@ public:
 			}
 			Column::COLUMN_TYPE columnType = ((dataSource.getColumnVector())[i])->getColumnType();
 			Column::SCALE_TYPE scaleType = ((dataSource.getColumnVector())[i])->getScaleType();
-			if(columnType == Column::STRING) {
-				throw string(cInvalidColumnType);
-			} else if(columnType == Column::NUMERICAL) {
+			if(columnType == Column::NUMERICAL) {
 				const NumberColumn* pNumberColumn = dynamic_cast<const NumberColumn*>(dataSource.getColumnVector()[i]);
 				_columnVector.push_back(new NumberColumn(*pNumberColumn));
 			} else {
@@ -88,22 +86,7 @@ public:
 		}
 		return numberVector;
 	}
-
-    /*
-	void write(ofstream& os, int version, int rowCount) {
-		int size = _columnVector.size();
-		for(int i = 0; i < _columnVector.size(); i++) {
-			NumberColumn* pNumberColumn = dynamic_cast<NumberColumn*>(_columnVector[i]);
-			if(pNumberColumn->getValueVector().size() > 0) {
-				pNumberColumn->getValueVector().resize(rowCount);
-			}
-			if(pNumberColumn->getNormalizedValueVector().size() > 0) {
-				pNumberColumn->getNormalizedValueVector().resize(rowCount);
-			}
-		}
-		DataSource::write(os, version);
-	}
-    */
+    
 	void read(ifstream& is) {
 		InOut::Read(is, _typeId);
 		if(_typeId != cGenerativeDataSourceTypeId) {
@@ -114,14 +97,6 @@ public:
 	}
 
 private:
-	void getInverseValueMap(const map<wstring, int>& valueMap, map<int, wstring>& inverseValueMap) {
-		map<wstring, int>::const_iterator mapIter = valueMap.begin();
-		while(mapIter != valueMap.end()) {
-			inverseValueMap[mapIter->second] = mapIter->first;
-			mapIter++;
-		}
-	}
-
 	vector<vector<int>> _indexVectors;
 	vector<uniform_int_distribution<int>*> _pRVector;
 };

@@ -20,6 +20,8 @@ public:
     }
 	NumberColumn(const NumberColumn& numberColumn):Column(numberColumn.getColumnType(), numberColumn.getScaleType(), numberColumn.getName(), numberColumn.getActive()), _max(numberColumn.getMax()), _min(numberColumn.getMin()) {
 	}
+    virtual ~NumberColumn() {
+    }
   
     virtual void clear() {
 	    _max = 0;
@@ -51,14 +53,6 @@ public:
 		vector<float> numberVector;
 		if(_scaleType == LINEAR) {
 			numberVector.push_back(_normalizedValueVector[i]);
-        /*
-		} else if(_scaleType == BINARY) {
-			if(_normalizedValueVector[i] >= 0.5) {
-				numberVector.push_back(1);
-			} else {
-				numberVector.push_back(0);
-			}
-		*/
 	    } else {
 	        throw cInvalidScaleType;
 	    }
@@ -73,15 +67,6 @@ public:
         if(_scaleType == LINEAR) {
             float value = _min + (_max - _min) * _normalizedValueVector[i];
             numberVector.push_back(value);
-        /*
-        } else if(_scaleType == BINARY) {
-            if(_normalizedValueVector[i] >= 0.5) {
-                numberVector.push_back(1);
-            } else {
-                numberVector.push_back(0);
-            }
-        }
-        */
         } else {
             throw cInvalidScaleType;
         }
@@ -105,7 +90,7 @@ public:
 	float getMin() const {
 		return _min;
 	}
-    virtual int getDimension() {
+    virtual int getDimension() const {
         return 1;
     }
   

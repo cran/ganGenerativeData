@@ -4,10 +4,10 @@
 \alias{dsCreateWithDataFrame}
 \title{Create a data source with passed data frame}
 \usage{
-dsCreateWithDataFrame(inDataFrame)
+dsCreateWithDataFrame(dataFrame)
 }
 \arguments{
-\item{inDataFrame}{Name of data frame}
+\item{dataFrame}{Name of data frame}
 }
 \value{
 None
@@ -17,5 +17,5 @@ Create a data source with passed data frame.
 }
 \examples{
 # Create a data source and with built in iris data frame.
-\donttest{dsCreateWithDataFrame(inDataFrame = iris)}
+\donttest{dsCreateWithDataFrame(dataFrame = iris)}
 }

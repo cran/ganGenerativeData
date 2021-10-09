@@ -19,19 +19,21 @@ const string cInvalidTypeId = "Invalid type id";
 const string cDataSourceNotNormalized = "Datasource not normalized";
 const string cInvalidColumnIndex = "Column index is invalid";
 const string cInvalidType = "Invalid type";
+const string cInvalidDimension = "Invalid dimension";
 const string cInvalidTypePrefix = "Type of occurred value";
 const string cInvalidTypeSuffix = "is invalid";
 
-const string cDataSourceTypeId = "c46afa0e-51b6-4877-b4f4-53d909e34a7d";
-const wstring cWeightColumn = L"Weights";
 
-const string cNoWeights = "No density values calculated";
-  
+const string cDataSourceTypeId = "c46afa0e-51b6-4877-b4f4-53d909e34a7d";
+const wstring cDensityColumn = L"Densities";
+
+const string cNoDensities = "No density values calculated";
+
 class DataSource{
 public:
-	DataSource():  _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0) {
+	DataSource():  _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0), _pDensityVector(new NumberColumn(Column::NUMERICAL, cDensityColumn)) {
 	}
-    DataSource(const DataSource& dataSource): _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0) {
+    DataSource(const DataSource& dataSource): _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0), _pDensityVector(new NumberColumn(Column::NUMERICAL, cDensityColumn)) {
 	    _version = dataSource._version;
 	    _normalized = false;
 	  
@@ -48,7 +50,7 @@ public:
 			}
 		}
 	}
-    DataSource(const vector<Column::COLUMN_TYPE>& columnTypes, const std::vector<wstring>& columnNames): _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0) {
+    DataSource(const vector<Column::COLUMN_TYPE>& columnTypes, const std::vector<wstring>& columnNames): _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0), _pDensityVector(new NumberColumn(Column::NUMERICAL, cDensityColumn)) {
         _normalized = false;
         
         for(int i = 0; i < columnTypes.size(); i++) {
@@ -67,10 +69,8 @@ public:
 		for(int i = 0; i < _columnVector.size(); i++) {
 			delete _columnVector[i];
 		}
-		
-		if(_pR != 0) {
-		  delete _pR;
-		}
+		delete _pR;
+		delete _pG;
 	}
 
     virtual void clear() {
@@ -102,8 +102,6 @@ public:
 				StringColumn* pStringColumnB = dynamic_cast<StringColumn*>(dataSource.getColumnVector()[i]);
 
 				for(int j = 0; j < pStringColumnB->getValueVector().size(); j++) {
-					//pStringColumnA->addValue(pStringColumnB->getValueVector()[j]);
-					//pStringColumnA->getValueVector().push_back(pStringColumnB->getValueVector()[j]);
 					wstring value = pStringColumnB->getValue(j);
 					pStringColumnA->addValue(value, false);
 				}
@@ -131,14 +129,12 @@ public:
                 for(int j = 0; j < indexVector.size(); j++) {
         	        wstring value = pStringColumnB->getValue(indexVector[j]);
         	        pStringColumnA->addValue(value, false);
-                    //pStringColumnA->addValue(pStringColumnB->getValueVector()[indexVector[j]]);
                 }
             } else if(type == Column::NUMERICAL) {
                 NumberColumn* pNumberColumnA = dynamic_cast<NumberColumn*>(_columnVector[i]);
                 NumberColumn* pNumberColumnB = dynamic_cast<NumberColumn*>(dataSource.getColumnVector()[i]);
         
                 for(int j = 0; j < pNumberColumnB->getValueVector().size(); j++) {
-                    //NumberColumnA->addValue((*pNumberColumnB)[indexVector[j]]);
                     pNumberColumnA->addValue((pNumberColumnB->getValueVector())[indexVector[j]]);
                 }
         
@@ -232,29 +228,6 @@ public:
         }
         return inactiveColumnNames;
     }
-    int getNumberVectorIndex(int columnIndex) {
-        if(columnIndex < 0 || columnIndex > (int)_columnVector.size() - 1) {
-            throw string(cInvalidColumnIndex);
-        }
-	    int numberVectorIndex = 0;
-	    int i = 0;
-	    int j = 0;
-	    for(i = 0; i < _columnVector.size(); i++) {
-	  	    if(_columnVector[i]->getActive()) {
-	  		    if(columnIndex == i)
-	  		    {
-	  			    break;
-	  		    }
-	  		    j = j + _columnVector[i]->getDimension();
-	  	    }
-	    }
-
-	    if(columnIndex != i)
-	    {
-	  	    throw string(cInvalidColumnIndex);
-	    }
-	    return j;
-    }
     int getColumnIndex(int numberVectorIndex) {
         int dimension = getDimension();
         if(numberVectorIndex < 0 || numberVectorIndex > dimension - 1) {
@@ -275,11 +248,11 @@ public:
     
         if(i < 0 || i > (int)_columnVector.size() - 1)
         {
-        throw string(cInvalidColumnIndex);
+            throw string(cInvalidColumnIndex);
         }
         return i;
     }
-    wstring getNumbeVectorIndexName(int numberVectorIndex) {
+    wstring getNumberVectorIndexName(int numberVectorIndex) {
         int dimension = getDimension();
         if(numberVectorIndex < 0 || numberVectorIndex > dimension - 1) {
             throw string(cInvalidIndex);
@@ -325,7 +298,7 @@ public:
     vector<wstring> getNumbeVectorIndexNames(vector<int> numberVectorIndices) {
 	    vector<wstring> numberVextorIndexNames;
 	    for(int i = 0; i < numberVectorIndices.size(); i++) {
-		    numberVextorIndexNames.push_back(getNumbeVectorIndexName(numberVectorIndices[i]));
+		    numberVextorIndexNames.push_back(getNumberVectorIndexName(numberVectorIndices[i]));
 	    }
 
 	    return numberVextorIndexNames;
@@ -353,10 +326,10 @@ public:
                 break;
             }
         }
-        
+      
         return size;
     }
-  
+    
     int getNormalizedSize() {
         int normalizedSize = 0;
         if(_normalized) {
@@ -417,7 +390,7 @@ public:
     }
   
     vector<float> getDenormalizedDataRandom(int rowCount) {
-          vector<float> numberVector;
+        vector<float> numberVector;
         if(!_normalized) {
             throw string(cDataSourceNotNormalized);
         }
@@ -435,6 +408,36 @@ public:
             numberVector.insert(numberVector.end(), rowNumberVector.begin(), rowNumberVector.end());
         }
         return numberVector;
+    }
+    vector<vector<float>> getDenormalizedDataRandomWithDensities(int rowCount) {
+        vector<float> numberVector;
+        if(!_normalized) {
+            throw string(cDataSourceNotNormalized);
+        }
+        
+        if( _pDensityVector->getNormalizedValueVector().size() == 0) {
+            throw string(cNoDensities);
+        }
+        
+        if(_pR == 0) {
+            _pR = new uniform_int_distribution<int>(0, getNormalizedSize() - 1);
+        }
+        _indexVector.resize(rowCount, 0);
+        for(int i = 0; i < (int)_indexVector.size(); i++) {
+            _indexVector[i] = (*_pR)(*_pG);
+        }
+        
+        vector<float> densityVector(rowCount, 0);
+        for(int i = 0; i < rowCount; i++) {
+            densityVector[i] = _pDensityVector->getNormalizedValueVector()[_indexVector[i]];
+            vector<float> rowNumberVector = getDenormalizedNumberVector(_indexVector[i]);
+            numberVector.insert(numberVector.end(), rowNumberVector.begin(), rowNumberVector.end());
+        }
+        
+        vector<vector<float>> numberVectorVector;
+        numberVectorVector.push_back(numberVector);
+        numberVectorVector.push_back(densityVector);
+        return numberVectorVector;
     }
     
     vector<float> getNormalizedData(int row, int rowCount) {
@@ -468,8 +471,8 @@ public:
     }
   
     vector<float> getDenormalizedRow(int i) {
-      vector<float> rowNumberVector = getDenormalizedNumberVector(i);
-      return rowNumberVector;
+        vector<float> rowNumberVector = getDenormalizedNumberVector(i);
+        return rowNumberVector;
     }
     
     void setColumnActive(int i, bool active) {
@@ -484,7 +487,7 @@ public:
 		}
 	}
   
-	void write(ofstream& os, int version = 1) {
+	void write(ofstream& os, int version = 2) {
 	    InOut::Write(os, _typeId);
 	  
 		InOut::Write(os, version);
@@ -498,6 +501,10 @@ public:
 			InOut::Write(os, t);
 			_columnVector[i]->write(os);
 		}
+		
+		int t = static_cast<int>(_pDensityVector->getColumnType());
+		InOut::Write(os, t);
+		_pDensityVector->write(os);
 	}
  
 	void read(ifstream& is) {
@@ -530,8 +537,24 @@ public:
                 throw string(cInvalidColumnType);
             }
         }
+        
+        if(_version > 1) {
+            InOut::Read(is, t);
+            Column::COLUMN_TYPE type = static_cast<Column::COLUMN_TYPE>(t);
+            if(type == Column::NUMERICAL) {
+                delete _pDensityVector;
+                _pDensityVector = new NumberColumn(Column::NUMERICAL, cDensityColumn);
+                _pDensityVector->read(is);
+            } else {
+                throw string(cInvalidColumnType);
+            }
+        }
     }
-  
+    
+    NumberColumn* getDensityVector() {
+        return _pDensityVector;
+    }
+
 protected:
 	random_device _rd;
   
@@ -544,6 +567,8 @@ protected:
 	
 	vector<int> _indexVector;
 	vector<Column*> _columnVector;
+	
+	NumberColumn* _pDensityVector;
 };
 
 #endif

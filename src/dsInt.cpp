@@ -5,7 +5,6 @@
 using namespace Rcpp;
 using namespace std;
 
-#include "dataSource.h"
 #include "normalizeData.h"
 
 namespace dsInt {
@@ -14,7 +13,8 @@ namespace dsInt {
 
 //' Write a data source to file
 //'
-//' Write a data source to a file in binary format
+//' Write a data source including settings of active columns to a file in binary format.
+//' This file will be used as input in functions for generation of generative data.\cr
 //'
 //' @param outFileName Name of data source file
 //'
@@ -25,7 +25,7 @@ namespace dsInt {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 //' dsDeactivateColumns(c(5))
 //' dsWrite("iris4d.bin")}
 // [[Rcpp::export]]
@@ -36,7 +36,7 @@ void dsWrite(const std::string& outFileName) {
         }
     
         ofstream outFile;
-        outFile.open(outFileName.c_str(), std::ios::binary);
+        outFile.open(outFileName.c_str(), ios::binary);
         if(!outFile.is_open()) {
             throw string("File " + outFileName + " could not be opened");
         }
@@ -63,7 +63,7 @@ void dsWrite(const std::string& outFileName) {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 //' dsDeactivateColumns(c(5))
 //' dsWrite("iris4d.bin")
 //' dsRead("iris4d.bin")}
@@ -71,7 +71,7 @@ void dsWrite(const std::string& outFileName) {
 void dsRead(const std::string& inFileName) {
     try {
         ifstream is;
-        is.open(inFileName.c_str(), std::ios::binary);
+        is.open(inFileName.c_str(), ios::binary);
         if(!is.is_open()) {
             throw string("File " + inFileName + " could not be opened");
         }
@@ -136,7 +136,7 @@ void dsAddValueRow(const std::vector<std::wstring>& valueVector) {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 //' dsDeactivateColumns(c(5))
 //' dsGetInactiveColumnNames()}
 // [[Rcpp::export]]
@@ -169,7 +169,7 @@ void dsDeactivateColumns(const std::vector<int>& columnVector) {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 //' dsGetActiveColumnNames()
 //' dsDeactivateColumns(c(5))
 //' dsGetActiveColumnNames()
@@ -201,11 +201,12 @@ void dsActivateColumns(const std::vector<int>& columnVector) {
 //'
 //' 
 //'
-//' @return Names of active columns
+//' @return Vector of names of active columns
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(inDataFrame = iris) 
+//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' dsDeactivateColumns(c(5))
 //' dsGetActiveColumnNames()}
 // [[Rcpp::export]]
 std::vector<std::wstring> dsGetActiveColumnNames() {
@@ -228,11 +229,12 @@ std::vector<std::wstring> dsGetActiveColumnNames() {
 //'
 //' 
 //'
-//' @return Names of inactive columns
+//' @return Vector of names of inactive columns
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' dsDeactivateColumns(c(5))
 //' dsGetInactiveColumnNames()}
 // [[Rcpp::export]]
 std::vector<std::wstring> dsGetInactiveColumnNames() {
@@ -259,7 +261,7 @@ std::vector<std::wstring> dsGetInactiveColumnNames() {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 //' dsGetNumberOfRows()}
 // [[Rcpp::export]]
 int dsGetNumberOfRows() {
@@ -278,16 +280,16 @@ int dsGetNumberOfRows() {
 
 //' Get a row in a data source
 //'
-//' Get a row in a data source containing values of columns for a row index
+//' Get a row in a data source for a row index.
 //'
 //' @param index Index of row
 //'
-//' @return Row in data source
+//' @return List containing row in data source
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
-//' dsGetRow(1)}
+//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' dsGetRow(1000)}
 // [[Rcpp::export]]
 List dsGetRow(int index) {
     try {

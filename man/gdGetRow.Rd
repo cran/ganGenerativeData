@@ -10,12 +10,12 @@ gdGetRow(index)
 \item{index}{Index of row}
 }
 \value{
-Row in generative data
+List containing row in generative data
 }
 \description{
-Get a row in generative data containing values of active columns for a row index
+Get a row in generative data for a row index
 }
 \examples{
 \donttest{gdRead("gd.bin")
-gdGetRow(1)}
+gdGetRow(1000)}
 }

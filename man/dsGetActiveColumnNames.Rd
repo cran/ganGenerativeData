@@ -7,12 +7,13 @@
 dsGetActiveColumnNames()
 }
 \value{
-Names of active columns
+Vector of names of active columns
 }
 \description{
 Get active column names of a data source
 }
 \examples{
-\donttest{dsCreateWithDataFrame(inDataFrame = iris) 
+\donttest{dsCreateWithDataFrame(dataFrame = iris)
+dsDeactivateColumns(c(5))
 dsGetActiveColumnNames()}
 }

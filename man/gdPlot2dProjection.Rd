@@ -5,30 +5,45 @@
 \title{Create an image file for generative data and data source}
 \usage{
 gdPlot2dProjection(
-  outImageFileName,
+  imageFileName,
+  title,
   columnIndices,
   numberOfRandomGdPoints,
-  numberOfRandomDsPoints
+  numberOfRandomDsPoints,
+  densityValueThresholds = c(),
+  densityValueColours = c("red"),
+  dsColour = "blue"
 )
 }
 \arguments{
-\item{outImageFileName}{Name of image file}
+\item{imageFileName}{Name of image file}
 
-\item{columnIndices}{Vector of two column indices that are used for the two-dimensional projection. The indices refer to indices of active columns of data source.}
+\item{title}{Title of image}
+
+\item{columnIndices}{Vector of two column indices that are used for the two-dimensional projections. Indices refer to indices of active columns of data source.}
 
 \item{numberOfRandomGdPoints}{Number of randomly selected rows in generative data}
 
 \item{numberOfRandomDsPoints}{Number of randomly selected rows in data source}
+
+\item{densityValueThresholds}{Vector of density value thresholds}
+
+\item{densityValueColours}{Vector of colours assigned to density value thresholds. The size must be the size of densityValueThresholds plus one.}
+
+\item{dsColour}{Colour for data points of data source}
 }
 \value{
 None
 }
 \description{
-Create an image file containing a two-dimensional projection for randomly selected rows in generative data and
+Create an image file containing two-dimensional projections for a number of randomly selected rows in generative data and
 data source. Data points of data source are drawn above data points of generative data.
+When density value thresholds with assigned colours are specified generative data is drawn for density value ranges in increasing order.
 }
 \examples{
 \donttest{gdRead("gd.bin", "iris4d.bin")
-gdPlot2dProjection("gd34d.png", c(3, 4), 55000, 2500)
-gdPlot2dProjection("gd12d.png", c(1, 2), 55000, 2500)}
+gdPlot2dProjection("gd34d.png", c(3, 4), "Generative Data for the Iris Dataset", 250000, 2500)
+gdPlot2dProjection("gd34ddv.png",
+"Generative Data with a Density Value Threshold for the Iris Dataset",
+c(3, 4), 250000, 2500, c(0.04), c("red", "green"))}
 }

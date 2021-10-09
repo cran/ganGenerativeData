@@ -3,7 +3,8 @@
 
 #' Write a data source to file
 #'
-#' Write a data source to a file in binary format
+#' Write a data source including settings of active columns to a file in binary format.
+#' This file will be used as input in functions for generation of generative data.\cr
 #'
 #' @param outFileName Name of data source file
 #'
@@ -14,7 +15,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+#' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 #' dsDeactivateColumns(c(5))
 #' dsWrite("iris4d.bin")}
 dsWrite <- function(outFileName) {
@@ -31,7 +32,7 @@ dsWrite <- function(outFileName) {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+#' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 #' dsDeactivateColumns(c(5))
 #' dsWrite("iris4d.bin")
 #' dsRead("iris4d.bin")}
@@ -59,7 +60,7 @@ dsAddValueRow <- function(valueVector) {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+#' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 #' dsDeactivateColumns(c(5))
 #' dsGetInactiveColumnNames()}
 dsDeactivateColumns <- function(columnVector) {
@@ -76,7 +77,7 @@ dsDeactivateColumns <- function(columnVector) {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+#' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 #' dsGetActiveColumnNames()
 #' dsDeactivateColumns(c(5))
 #' dsGetActiveColumnNames()
@@ -92,11 +93,12 @@ dsActivateColumns <- function(columnVector) {
 #'
 #' 
 #'
-#' @return Names of active columns
+#' @return Vector of names of active columns
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(inDataFrame = iris) 
+#' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+#' dsDeactivateColumns(c(5))
 #' dsGetActiveColumnNames()}
 dsGetActiveColumnNames <- function() {
     .Call('_ganGenerativeData_dsGetActiveColumnNames', PACKAGE = 'ganGenerativeData')
@@ -108,11 +110,12 @@ dsGetActiveColumnNames <- function() {
 #'
 #' 
 #'
-#' @return Names of inactive columns
+#' @return Vector of names of inactive columns
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+#' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+#' dsDeactivateColumns(c(5))
 #' dsGetInactiveColumnNames()}
 dsGetInactiveColumnNames <- function() {
     .Call('_ganGenerativeData_dsGetInactiveColumnNames', PACKAGE = 'ganGenerativeData')
@@ -128,7 +131,7 @@ dsGetInactiveColumnNames <- function() {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
+#' \donttest{dsCreateWithDataFrame(dataFrame = iris)
 #' dsGetNumberOfRows()}
 dsGetNumberOfRows <- function() {
     .Call('_ganGenerativeData_dsGetNumberOfRows', PACKAGE = 'ganGenerativeData')
@@ -136,16 +139,16 @@ dsGetNumberOfRows <- function() {
 
 #' Get a row in a data source
 #'
-#' Get a row in a data source containing values of columns for a row index
+#' Get a row in a data source for a row index.
 #'
 #' @param index Index of row
 #'
-#' @return Row in data source
+#' @return List containing row in data source
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(inDataFrame = iris)
-#' dsGetRow(1)}
+#' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+#' dsGetRow(1000)}
 dsGetRow <- function(index) {
     .Call('_ganGenerativeData_dsGetRow', PACKAGE = 'ganGenerativeData', index)
 }
@@ -186,6 +189,10 @@ gdGenerativeDataWrite <- function(outFileName) {
     invisible(.Call('_ganGenerativeData_gdGenerativeDataWrite', PACKAGE = 'ganGenerativeData', outFileName))
 }
 
+gdCreateGenerativeData <- function() {
+    invisible(.Call('_ganGenerativeData_gdCreateGenerativeData', PACKAGE = 'ganGenerativeData'))
+}
+
 gdDataSourceGetDataRandom <- function(rowCount) {
     .Call('_ganGenerativeData_gdDataSourceGetDataRandom', PACKAGE = 'ganGenerativeData', rowCount)
 }
@@ -200,6 +207,10 @@ gdGenerativeDataGetNormalizedDataRandom <- function(rowCount) {
 
 gdGenerativeDataGetDenormalizedDataRandom <- function(rowCount) {
     .Call('_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandom', PACKAGE = 'ganGenerativeData', rowCount)
+}
+
+gdGenerativeDataGetDenormalizedDataRandomWithDensities <- function(rowCount) {
+    .Call('_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandomWithDensities', PACKAGE = 'ganGenerativeData', rowCount)
 }
 
 gdGetDataSourceDimension <- function() {
@@ -238,16 +249,16 @@ gdGetNumberVectorIndexNames <- function(numberVectorIndices) {
 
 #' Get a row in generative data
 #'
-#' Get a row in generative data containing values of active columns for a row index
+#' Get a row in generative data for a row index
 #'
 #' @param index Index of row
 #'
-#' @return Row in generative data
+#' @return List containing row in generative data
 #' @export
 #'
 #' @examples
 #' \donttest{gdRead("gd.bin")
-#' gdGetRow(1)}
+#' gdGetRow(1000)}
 gdGetRow <- function(index) {
     .Call('_ganGenerativeData_gdGetRow', PACKAGE = 'ganGenerativeData', index)
 }
@@ -258,5 +269,45 @@ gdGetMax <- function(i) {
 
 gdGetMin <- function(i) {
     .Call('_ganGenerativeData_gdGetMin', PACKAGE = 'ganGenerativeData', i)
+}
+
+gdIntCalculateDensityValues <- function() {
+    invisible(.Call('_ganGenerativeData_gdIntCalculateDensityValues', PACKAGE = 'ganGenerativeData'))
+}
+
+#' Calculate density value for a data record
+#' 
+#' Calculate density value for a data record.
+#'
+#' @param dataRecord List containing a data record
+#'
+#' @return Normalized density value number
+#' @export
+#'
+#' @examples
+#' \donttest{gdRead("gd.bin")
+#' gdCalculateDensityValue(List(6.1, 2.6, 5.6, 1.4))}
+gdCalculateDensityValue <- function(dataRecord) {
+    .Call('_ganGenerativeData_gdCalculateDensityValue', PACKAGE = 'ganGenerativeData', dataRecord)
+}
+
+#' Calculate density value quantile
+#' 
+#' Calculate density value quantile for a percent value. 
+#'
+#' @param percent Percent value
+#'
+#' @return Normalized density value quantile number
+#' @export
+#'
+#' @examples
+#' \donttest{gdRead("gd.bin")
+#' gdCalculateDensityValueQuantile(50)}
+gdCalculateDensityValueQuantile <- function(percent) {
+    .Call('_ganGenerativeData_gdCalculateDensityValueQuantile', PACKAGE = 'ganGenerativeData', percent)
+}
+
+gdBuildFileName <- function(fileName, niveau) {
+    .Call('_ganGenerativeData_gdBuildFileName', PACKAGE = 'ganGenerativeData', fileName, niveau)
 }
 

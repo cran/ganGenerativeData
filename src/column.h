@@ -17,10 +17,11 @@ class Column{
 public:
 	enum COLUMN_TYPE {
 		STRING,
-		NUMERICAL,
+		NUMERICAL
 	};
     enum SCALE_TYPE {
         LINEAR,
+        BINARY,
         NOMINAL
     };
   
@@ -28,12 +29,14 @@ public:
 	}
 	Column(const COLUMN_TYPE type, const SCALE_TYPE scaleType, const wstring& name, bool active): _type(type),  _scaleType(scaleType), _name(name), _active(active) {
 	}
+	virtual ~Column() {
+	}
 	
 	virtual vector<float> getNumberVector(int i) = 0;
 	virtual vector<float> getNormalizedNumberVector(int i) = 0;
 	virtual vector<float> getDenormalizedNumberVector(int i) = 0;
 	virtual void clear() = 0;
-	virtual int getDimension() = 0;
+	virtual int getDimension() const = 0;
 	virtual int getSize() = 0;
 	virtual int getNormalizedSize() = 0;
 	

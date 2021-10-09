@@ -8,7 +8,6 @@
 
 using namespace std;
 
-//const string cInvalidScaleType = "Invalid scale type";
 const string cInvalidValue = "Invalid value";
 
 class StringColumn : public Column{
@@ -21,6 +20,8 @@ public:
 	    _valueMap = stringColumn.getValueMap();
 		_inverseValueMap = stringColumn.getInverseValueMap();
 	}
+    virtual ~StringColumn() {
+    }
   
 	virtual void clear() {
 	    _valueVector.clear();
@@ -75,7 +76,7 @@ public:
     virtual vector<float> getDenormalizedNumberVector(int i) {
         return  getDenormalizedNumberVector(i);
     }
-	virtual int getDimension() {
+	virtual int getDimension() const {
 		if(_scaleType == NOMINAL) {
 			return _valueMap.size();
 		} else {
@@ -125,20 +126,6 @@ public:
 		InOut::Read(is, _valueMap);
 		InOut::Read(is, _inverseValueMap);
 		InOut::Read(is, _valueVector);
-	}
-
-	bool equal(const StringColumn& c) {
-		/*
-		if(Column::eaqual(c) &&
-				getValueMap() == c.getValueMap() &&
-				getInverseValueMap() == c.getInveseValueMap() &&
-				getValueVetor() == c.getValueVector()) {
-			return true;
-		} else {
-			return false;
-		}
-		*/
-		return true;
 	}
 
 private:

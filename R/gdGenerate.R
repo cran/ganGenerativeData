@@ -11,22 +11,22 @@ generate <- function(outGenerativeDataFileName, numberOfIterations, inKeepProbab
   gdTf <- tf$compat$v1
   gdTf$disable_v2_behavior()
   
-  if(length(columnIndices) != 2) {
-    message("length of vector of column indices must be two")
-    return()
-  }
-  columnNames <- gdGetNumberVectorIndexNames(columnIndices)
-  
   cNumberOfBatchesPerEpoch <- 10
   cWriteEpochsModulo <- 250
   cInitEpochs <- -100
 
   batchSize <- gdGetBatchSize();
-  dataDimension <- gdGetDataSourceDimension();
-  if(dataDimension < 2) {
-    message("number of active columns in data source must be greater or equal to two")
+  dataDimension <- gdGetDataSourceDimension()
+  
+  if(dataDimension > 1 && length(columnIndices) != 2) {
+    message("size of vector columnIndices must be equal to two\n")
+    return()
+  } else if (dataDimension == 1 && length(columnIndices) != 1) {
+    message("size of vector columnIndices must be equal to one\n")
     return()
   }
+  
+  columnNames <- gdGetNumberVectorIndexNames(columnIndices)
   
   cOutputLayerSize <- gdGetDataSourceDimension()
   cLr <- 0.00005
@@ -98,6 +98,7 @@ generate <- function(outGenerativeDataFileName, numberOfIterations, inKeepProbab
   epoch <- 1
   for(epoch in cInitEpochs:epochs) {
 
+    samples <- NULL
     i <- 1
     for(i in 1:cNumberOfBatchesPerEpoch) {
       samples <- gdDataSourceGetNormalizedDataRandom(batchSize)
@@ -138,10 +139,18 @@ generate <- function(outGenerativeDataFileName, numberOfIterations, inKeepProbab
     if(epoch >= 1) {
       gdAddValueRows(gsp)
     }
-    plot(gs[, columnIndices[1]], gs[, columnIndices[2]], main = "gdGenerate", cex.main = 1.0, font.main = 1, xlim = c(0.0, 1.0), ylim = c(0.0, 1.0), col = ifelse(gp >= 0.5, "green", "red"), xlab = columnNames[1], ylab = columnNames[2])
-    points(samples[, columnIndices[1]], samples[, columnIndices[2]], col = "blue")
+    if(dataDimension == 1) {
+      plot(gs[, columnIndices[1]], array(0, batchSize), main = "gdGenerate", cex.main = 1.0, font.main = 1, xlim = c(0.0, 1.0), ylim = c(0.0, 1.0), col = ifelse(gp >= 0.5, "green", "red"), xlab = columnNames[1], ylab = columnNames[2])
+    } else {
+      plot(gs[, columnIndices[1]], gs[, columnIndices[2]], main = "gdGenerate", cex.main = 1.0, font.main = 1, xlim = c(0.0, 1.0), ylim = c(0.0, 1.0), col = ifelse(gp >= 0.5, "green", "red"), xlab = columnNames[1], ylab = columnNames[2])      
+    }
     legend("topleft", legend = c("gd positive", "gd negative", "ds"), col = c("green", "red", "blue"), pch = c(1, 1, 1), bty = "n", horiz = TRUE)
-
+    if(dataDimension == 1) {
+      points(samples[, columnIndices[1]], array(0, batchSize), col = "blue")
+    } else {
+      points(samples[, columnIndices[1]], samples[, columnIndices[2]], col = "blue")
+    }
+    
     if(epoch >= 1) {
       if(epoch %% cWriteEpochsModulo == 0) {
         gdGenerativeDataWrite(outGenerativeDataFileName)
@@ -155,29 +164,30 @@ generate <- function(outGenerativeDataFileName, numberOfIterations, inKeepProbab
 #' Generate generative data for a data source
 #' 
 #' Read a data source from a file, generate generative data for the data source in iterative training steps and
-#' write generated generative data to a file in binary format. When a higher number of iterations is used 
-#' the distribution of generated generative data gets closer to that of the data source.
+#' write generated data to a file in binary format. When a higher number of iterations is used 
+#' the distribution of generated data gets closer to that of the data source.
 #'
-#' @param inDataSourceFileName Name of data source file
-#' @param outGenerativeDataFileName Name of generative data file
+#' @param dataSourceFileName Name of data source file
+#' @param generativeDataFileName Name of generative data file
 #' @param numberOfIterations Number of iterations.
-#' In this version the limit of number of iterations is set to 25000.
+#' In this version the limit of number of iterations is set to 50000.
 #' @param keepProbability Value in the range of 0 to 1 which is used in training of neural networks to train generalized networks.
-#' @param columnIndices Vector of two column indices that are used to show two-dimensional projections of normalized generated generative data and
-#' data source for a training step in RStudio Plots pane. Indices refer to indices of active columns of data source. 
+#' @param columnIndices Vector of two column indices that are used to plot two-dimensional projections of normalized generated generative data and
+#' data source for a training step. Indices refer to indices of active columns of data source. 
 #'
 #' @return None
 #' @export
 #'
 #' @examples
 #' \donttest{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
-gdGenerate <- function(inDataSourceFileName, outGenerativeDataFileName, numberOfIterations, keepProbability, columnIndices) {
+gdGenerate <- function(dataSourceFileName, generativeDataFileName, numberOfIterations, keepProbability, columnIndices) {
   if(numberOfIterations > gdGetMaxSize() / gdGetBatchSize()) {
     message("Max number of iterations exceeded")
     return()
   }
   gdReset()
   
-  gdDataSourceRead(inDataSourceFileName)
-  generate(outGenerativeDataFileName, numberOfIterations, keepProbability, columnIndices)
+  gdDataSourceRead(dataSourceFileName)
+  gdCreateGenerativeData()
+  generate(generativeDataFileName, numberOfIterations, keepProbability, columnIndices)
 }

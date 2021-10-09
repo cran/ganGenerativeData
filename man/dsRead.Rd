@@ -16,7 +16,7 @@ None
 Read a data source from a file in binary format
 }
 \examples{
-\donttest{dsCreateWithDataFrame(inDataFrame = iris)
+\donttest{dsCreateWithDataFrame(dataFrame = iris)
 dsDeactivateColumns(c(5))
 dsWrite("iris4d.bin")
 dsRead("iris4d.bin")}
