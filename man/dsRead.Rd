@@ -4,10 +4,10 @@
 \alias{dsRead}
 \title{Read a data source from file}
 \usage{
-dsRead(inFileName)
+dsRead(fileName)
 }
 \arguments{
-\item{inFileName}{Name of data source file}
+\item{fileName}{Name of data source file}
 }
 \value{
 None
@@ -16,7 +16,7 @@ None
 Read a data source from a file in binary format
 }
 \examples{
-\donttest{dsCreateWithDataFrame(dataFrame = iris)
+\donttest{dsCreateWithDataFrame(iris)
 dsDeactivateColumns(c(5))
 dsWrite("iris4d.bin")
 dsRead("iris4d.bin")}

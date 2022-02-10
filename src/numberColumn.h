@@ -6,6 +6,12 @@
 
 #include "column.h"
 
+#define GD_RCPP
+
+#ifdef GD_RCPP
+#include <Rcpp.h>
+#endif
+
 using namespace std;
 
 class NumberColumn : public Column{

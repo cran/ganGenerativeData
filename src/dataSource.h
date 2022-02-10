@@ -31,9 +31,9 @@ const string cNoDensities = "No density values calculated";
 
 class DataSource{
 public:
-	DataSource():  _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0), _pDensityVector(new NumberColumn(Column::NUMERICAL, cDensityColumn)) {
+	DataSource():  _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0), _pDensityVector(new NumberColumn(Column::NUMERICAL, Column::LOGARITHMIC, cDensityColumn)) {
 	}
-    DataSource(const DataSource& dataSource): _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0), _pDensityVector(new NumberColumn(Column::NUMERICAL, cDensityColumn)) {
+    DataSource(const DataSource& dataSource): _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0), _pDensityVector(new NumberColumn(Column::NUMERICAL, Column::LOGARITHMIC, cDensityColumn)) {
 	    _version = dataSource._version;
 	    _normalized = false;
 	  
@@ -50,7 +50,7 @@ public:
 			}
 		}
 	}
-    DataSource(const vector<Column::COLUMN_TYPE>& columnTypes, const std::vector<wstring>& columnNames): _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0), _pDensityVector(new NumberColumn(Column::NUMERICAL, cDensityColumn)) {
+    DataSource(const vector<Column::COLUMN_TYPE>& columnTypes, const std::vector<wstring>& columnNames): _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pG(new mt19937(_rd())), _pR(0), _pDensityVector(new NumberColumn(Column::NUMERICAL, Column::LOGARITHMIC, cDensityColumn)) {
         _normalized = false;
         
         for(int i = 0; i < columnTypes.size(); i++) {
@@ -538,7 +538,7 @@ public:
             }
         }
         
-        if(_version > 1) {
+        if(_version >= 2) {
             InOut::Read(is, t);
             Column::COLUMN_TYPE type = static_cast<Column::COLUMN_TYPE>(t);
             if(type == Column::NUMERICAL) {

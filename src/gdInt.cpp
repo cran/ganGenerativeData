@@ -1,4 +1,3 @@
-
 // Copyright 2021 Werner Mueller
 // Released under the GPL (>= 2)
 
@@ -9,15 +8,26 @@ using namespace std;
 
 #include "density.h"
 
+const string cInvalidNearestNeighborsSize = "Invalid size of nearest neighbors";
+const string cDifferentListSizes = "Sizes of lists are different";
+
 namespace gdInt {
     DataSource* pDataSource = 0;
     GenerativeData* pGenerativeData = 0;
+    
+    VpTree* pVpTree = 0;
+    VpTreeData* pVpTreeData = 0;
+    LpDistance* pLpDistance = 0;
+    
+    VpTree* pDensityVpTree = 0;
+    VpTreeData* pDensityVpTreeData = 0;
+    LpDistance* pDensityLpDistance = 0;
     
     string inGenerativeDataFileName = "";
     string inDataSourceFileName = "";
     int batchSize = 256;
     int maxSize = batchSize * 50000;
-    int nNearestNeighbours = 25;
+    int nNearestNeighbors = 25;
   
     const string cMaxSizeExceeded = "Max size of generative data exceeded";
 }
@@ -29,6 +39,20 @@ void gdReset() {
         gdInt::pDataSource = 0;
         delete gdInt::pGenerativeData;
         gdInt::pGenerativeData = 0;
+        
+        delete gdInt::pVpTree;
+        gdInt::pVpTree = 0;
+        delete gdInt::pVpTreeData;
+        gdInt::pVpTreeData = 0;
+        delete gdInt::pLpDistance;
+        gdInt::pLpDistance = 0;
+        
+        delete gdInt::pDensityVpTree;
+        gdInt::pDensityVpTree = 0;
+        delete gdInt::pDensityVpTreeData;
+        gdInt::pDensityVpTreeData = 0;
+        delete gdInt::pDensityLpDistance;
+        gdInt::pDensityLpDistance = 0;
         
         gdInt::inGenerativeDataFileName = "";
         gdInt::inDataSourceFileName = "";
@@ -287,7 +311,7 @@ void gdAddValueRows(const std::vector<float>& valueRows) {
 //' @export
 //'
 //' @examples
-//' \donttest{gdRead("gd.bin")
+//' \dontrun{gdRead("gd.bin")
 //' gdGetNumberOfRows()}
 // [[Rcpp::export]]
 int gdGetNumberOfRows() {
@@ -368,7 +392,7 @@ std::vector<std::wstring> gdGetNumberVectorIndexNames(std::vector<int>& numberVe
 //' @export
 //'
 //' @examples
-//' \donttest{gdRead("gd.bin")
+//' \dontrun{gdRead("gd.bin")
 //' gdGetRow(1000)}
 // [[Rcpp::export]]
 List gdGetRow(int index) {
@@ -465,10 +489,10 @@ void gdIntCalculateDensityValues() {
         VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
         L2Distance l2Distance;
         Progress progress(gdInt::pGenerativeData->getNormalizedSize());
-        VpTree vpTree(vpGenerativeData, l2Distance, &progress);
-        vpTree.build();
+        VpTree vpTree;
+        vpTree.build(&vpGenerativeData, &l2Distance, 0);
        
-        Density density(*gdInt::pGenerativeData, vpTree, gdInt::nNearestNeighbours, &progress);
+        Density density(*gdInt::pGenerativeData, vpTree, gdInt::nNearestNeighbors, &progress);
         density.calculateDensityValues();
          
         progress(gdInt::pGenerativeData->getNormalizedSize());
@@ -482,42 +506,65 @@ void gdIntCalculateDensityValues() {
 //' Calculate density value for a data record
 //' 
 //' Calculate density value for a data record.
+//' By default for the calculation a linear search is performed on generative data.
+//' When a search tree is used search is performed on a tree for generative data
+//' which is built once in the first function call.
 //'
 //' @param dataRecord List containing a data record
+//' @param useSearchTree Boolean value indicating if a search tree should be used.
 //'
 //' @return Normalized density value number
 //' @export
 //'
 //' @examples
-//' \donttest{gdRead("gd.bin")
-//' gdCalculateDensityValue(List(6.1, 2.6, 5.6, 1.4))}
+//' \dontrun{gdRead("gd.bin")
+//' gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 // [[Rcpp::export]]
-float gdCalculateDensityValue(List dataRecord) {
-  try {
-    if(gdInt::pGenerativeData == 0) {
-      throw string("No generative data");
+float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
+    try {
+        if(gdInt::pGenerativeData == 0) {
+            throw string("No generative data");
+        }
+        
+        vector<float> numberVector;
+        for(List::iterator iterator = dataRecord.begin(); iterator != dataRecord.end(); ++iterator) {
+          float number = (float)as<double>(*iterator);
+          numberVector.push_back(number);
+        }
+        
+        if(useSearchTree) {
+            if(gdInt::pDensityVpTree == 0) {
+                delete gdInt::pDensityVpTree;
+                gdInt::pDensityVpTree = new VpTree();
+                Progress progress(gdInt::pGenerativeData->getNormalizedSize());
+                delete gdInt::pDensityVpTreeData;
+                gdInt::pDensityVpTreeData = new VpGenerativeData(*gdInt::pGenerativeData);
+                delete gdInt::pDensityLpDistance;
+                gdInt::pDensityLpDistance = new L2Distance;
+            
+                gdInt::pDensityVpTree->build(gdInt::pDensityVpTreeData, gdInt::pDensityLpDistance, &progress);
+            }
+        }
+        
+        float d = 0;
+        if(useSearchTree) {
+            Density density(*gdInt::pGenerativeData, *gdInt::pDensityVpTree, gdInt::nNearestNeighbors, 0);
+            d = density.calculateDensityValue(numberVector);
+        } else {
+            VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
+            L2Distance l2Distance;
+            VpTree vpTree(&vpGenerativeData, &l2Distance, 0);
+            Density density(*gdInt::pGenerativeData, vpTree, gdInt::nNearestNeighbors, 0);
+            d = density.calculateDensityValue(numberVector);
+        }
+        return d;
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
     }
-    
-    vector<float> numberVector;
-    for(List::iterator iterator = dataRecord.begin(); iterator != dataRecord.end(); ++iterator) {
-      float number = (float)as<double>(*iterator);
-      numberVector.push_back(number);
-    }
-    
-    VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
-    L2Distance l2Distance;
-    VpTree vpTree(vpGenerativeData, l2Distance, 0);
-    
-    Density density(*gdInt::pGenerativeData, vpTree, gdInt::nNearestNeighbours, 0);
-    float d = density.calculateDensityValue(numberVector);
-    return d;
-  } catch (const string& e) {
-    ::Rf_error(e.c_str());
-  } catch(...) {
-    ::Rf_error("C++ exception (unknown reason)");
-  }
 }
-
+  
 //' Calculate density value quantile
 //' 
 //' Calculate density value quantile for a percent value. 
@@ -528,33 +575,225 @@ float gdCalculateDensityValue(List dataRecord) {
 //' @export
 //'
 //' @examples
-//' \donttest{gdRead("gd.bin")
+//' \dontrun{gdRead("gd.bin")
 //' gdCalculateDensityValueQuantile(50)}
 // [[Rcpp::export]]
 float gdCalculateDensityValueQuantile(float percent) {
-  try {
-    if(gdInt::pGenerativeData == 0) {
-      throw string("No generative data");
+    try {
+        if(gdInt::pGenerativeData == 0) {
+            throw string("No generative data");
+        }
+    
+        VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
+        L2Distance l2Distance;
+        VpTree vpTree(&vpGenerativeData, &l2Distance, 0);
+    
+        Density density(*gdInt::pGenerativeData, vpTree, gdInt::nNearestNeighbors, 0);
+        float q = density.calculateQuantile(percent);
+        return q;
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
     }
-    
-    VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
-    L2Distance l2Distance;
-    VpTree vpTree(vpGenerativeData, l2Distance, 0);
-    
-    Density density(*gdInt::pGenerativeData, vpTree, gdInt::nNearestNeighbours, 0);
-    float q = density.calculateQuantile(percent);
-    return q;
-  } catch (const string& e) {
-    ::Rf_error(e.c_str());
-  } catch(...) {
-    ::Rf_error("C++ exception (unknown reason)");
-  }
 }
 
 // [[Rcpp::export]]
 std::string gdBuildFileName(const std::string& fileName, float niveau) {
     try {
         return BuildFileName()(GetFileName()(fileName), niveau, GetExtension()(fileName));
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+//' Search for k nearest neighbors
+//' 
+//' Search for k nearest neighbors in generative data for a data record.
+//' When the data record contains NA values only the non-NA values are considered in search.
+//' By default a linear search is performed. When a search tree is used search is performed on a tree
+//' which is built once in the first function call.
+//' Building a tree is also triggered when NA values in data records change in subsequent function calls. 
+//' 
+//' @param dataRecord List containing a data record
+//' @param k Number of nearest neighbors
+//' @param useSearchTree Boolean value indicating if a search tree should be used. 
+//'
+//' @return A list of rows in generative data
+//' @export
+//'
+//' @examples
+//' \dontrun{gdRead("gd.bin")
+//' gdKNearestNeighbors(list(5.1, 3.5, 1.4, 0.2), 3)}
+// [[Rcpp::export]]
+List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false) {
+    try {
+        if(gdInt::pGenerativeData == 0) {
+            throw string("No generative data");
+        }
+  
+        if(!(k >= 1)) {
+           throw string("k must be greater than or equal to 1");
+        }
+  
+        vector<float> numberVector;
+        int isnanCount = 0;
+        for(List::iterator iterator = dataRecord.begin(); iterator != dataRecord.end(); ++iterator) {
+            float number = (float)as<double>(*iterator);
+            numberVector.push_back(number);
+            if(isnan(number)) {
+                isnanCount++;
+            }
+        }
+       
+        if(gdInt::pGenerativeData->getDimension() != numberVector.size()) {
+            throw string(cInvalidDimension);
+        }
+        if(isnanCount == gdInt::pGenerativeData->getDimension()) {
+            return dataRecord;
+        }
+    
+        NormalizeData normalizeData;
+        vector<float> normalizedNumberVector = normalizeData.getNormalizedNumberVector(*gdInt::pGenerativeData, numberVector);
+        
+        if(useSearchTree) {
+            bool build = false;
+            if(gdInt::pVpTree == 0) {
+                build = true;
+            } else {
+                if(gdInt::pVpTree->isBuilt()) {
+                    L2DistanceNanIndexed l2DistanceNanIndexed = dynamic_cast<L2DistanceNanIndexed&>(gdInt::pVpTree->getLpDistance());
+                    for(int i = 0; i < (int)numberVector.size(); i++) {
+                        if(isnan(numberVector[i]) != isnan(l2DistanceNanIndexed._distance[i])) {
+                            build = true;
+                            break;
+                        }
+                    }
+                } else {
+                    build = true;
+                }
+            }
+      
+            if(build) {
+                delete gdInt::pVpTree;
+                gdInt::pVpTree = new VpTree();
+                Progress progress(gdInt::pGenerativeData->getNormalizedSize());
+                delete gdInt::pVpTreeData;
+                gdInt::pVpTreeData = new VpGenerativeData(*gdInt::pGenerativeData);
+                delete gdInt::pLpDistance;
+                gdInt::pLpDistance = new L2DistanceNanIndexed(numberVector);
+                
+                gdInt::pVpTree->build(gdInt::pVpTreeData, gdInt::pLpDistance, &progress);
+            }
+        }
+    
+        vector<VpElement> nearestNeighbours;
+        if(useSearchTree) {
+            gdInt::pVpTree->search(normalizedNumberVector,  k, nearestNeighbours);
+        } else {
+            VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
+            L2DistanceNanIndexed l2DistanceNanIndexed(numberVector);
+            VpTree vpTree(&vpGenerativeData, &l2DistanceNanIndexed, 0);
+            vpTree.linearSearch(normalizedNumberVector,  k, nearestNeighbours);
+        }
+
+        List completeDataRecordList;
+        if(nearestNeighbours.size() == 0) {
+            return completeDataRecordList;  
+        }
+    
+        vector<Column*> const & columnVector = gdInt::pGenerativeData->getColumnVector();
+        for(int i = 0; i < (int) nearestNeighbours.size(); i++) {
+            List completeDataRecord;
+            for(int j = 0; j < columnVector.size(); j++) {
+                Column::COLUMN_TYPE type = columnVector[j]->getColumnType();
+                if(type == Column::NUMERICAL) {
+                    vector<float> numberVector = columnVector[j]->getDenormalizedNumberVector(nearestNeighbours[i].getIndex());
+                    float value = numberVector[0];
+                    completeDataRecord.insert(completeDataRecord.end(), value);
+                } else {
+                    throw string(cInvalidColumnType);
+                }
+            }
+            completeDataRecordList.insert(completeDataRecordList.end(), completeDataRecord);
+        }
+
+        return completeDataRecordList;
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+//' Complete incomplete data record
+//' 
+//' Search for first nearest neighbor in generative data for incomplete data record containing NA values.
+//' Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
+//' gdKNearestNeighbor with parameter k equal to 1.
+//' 
+//' @param dataRecord List containing incomplete data record
+//' @param useSearchTree Boolean value indicating if a search tree should be used.
+//'
+//' @return List containing completed data record
+//' @export
+//'
+//' @examples
+//' \dontrun{gdRead("gd.bin")
+//' gdComplete(list(5.1, 3.5, 1.4, NA))}
+// [[Rcpp::export]]
+List gdComplete(List dataRecord, bool useSearchTree = false) {
+    List nearestNeighbors = gdKNearestNeighbors(dataRecord, 1, useSearchTree);
+    
+    if(nearestNeighbors.size() != 1) {
+        throw(string(cInvalidNearestNeighborsSize));
+    }
+    List nearestNeighbor = as<List>(nearestNeighbors[0]);
+    if(nearestNeighbor.size() != dataRecord.size()) {
+        throw(string(cDifferentListSizes));
+    }
+
+    List completedList;
+    List::iterator iterator;
+    List::iterator nearestNeighborIterator;
+    for(iterator = dataRecord.begin(), nearestNeighborIterator = nearestNeighbor.begin();
+        iterator != dataRecord.end() && nearestNeighborIterator != nearestNeighbor.end();
+        ++iterator, ++nearestNeighborIterator) {
+        float number = (float)as<double>(*iterator);
+        float nearestNeighborNumber = (float)as<double>(*nearestNeighborIterator);
+        if(!isnan(number)) {
+            completedList.insert(completedList.end(), number);
+        } else {
+            completedList.insert(completedList.end(), nearestNeighborNumber);
+        }
+    }
+
+    return completedList;
+}
+
+// [[Rcpp::export]]
+void gdTest(int begin, int end) {
+    try {
+        if(gdInt::pGenerativeData == 0) {
+            throw string("No generative data");
+        }
+    
+        Function f("message");
+        VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
+        vector<float> reference{1, 1, NAN, 1};
+        if(isnan(reference[2])) {
+            f("true");
+        }
+        L2DistanceNanIndexed l2DistanceIndexed(reference);
+    
+        L2DistanceNanIndexed l2Distance22(reference);
+        l2Distance22 = l2DistanceIndexed;
+    
+        Progress progress(gdInt::pGenerativeData->getNormalizedSize());
+        VpTree vpTree;
+        vpTree.build(&vpGenerativeData, &l2DistanceIndexed, &progress);
     } catch (const string& e) {
         ::Rf_error(e.c_str());
     } catch(...) {

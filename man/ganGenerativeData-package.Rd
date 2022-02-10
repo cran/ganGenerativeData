@@ -6,7 +6,7 @@
   Generate generative data for a data source
 }
 \description{
-Generative Adversarial Networks are applied to generate generative data for a data source. In iterative training steps the distribution of generated data converges to that of the data source. An application of generative data is the created density value function which is used to classify data records.
+Generative Adversarial Networks are applied to generate generative data for a data source. In iterative training steps the distribution of generated data converges to that of the data source. Direct applications of generative data are the created functions for outlier detection and missing data completion.
 
 The inserted images show two-dimensional projections of generative data for the iris dataset:\cr
 \if{html}{\figure{gd34d.png}}
@@ -49,7 +49,11 @@ The API includes functions for topics "definition of data source" and "generatio
 
 \strong{\code{gdRead()}} Read generative data and data source from specified files.\cr
 
-\strong{\code{gdPlot2dProjection()}} Create an image showing two-dimensional projections of generative data and data source and write it to a file.\cr
+\strong{\code{gdPlotParameters()}} Specify plot parameters for generative data.\cr
+
+\strong{\code{gdPlotDataSourceParameters()}} Specify plot parameters for data source.\cr
+
+\strong{\code{gdPlot2dProjection()}} Create an image file containing two-dimensional projections of generative data and data source.\cr
 
 \strong{\code{gdGetNumberOfRows()}} Get number of rows in generative data.\cr
 
@@ -57,7 +61,11 @@ The API includes functions for topics "definition of data source" and "generatio
 
 \strong{\code{gdCalculateDensityValue()}} Calculate density value for a data record.\cr
 
-\strong{\code{gdCalculateDensityValueQuantile()}} Calculate density value quantile for a percent value.
+\strong{\code{gdCalculateDensityValueQuantile()}} Calculate density value quantile for a percent value.\cr
+
+\strong{\code{gdKNearestNeighbors()}} Search for k nearest neighbors.\cr
+
+\strong{\code{gdCompletee()}} Complete incomplete data record.
 }
 \author{
 Werner Mueller
@@ -71,8 +79,10 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 \examples{
 # Generate generative data for the iris dataset
 
-# Load and install library tensorflow
-\donttest{library(tensorflow)
+# This package imports package tensorflow 
+# which offers an interface to machine learning framework TensorFlow.
+# It is needed to train neural networks and must be installed by the user.
+\dontrun{library(tensorflow)
 install_tensorflow()}
 
 # Load library
@@ -81,7 +91,7 @@ library(ganGenerativeData)
 # 1. Definition of data source for the iris dataset
 
 # Create a data source with built in iris data frame.
-dsCreateWithDataFrame(dataFrame = iris)
+dsCreateWithDataFrame(iris)
 
 # Deactivate the column with name Species and index 5 in order to exclude it in 
 # generation of generative data.
@@ -99,35 +109,45 @@ dsWrite(iris4d)}\donttest{dsWrite("iris4d.bin")}
 # Read data source from file "iris4d.bin",
 # generate generative data in iterative training steps and
 # write generated generative data to file "gd.bin".
-\donttest{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
+\dontrun{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
 
 # Read generative data from file "gd.bin", calculate density values and
 # write generative data with density values to original file.
-\donttest{gdCalculateDensityValues("gd.bin")}
+\dontrun{gdCalculateDensityValues("gd.bin")}
 
 # Read generative data from file "gd.bin" and data source from "iris4d.bin"
-\donttest{gdRead("gd.bin", "iris4d.bin")}
+\dontrun{gdRead("gd.bin", "iris4d.bin")}
 
 # Create an image showing two-dimensional projections of generative data and
 # data source for column indices 3, 4 and write it to file "gd34d.png"
-\donttest{gdPlot2dProjection("gd34d.png", "Generative Data for the Iris Dataset", c(3, 4), 250000, 2500)}
+\dontrun{gdPlot2dProjection("gd34d.png",
+"Generative Data for the Iris Dataset", c(3, 4),
+gdPlotParameters(250000),
+gdPlotDataSourceParameters(2500))}
 
 # Create an image showing two-dimensional projections of generative data and data source for
-# column indices 3, 4 with density value threshold 0.02 and write it to file "gd34ddv.png"
-\donttest{gdPlot2dProjection("gd34ddv.png", 
-"Generative Data with a Density Value Threshold for the Iris Dataset",
-c(3, 4), 250000, 2500, c(0.04), c("red", "green"))}
+# column indices 3, 4 with density value threshold 0.71 and write it to file "gd34ddv.png"
+\dontrun{gdPlot2dProjection("gd34ddv.png",
+"Generative Data with a Density Value Threshold for the Iris Dataset", c(3, 4),
+gdPlotParameters(250000, c(0.71), c("red", "green")),
+gdPlotDataSourceParameters(2500))}
 
 # Get number of rows in generative data
-\donttest{gdGetNumberOfRows()}
+\dontrun{gdGetNumberOfRows()}
 
 # Get row with index 1000 in generative data
-\donttest{gdGetRow(1000)}
+\dontrun{gdGetRow(1000)}
 
 # Calculate density value for a data record
-\donttest{gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
+\dontrun{gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 
 # Calculate density value quantile for 50 percent
-\donttest{gdCalculateDensityValueQuantile(50)}
+\dontrun{gdCalculateDensityValueQuantile(50)}
+
+# Search for k nearest neighbors for a data record 
+\dontrun{gdKNearestNeighbors(list(5.1, 3.5, 1.4, 0.2), 3)}
+
+# Complete incomplete data record containing an NA value
+\dontrun{gdComplete(list(5.1, 3.5, 1.4, NA))}
 }
 

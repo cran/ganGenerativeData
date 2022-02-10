@@ -21,6 +21,7 @@ public:
 	};
     enum SCALE_TYPE {
         LINEAR,
+        LOGARITHMIC,
         BINARY,
         NOMINAL
     };
@@ -61,6 +62,8 @@ public:
 		InOut::Write(os, _active);
 		
 		int st = static_cast<int>(_scaleType);
+		//Function f("message");
+		//f(st);
 		InOut::Write(os, st);
 	}
 	virtual void read(ifstream& is) {
@@ -69,6 +72,8 @@ public:
 		
 		int st;
 		InOut::Read(is, st);
+		//Function f("message");
+		//f(st);
 		_scaleType = static_cast<SCALE_TYPE>(st);
 	}
 	

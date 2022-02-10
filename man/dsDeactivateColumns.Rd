@@ -18,7 +18,7 @@ Note that in this version only columns with values of type double or float can b
 All columns with values of other type have to be deactivated.
 }
 \examples{
-\donttest{dsCreateWithDataFrame(dataFrame = iris)
+\donttest{dsCreateWithDataFrame(iris)
 dsDeactivateColumns(c(5))
 dsGetInactiveColumnNames()}
 }

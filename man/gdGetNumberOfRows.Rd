@@ -13,6 +13,6 @@ Number of rows
 Get number of rows in generative data
 }
 \examples{
-\donttest{gdRead("gd.bin")
+\dontrun{gdRead("gd.bin")
 gdGetNumberOfRows()}
 }

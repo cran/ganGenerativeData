@@ -6,22 +6,22 @@
 using namespace Rcpp;
 
 // dsWrite
-void dsWrite(const std::string& outFileName);
-RcppExport SEXP _ganGenerativeData_dsWrite(SEXP outFileNameSEXP) {
+void dsWrite(const std::string& fileName);
+RcppExport SEXP _ganGenerativeData_dsWrite(SEXP fileNameSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type outFileName(outFileNameSEXP);
-    dsWrite(outFileName);
+    Rcpp::traits::input_parameter< const std::string& >::type fileName(fileNameSEXP);
+    dsWrite(fileName);
     return R_NilValue;
 END_RCPP
 }
 // dsRead
-void dsRead(const std::string& inFileName);
-RcppExport SEXP _ganGenerativeData_dsRead(SEXP inFileNameSEXP) {
+void dsRead(const std::string& fileName);
+RcppExport SEXP _ganGenerativeData_dsRead(SEXP fileNameSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type inFileName(inFileNameSEXP);
-    dsRead(inFileName);
+    Rcpp::traits::input_parameter< const std::string& >::type fileName(fileNameSEXP);
+    dsRead(fileName);
     return R_NilValue;
 END_RCPP
 }
@@ -365,13 +365,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // gdCalculateDensityValue
-float gdCalculateDensityValue(List dataRecord);
-RcppExport SEXP _ganGenerativeData_gdCalculateDensityValue(SEXP dataRecordSEXP) {
+float gdCalculateDensityValue(List dataRecord, bool useSearchTree);
+RcppExport SEXP _ganGenerativeData_gdCalculateDensityValue(SEXP dataRecordSEXP, SEXP useSearchTreeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type dataRecord(dataRecordSEXP);
-    rcpp_result_gen = Rcpp::wrap(gdCalculateDensityValue(dataRecord));
+    Rcpp::traits::input_parameter< bool >::type useSearchTree(useSearchTreeSEXP);
+    rcpp_result_gen = Rcpp::wrap(gdCalculateDensityValue(dataRecord, useSearchTree));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -396,6 +397,42 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< float >::type niveau(niveauSEXP);
     rcpp_result_gen = Rcpp::wrap(gdBuildFileName(fileName, niveau));
     return rcpp_result_gen;
+END_RCPP
+}
+// gdKNearestNeighbors
+List gdKNearestNeighbors(List dataRecord, int k, bool useSearchTree);
+RcppExport SEXP _ganGenerativeData_gdKNearestNeighbors(SEXP dataRecordSEXP, SEXP kSEXP, SEXP useSearchTreeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type dataRecord(dataRecordSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< bool >::type useSearchTree(useSearchTreeSEXP);
+    rcpp_result_gen = Rcpp::wrap(gdKNearestNeighbors(dataRecord, k, useSearchTree));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdComplete
+List gdComplete(List dataRecord, bool useSearchTree);
+RcppExport SEXP _ganGenerativeData_gdComplete(SEXP dataRecordSEXP, SEXP useSearchTreeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type dataRecord(dataRecordSEXP);
+    Rcpp::traits::input_parameter< bool >::type useSearchTree(useSearchTreeSEXP);
+    rcpp_result_gen = Rcpp::wrap(gdComplete(dataRecord, useSearchTree));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdTest
+void gdTest(int begin, int end);
+RcppExport SEXP _ganGenerativeData_gdTest(SEXP beginSEXP, SEXP endSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type begin(beginSEXP);
+    Rcpp::traits::input_parameter< int >::type end(endSEXP);
+    gdTest(begin, end);
+    return R_NilValue;
 END_RCPP
 }
 
@@ -435,9 +472,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_gdGetMax", (DL_FUNC) &_ganGenerativeData_gdGetMax, 1},
     {"_ganGenerativeData_gdGetMin", (DL_FUNC) &_ganGenerativeData_gdGetMin, 1},
     {"_ganGenerativeData_gdIntCalculateDensityValues", (DL_FUNC) &_ganGenerativeData_gdIntCalculateDensityValues, 0},
-    {"_ganGenerativeData_gdCalculateDensityValue", (DL_FUNC) &_ganGenerativeData_gdCalculateDensityValue, 1},
+    {"_ganGenerativeData_gdCalculateDensityValue", (DL_FUNC) &_ganGenerativeData_gdCalculateDensityValue, 2},
     {"_ganGenerativeData_gdCalculateDensityValueQuantile", (DL_FUNC) &_ganGenerativeData_gdCalculateDensityValueQuantile, 1},
     {"_ganGenerativeData_gdBuildFileName", (DL_FUNC) &_ganGenerativeData_gdBuildFileName, 2},
+    {"_ganGenerativeData_gdKNearestNeighbors", (DL_FUNC) &_ganGenerativeData_gdKNearestNeighbors, 3},
+    {"_ganGenerativeData_gdComplete", (DL_FUNC) &_ganGenerativeData_gdComplete, 2},
+    {"_ganGenerativeData_gdTest", (DL_FUNC) &_ganGenerativeData_gdTest, 2},
     {NULL, NULL, 0}
 };
 

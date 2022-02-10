@@ -17,5 +17,5 @@ Create a data source with passed data frame.
 }
 \examples{
 # Create a data source and with built in iris data frame.
-\donttest{dsCreateWithDataFrame(dataFrame = iris)}
+\donttest{dsCreateWithDataFrame(iris)}
 }

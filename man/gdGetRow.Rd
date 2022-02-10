@@ -16,6 +16,6 @@ List containing row in generative data
 Get a row in generative data for a row index
 }
 \examples{
-\donttest{gdRead("gd.bin")
+\dontrun{gdRead("gd.bin")
 gdGetRow(1000)}
 }

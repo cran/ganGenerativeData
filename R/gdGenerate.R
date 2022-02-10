@@ -179,7 +179,7 @@ generate <- function(outGenerativeDataFileName, numberOfIterations, inKeepProbab
 #' @export
 #'
 #' @examples
-#' \donttest{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
+#' \dontrun{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
 gdGenerate <- function(dataSourceFileName, generativeDataFileName, numberOfIterations, keepProbability, columnIndices) {
   if(numberOfIterations > gdGetMaxSize() / gdGetBatchSize()) {
     message("Max number of iterations exceeded")

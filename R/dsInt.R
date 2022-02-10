@@ -17,7 +17,7 @@ sourceCpp("src/dsInt.cpp")
 #'
 #' @examples
 #' # Create a data source and with built in iris data frame.
-#' \donttest{dsCreateWithDataFrame(dataFrame = iris)}
+#' \donttest{dsCreateWithDataFrame(iris)}
 dsCreateWithDataFrame <- function (dataFrame) {
     if(!is.data.frame(dataFrame)) {
       message("Passed object is not a data frame\n")

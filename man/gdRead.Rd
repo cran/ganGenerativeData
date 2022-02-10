@@ -19,5 +19,5 @@ Read generative data and data source from specified files. Read in generative da
 generative data is accessed in gdGetRow(), gdCalculateDensityValue() and gdCalculateDensityValueQuantile().
 }
 \examples{
-\donttest{gdRead("gd.bin", "iris4d.bin")}
+\dontrun{gdRead("gd.bin", "iris4d.bin")}
 }

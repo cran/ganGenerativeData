@@ -14,17 +14,24 @@ using namespace std;
 
 class Progress {
 public:
-    Progress(int size): _lastPercent(-1), _size(size), _modulo(500), _beginCount(0) {}
-    void operator()(int n) {
+    Progress(int size): _lastPercent(-1), _size(size), _modulo(500), _beginCount(0) {
 #ifdef GD_RCPP
         Function f("message");
+        operator()(0);
+#endif
+    }
+    void operator()(int n) {
+#ifdef GD_RCPP
+        //Function f("message");
         
         if(n == 0 && _lastPercent == -1) {
+            Function f("message");
             f("0%");
             _lastPercent = 0;
             return;
         }
         if(n == _size) {
+            Function f("message");
             if(_lastPercent != 100) {
                 f("100%");
                 _lastPercent = 100;
@@ -40,6 +47,7 @@ public:
         if(n % _modulo == 0) {
             int percent = floor((float)n / (float)_size * 100.0f);
             if(percent != _lastPercent) {
+                Function f("message");
                 stringstream ss;
                 ss << percent << "%";
                 f(ss.str());

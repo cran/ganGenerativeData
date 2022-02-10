@@ -10,7 +10,7 @@ sourceCpp("src/gdInt.cpp")
 #' 
 #' Read generative data from a file, calculate density values and write generative data with density values to original file.
 #' Calculated density values are used to classiy generative data.
-#' In function gdPlot2dProjection() density value thresholds with assigned colours can be passed
+#' In function gdPlotParameters() density value thresholds with assigned colors can be passed
 #' to draw generative data for different density value ranges.
 #'
 #' @param generativeDataFileName Name of generative data file name
@@ -19,7 +19,7 @@ sourceCpp("src/gdInt.cpp")
 #' @export
 #'
 #' @examples
-#' \donttest{gdCalculateDensityValues("gd.bin")}
+#' \dontrun{gdCalculateDensityValues("gd.bin")}
 gdCalculateDensityValues <- function(generativeDataFileName) {
   gdReset()
   
@@ -27,3 +27,4 @@ gdCalculateDensityValues <- function(generativeDataFileName) {
   gdIntCalculateDensityValues()
   gdGenerativeDataWrite(generativeDataFileName)
 }
+

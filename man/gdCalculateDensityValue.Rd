@@ -4,18 +4,23 @@
 \alias{gdCalculateDensityValue}
 \title{Calculate density value for a data record}
 \usage{
-gdCalculateDensityValue(dataRecord)
+gdCalculateDensityValue(dataRecord, useSearchTree = FALSE)
 }
 \arguments{
 \item{dataRecord}{List containing a data record}
+
+\item{useSearchTree}{Boolean value indicating if a search tree should be used.}
 }
 \value{
 Normalized density value number
 }
 \description{
 Calculate density value for a data record.
+By default for the calculation a linear search is performed on generative data.
+When a search tree is used search is performed on a tree for generative data
+which is built once in the first function call.
 }
 \examples{
-\donttest{gdRead("gd.bin")
-gdCalculateDensityValue(List(6.1, 2.6, 5.6, 1.4))}
+\dontrun{gdRead("gd.bin")
+gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 }

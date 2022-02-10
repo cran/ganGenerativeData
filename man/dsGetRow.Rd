@@ -16,6 +16,6 @@ List containing row in data source
 Get a row in a data source for a row index.
 }
 \examples{
-\donttest{dsCreateWithDataFrame(dataFrame = iris)
-dsGetRow(1000)}
+\donttest{dsCreateWithDataFrame(iris)
+dsGetRow(1)}
 }

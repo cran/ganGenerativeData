@@ -34,5 +34,5 @@ write generated data to a file in binary format. When a higher number of iterati
 the distribution of generated data gets closer to that of the data source.
 }
 \examples{
-\donttest{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
+\dontrun{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
 }

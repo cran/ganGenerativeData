@@ -8,11 +8,10 @@ gdPlot2dProjection(
   imageFileName,
   title,
   columnIndices,
-  numberOfRandomGdPoints,
-  numberOfRandomDsPoints,
-  densityValueThresholds = c(),
-  densityValueColours = c("red"),
-  dsColour = "blue"
+  generativeDataParameters = gdPlotParameters(numberOfRandomPoints = 0,
+    densityValueThresholds = c(), densityValueColors = c("red")),
+  dataSourceParameters = gdPlotDataSourceParameters(numberOfRandomPoints = 0, color =
+    "blue")
 )
 }
 \arguments{
@@ -22,28 +21,26 @@ gdPlot2dProjection(
 
 \item{columnIndices}{Vector of two column indices that are used for the two-dimensional projections. Indices refer to indices of active columns of data source.}
 
-\item{numberOfRandomGdPoints}{Number of randomly selected rows in generative data}
+\item{generativeDataParameters}{Plot generative data parameters, see function gdPlotParameters().}
 
-\item{numberOfRandomDsPoints}{Number of randomly selected rows in data source}
-
-\item{densityValueThresholds}{Vector of density value thresholds}
-
-\item{densityValueColours}{Vector of colours assigned to density value thresholds. The size must be the size of densityValueThresholds plus one.}
-
-\item{dsColour}{Colour for data points of data source}
+\item{dataSourceParameters}{Plot data source parameters, see function gdPlotDataSourceParameters().}
 }
 \value{
 None
 }
 \description{
-Create an image file containing two-dimensional projections for a number of randomly selected rows in generative data and
-data source. Data points of data source are drawn above data points of generative data.
-When density value thresholds with assigned colours are specified generative data is drawn for density value ranges in increasing order.
+Create an image file containing two-dimensional projections of generative data and data source.
+Plot parameters for generative data and data source are passed by functions gdPlotParameters() and
+gdPlotDataSourceParameters(). Data points of data source are drawn above data points of generative data.
 }
 \examples{
-\donttest{gdRead("gd.bin", "iris4d.bin")
-gdPlot2dProjection("gd34d.png", c(3, 4), "Generative Data for the Iris Dataset", 250000, 2500)
+\dontrun{gdRead("gd.bin", "iris4d.bin")
+gdPlot2dProjection("gd12ddv.png",
+ "Generative Data with a Density Value Threshold for the Iris Dataset", c(1, 2),
+gdPlotParameters(250000, c(0.71), c("red", "green")),
+gdPlotDataSourceParameters(2500))
 gdPlot2dProjection("gd34ddv.png",
-"Generative Data with a Density Value Threshold for the Iris Dataset",
-c(3, 4), 250000, 2500, c(0.04), c("red", "green"))}
+"Generative Data with a Density Value Threshold for the Iris Dataset", c(3, 4),
+gdPlotParameters(250000, c(0.71), c("red", "green")),
+gdPlotDataSourceParameters(2500))}
 }

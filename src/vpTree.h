@@ -6,6 +6,7 @@
 
 #include <queue>
 #include <random>
+#include <cmath>
 
 #include "inOut.h"
 #include "progress.h"
@@ -20,11 +21,15 @@
 using namespace std;
 
 const string cDifferentSizes = "Sizes of vectors are different";
-const string cNearestNeighbourDifferent = "Nearest neighbour is different";
+const string cNearestNeighborDifferent = "Nearest neighbor is different";
+int cMaxNearestNeighbors = 128;
 
 struct LpDistance{
     LpDistance() {}
+    virtual ~LpDistance() {
+    }
     virtual float operator()(const vector<float>& a, const vector<float>& b) = 0;
+    virtual LpDistance& assign(const LpDistance& lpDistance) = 0;
 };
 
 struct L1Distance : public LpDistance {
@@ -37,6 +42,10 @@ struct L1Distance : public LpDistance {
             d += abs(a[i] - b[i]);
         }
         return d;
+    }
+    LpDistance& assign(const LpDistance& lpDistance) {
+        *this = dynamic_cast<const L1Distance&>(lpDistance);
+        return *this;
     }
 };
 
@@ -51,32 +60,88 @@ struct L2Distance : public LpDistance {
         }
         return sqrt(d);
     }
+    LpDistance& assign(const LpDistance& lpDistance) {
+        *this = dynamic_cast<const L2Distance&>(lpDistance);
+        return *this;
+    }
 };
- 
+
+struct L2DistanceNan : public LpDistance {
+    float operator()(const vector<float>& a, const vector<float>& b) {
+        if(a.size() != b.size()) {
+            throw string(cDifferentSizes);
+        }
+        float d = 0.0;
+        for(int i = 0; i < a.size(); i++) {
+            if(isnan(a[i]) || isnan(b[i])) {
+                continue;
+            }
+            d += (a[i] - b[i]) * (a[i] - b[i]);
+        }
+        return sqrt(d);
+    }
+    LpDistance& assign(const LpDistance& lpDistance) {
+        *this = dynamic_cast<const L2DistanceNan&>(lpDistance);
+        return *this;
+    }
+};
+
+struct L2DistanceNanIndexed : public LpDistance {
+    L2DistanceNanIndexed(const vector<float>& distance): _distance(distance) {
+    }
+    L2DistanceNanIndexed(const L2DistanceNanIndexed& l2DistanceNanIndexed): _distance(l2DistanceNanIndexed._distance) {
+    }
+    float operator()(const vector<float>& a, const vector<float>& b) {
+        if(a.size() != _distance.size() || b.size() != _distance.size()) {
+            throw string(cDifferentSizes);
+        }
+        float d = 0.0;
+        for(int i = 0; i < a.size(); i++) {
+            if(isnan(_distance[i])) {
+                continue;
+            }
+            d += (a[i] - b[i]) * (a[i] - b[i]);
+        }
+        return sqrt(d);
+    }
+    LpDistance& assign(const LpDistance& lpDistance) {
+        *this = dynamic_cast<const L2DistanceNanIndexed&>(lpDistance);
+        return *this;
+    }
+    vector<float> _distance;
+};
+
 class VpTreeData {
 public:
     VpTreeData() {
-        ;
-    };
+    }
+    virtual ~VpTreeData() {
+    }
+    
     virtual vector<float> getNumberVector(int i) = 0;
     virtual int getSize() = 0;
+    virtual VpTreeData& assign(const VpTreeData& vpTreeData) = 0;
 };
 
 class VpGenerativeData : public VpTreeData {
 public:
-    VpGenerativeData(GenerativeData& generativeData): _generativeData(generativeData) {
-        ;
+    VpGenerativeData(GenerativeData& generativeData): _generativeData(&generativeData) {}
+    VpGenerativeData(const VpGenerativeData& vpGenerativeData): _generativeData(vpGenerativeData._generativeData) {
+    }
+    virtual VpTreeData& assign(const VpTreeData& vpTreeData) {
+        *this = dynamic_cast<const VpGenerativeData&>(vpTreeData);
+        return *this;
     }
     
     virtual vector<float> getNumberVector(int i) {
-        return  _generativeData.getNormalizedNumberVector(i);
-    };
+        return  _generativeData->getNormalizedNumberVector(i);
+    }
     virtual int getSize() {
-        return _generativeData.getNormalizedSize();  
-    };
+        return _generativeData->getNormalizedSize();  
+    }
     
 private:
-    GenerativeData& _generativeData;
+    GenerativeData* _generativeData;
 };
 
 struct Distance {
@@ -112,46 +177,6 @@ struct VpDistance {
     VpTreeData& _vpTreeData;
     int _index;
     LpDistance& _lpDistance;
-};
-
-class VpNode {
-public:
-	VpNode(): _index(-1), _threshold(0), _pInVpNode(0), _pOutVpNode(0) {}
-    ~VpNode() {
-        delete _pInVpNode;
-        delete _pOutVpNode;
-    }
-	
-    int getIndex() {
-        return _index;
-    }
-    void setIndex(int index) {
-        _index = index;
-    }
-    float getThreshold() {
-        return _threshold;
-	}
-    void setThreshold(float threshold) {
-        _threshold = threshold;
-    }
-	VpNode* getInVpNode() {
-		return _pInVpNode;
-	}
-    void setInVpNode(VpNode* pVpNode) {
-        _pInVpNode = pVpNode;
-    }
-    VpNode* getOutVpNode() {
-        return _pOutVpNode;
-    }
-    void setOutVpNode(VpNode* pVpNode) {
-        _pOutVpNode = pVpNode;
-    }
-  
-private:
-    int _index;
-    float _threshold;
-	VpNode* _pInVpNode;
-	VpNode* _pOutVpNode;
 };
 
 class VpElement {
@@ -205,19 +230,76 @@ private:
     int _category;
 };
 
+struct VpElementCompare{
+    bool operator()(const VpElement& a, const VpElement& b) {
+        if(a.getDistance() < b.getDistance()) {
+            return true;
+        }
+        if(a.getDistance() == b.getDistance()) {
+            if(a.getIndex() < b.getIndex()) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+class VpNode {
+public:
+	VpNode(): _index(-1), _threshold(0), _pInVpNode(0), _pOutVpNode(0) {}
+    ~VpNode() {
+        delete _pInVpNode;
+        delete _pOutVpNode;
+    }
+	
+    int getIndex() {
+        return _index;
+    }
+    void setIndex(int index) {
+        _index = index;
+    }
+    float getThreshold() {
+        return _threshold;
+	}
+    void setThreshold(float threshold) {
+        _threshold = threshold;
+    }
+	VpNode* getInVpNode() {
+		return _pInVpNode;
+	}
+    void setInVpNode(VpNode* pVpNode) {
+        _pInVpNode = pVpNode;
+    }
+    VpNode* getOutVpNode() {
+        return _pOutVpNode;
+    }
+    void setOutVpNode(VpNode* pVpNode) {
+        _pOutVpNode = pVpNode;
+    }
+  
+private:
+    int _index;
+    float _threshold;
+	VpNode* _pInVpNode;
+	VpNode* _pOutVpNode;
+};
+
 class VpTree {
 public:
-    VpTree(VpTreeData& vpTreeData, LpDistance& lpDistance, Progress* pProgress): _pVpNode(0), _vpTreeData(vpTreeData), _tau(numeric_limits<float>::max()), _pProgress(pProgress), _lpDistance(lpDistance), _pG(new mt19937(_rd())), _pR(0) {
+    VpTree(): _pVpNode(0), _pVpTreeData(0), _tau(numeric_limits<float>::max()), _pProgress(0), _pLpDistance(0), _pG(new mt19937(_rd())), _pR(0), _pGd(0) {
+    }
+    VpTree(VpTreeData* pVpTreeData, LpDistance* pLpDistance, Progress* pProgress): _pVpNode(0), _pVpTreeData(pVpTreeData), _tau(numeric_limits<float>::max()), _pProgress(pProgress), _pLpDistance(pLpDistance), _pG(new mt19937(_rd())), _pR(0), _pGd(0) {
     }
     ~VpTree() {
         delete _pVpNode;
         delete _pR;
         delete _pG;
+        delete _pGd;
     }
     
     VpNode* build(int lower, int upper) {
         if(_pProgress != 0) {
-            (*_pProgress)(0);
+            (*_pProgress)(_i);
         }
         
         if(upper == lower) {
@@ -228,33 +310,49 @@ public:
         pVpNode->setIndex(lower);
     
         if(upper - lower > 1) {
-            int i = (int)((float)(*_pR)(*_pG) / (float)(_vpTreeData.getSize() - 1) * (float)(upper - lower - 1)) + lower;
+            int i = (int)((float)(*_pR)(*_pGd) / (float)(_pVpTreeData->getSize() - 1) * (float)(upper - lower - 1)) + lower;
+            
             swap(_indexVector[lower], _indexVector[i]);
             int median = (upper + lower) / 2;
             nth_element(_indexVector.begin() + lower + 1,
                  _indexVector.begin() + median,
                 _indexVector.begin() + upper,
-                VpDistance(_vpTreeData, _indexVector[lower], _lpDistance));
+                VpDistance(*_pVpTreeData, _indexVector[lower], *_pLpDistance));
           
-            pVpNode->setThreshold(Distance(_vpTreeData, _lpDistance).operator()(_indexVector[lower], _indexVector[median]));
+            pVpNode->setThreshold(Distance(*_pVpTreeData, *_pLpDistance).operator()(_indexVector[lower], _indexVector[median]));
             pVpNode->setIndex(lower);
             pVpNode->setInVpNode(build(lower + 1, median));
             pVpNode->setOutVpNode(build(median, upper));
         }
+        _i++;
     
         return pVpNode;
     }
-    void build() {
-        if(_pProgress != 0) {
-            (*_pProgress)(0);
-        };
+    void build(VpTreeData* pVpTreeData, LpDistance* pLpDistance, Progress* pProgress) {
+        delete _pVpNode;
         
-        _indexVector.resize(_vpTreeData.getSize());
-        for(int i = 0; i < _vpTreeData.getSize(); i++) {
+        _pVpTreeData = pVpTreeData;
+        _pLpDistance = pLpDistance;
+        _pProgress = pProgress;
+        _i = 0;
+        
+        //if(_pProgress != 0) {
+        //    (*_pProgress)(0);
+        //}
+        
+        _indexVector.resize(_pVpTreeData->getSize());
+        for(int i = 0; i < _pVpTreeData->getSize(); i++) {
             _indexVector[i] = i;
         }
-        _pR = new uniform_int_distribution<int>(0, _vpTreeData.getSize() - 1);
+        delete _pGd;
+        _pGd = new default_random_engine(30);
+        delete _pR;
+        _pR = new uniform_int_distribution<int>(0, _pVpTreeData->getSize() - 1);
         _pVpNode = build(0, _indexVector.size());
+        
+        if(_pProgress != 0) {
+            (*_pProgress)(_pVpTreeData->getSize());
+        }
     }
     bool isBuilt() {
         if(_pVpNode != 0) {
@@ -264,17 +362,39 @@ public:
         }
     }
   
-    void search(const vector<float>& target, int k, vector<VpElement>& nearestNeighbours) {
+    vector<VpElement> kNearestNeighbors(int k, vector<VpElement>& nearestNeighbors) {
+        if(nearestNeighbors.size() <= k) {
+            return nearestNeighbors;
+        }
+        
+        vector<VpElement> kNearestNeighbors;
+        for(int i = 0; i < k; i++) {
+            delete _pR;
+            _pR = new uniform_int_distribution<int>(0, nearestNeighbors.size() - 1);
+            int r = (*_pR)(*_pG);
+            kNearestNeighbors.push_back(nearestNeighbors[r]);
+            nearestNeighbors.erase(nearestNeighbors.begin() + r);
+        }
+        
+        VpElementCompare vpElementCompare;
+        sort(kNearestNeighbors.begin(), kNearestNeighbors.end(), vpElementCompare);
+        
+        return kNearestNeighbors;
+    }
+    void search(const vector<float>& target, int k, vector<VpElement>& nearestNeighbors) {
         priority_queue<VpElement> priorityQueue;
         _tau = numeric_limits<float>::max();
+        _unique.clear();
         search(_pVpNode, target, k, priorityQueue);
         
-        nearestNeighbours.clear();
+        nearestNeighbors.clear();
         while(!priorityQueue.empty()) {
-            nearestNeighbours.push_back(priorityQueue.top());
+            nearestNeighbors.push_back(priorityQueue.top());
             priorityQueue.pop();
         }
-        reverse(nearestNeighbours.begin(), nearestNeighbours.end());
+        reverse(nearestNeighbors.begin(), nearestNeighbors.end());
+        
+        nearestNeighbors = kNearestNeighbors(k, nearestNeighbors);
     }
 
     void search(VpNode* pVpNode, const vector<float>& target, int k, priority_queue<VpElement>& priorityQueue) {
@@ -282,16 +402,20 @@ public:
             return;
         }
         
-        vector<float> numberVector = _vpTreeData.getNumberVector(_indexVector[pVpNode->getIndex()]);
-        float d = _lpDistance(numberVector, target);
-        
-        if(d < _tau) {
-            if(priorityQueue.size() == k) {
-                priorityQueue.pop();
-            }
-            priorityQueue.push(VpElement(_indexVector[pVpNode->getIndex()], d));
-            if(priorityQueue.size() == k) {
+        vector<float> numberVector = _pVpTreeData->getNumberVector(_indexVector[pVpNode->getIndex()]);
+        float d = (*_pLpDistance)(numberVector, target);
+        if(d <= _tau) {
+            _unique.insert(d);
+            if(_unique.size() > k || priorityQueue.size() > cMaxNearestNeighbors) {
+                float tau = priorityQueue.top().getDistance();
+                while(!priorityQueue.empty() && priorityQueue.top().getDistance() == tau) {
+                    priorityQueue.pop();
+                }
+                _unique.erase(tau);
+                priorityQueue.push(VpElement(_indexVector[pVpNode->getIndex()], d));   
                 _tau = priorityQueue.top().getDistance();
+            } else {
+                priorityQueue.push(VpElement(_indexVector[pVpNode->getIndex()], d));
             }
         }
         
@@ -300,78 +424,97 @@ public:
             if(d + _tau >= pVpNode->getThreshold()) {
                 search(pVpNode->getOutVpNode(), target, k, priorityQueue);
             }
-        } else {
+        } else if(d == pVpNode->getThreshold()) {
+            search(pVpNode->getInVpNode(), target, k, priorityQueue);
             search(pVpNode->getOutVpNode(), target, k, priorityQueue);
-            if(d - _tau < pVpNode->getThreshold()) {
+        } else if(d > pVpNode->getThreshold()) {
+            search(pVpNode->getOutVpNode(), target, k, priorityQueue);
+            if(d - _tau <= pVpNode->getThreshold()) {
                 search(pVpNode->getInVpNode(), target, k, priorityQueue);
             }
         }
     }
-    void linearSearch(const vector<float>& target, int k, vector<VpElement>& nearestNeighbours) {
+    void linearSearch(const vector<float>& target, int k, vector<VpElement>& nearestNeighbors) {
         priority_queue<VpElement> priorityQueue;
         float tau = numeric_limits<float>::max();
-        for(int i = 0; (int)i < _vpTreeData.getSize(); i++) {
-            vector<float> numberVector = _vpTreeData.getNumberVector(i);
-            float d = _lpDistance(numberVector, target);
-            
-            if(d < tau) {
-                if(priorityQueue.size() == k) {
-                    priorityQueue.pop();
-                }
-                priorityQueue.push(VpElement(i, d));
-                if(priorityQueue.size() == k) {
-                    tau = priorityQueue.top().getDistance();
+        _unique.clear();
+        for(int i = 0; (int)i < _pVpTreeData->getSize(); i++) {
+            vector<float> numberVector = _pVpTreeData->getNumberVector(i);
+            float d = (*_pLpDistance)(numberVector, target);
+            if(d <= _tau) {
+                _unique.insert(d);
+                if(_unique.size() > k) {
+                    float tau = priorityQueue.top().getDistance();
+                    while(!priorityQueue.empty() && priorityQueue.top().getDistance() == tau) {
+                        priorityQueue.pop();
+                    }
+                    _unique.erase(tau);
+                    priorityQueue.push(VpElement(i, d));  
+                    _tau = priorityQueue.top().getDistance();
+                    
+                } else {
+                    priorityQueue.push(VpElement(i, d));      
+                    _tau = priorityQueue.top().getDistance();
                 }
             }
         }
-        
-        nearestNeighbours.clear();
+        nearestNeighbors.clear();
         while(!priorityQueue.empty()) {
-            nearestNeighbours.push_back(priorityQueue.top());
+            nearestNeighbors.push_back(priorityQueue.top());
             priorityQueue.pop();
         }
-        reverse(nearestNeighbours.begin(), nearestNeighbours.end());
+        reverse(nearestNeighbors.begin(), nearestNeighbors.end());
+        
+        nearestNeighbors = kNearestNeighbors(k, nearestNeighbors);
     }
-    
-    void test(int begin, int end, int nNearestNeighbours) {
-        if(begin >= _vpTreeData.getSize())
+   
+    void test(int begin, int end, int nNearestNeighbors) {
+        if(begin >= _pVpTreeData->getSize())
         {
-            begin = _vpTreeData.getSize();
+            begin = _pVpTreeData->getSize();
         }
-        if(end > _vpTreeData.getSize())
+        if(end > _pVpTreeData->getSize())
         {
-            end = _vpTreeData.getSize();
+            end = _pVpTreeData->getSize();
         }
         for(int i = begin; i < end; i++) {
-            vector<float> numberVector = _vpTreeData.getNumberVector(i);
-            vector<VpElement> nearestNeighbours;
-            search(numberVector, nNearestNeighbours, nearestNeighbours);
+            vector<float> numberVector = _pVpTreeData->getNumberVector(i);
+            vector<VpElement> nearestNeighbors;
+            search(numberVector, nNearestNeighbors, nearestNeighbors);
             
-            vector<VpElement> lNearestNeighbours;
-            linearSearch(numberVector, nNearestNeighbours, lNearestNeighbours);
+            vector<VpElement> lNearestNeighbors;
+            linearSearch(numberVector, nNearestNeighbors, lNearestNeighbors);
             
-            for(int j = 0; j < (int)nearestNeighbours.size(); j++) {
-                if(nearestNeighbours[j].getDistance() != lNearestNeighbours[j].getDistance()) {
-                    throw string(cNearestNeighbourDifferent);
+            for(int j = 0; j < (int)nearestNeighbors.size(); j++) {
+                if(nearestNeighbors[j].getDistance() != lNearestNeighbors[j].getDistance()) {
+                    throw string(cNearestNeighborDifferent);
                 }
             }
         }
     }
     VpTreeData& getVpTreeData() {
-        return _vpTreeData;
+        return *_pVpTreeData;
+    }
+    LpDistance& getLpDistance() {
+        return *_pLpDistance;
     }
     
 private:
     vector<int> _indexVector;
     VpNode* _pVpNode;
-    VpTreeData& _vpTreeData;
+    VpTreeData* _pVpTreeData;
     float _tau;
     Progress* _pProgress;
-    LpDistance& _lpDistance;
+    LpDistance* _pLpDistance;
     
     random_device _rd;
     mt19937* _pG;
     uniform_int_distribution<int>* _pR;
+    
+    set<float> _unique;
+    int _i;
+    
+    default_random_engine *_pGd;
 };
 
 #endif

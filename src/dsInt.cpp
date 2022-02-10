@@ -16,7 +16,7 @@ namespace dsInt {
 //' Write a data source including settings of active columns to a file in binary format.
 //' This file will be used as input in functions for generation of generative data.\cr
 //'
-//' @param outFileName Name of data source file
+//' @param fileName Name of data source file
 //'
 //' @return None
 //' 
@@ -25,20 +25,20 @@ namespace dsInt {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsWrite("iris4d.bin")}
 // [[Rcpp::export]]
-void dsWrite(const std::string& outFileName) {
+void dsWrite(const std::string& fileName) {
     try {
         if(dsInt::pDataSource == 0) {
             throw string("No datasource");
         }
     
         ofstream outFile;
-        outFile.open(outFileName.c_str(), ios::binary);
+        outFile.open(fileName.c_str(), ios::binary);
         if(!outFile.is_open()) {
-            throw string("File " + outFileName + " could not be opened");
+            throw string("File " + fileName + " could not be opened");
         }
         
         NormalizeData normalizeData;
@@ -57,23 +57,23 @@ void dsWrite(const std::string& outFileName) {
 //'
 //' Read a data source from a file in binary format
 //'
-//' @param inFileName Name of data source file
+//' @param fileName Name of data source file
 //'
 //' @return None
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsWrite("iris4d.bin")
 //' dsRead("iris4d.bin")}
 // [[Rcpp::export]]
-void dsRead(const std::string& inFileName) {
+void dsRead(const std::string& fileName) {
     try {
         ifstream is;
-        is.open(inFileName.c_str(), ios::binary);
+        is.open(fileName.c_str(), ios::binary);
         if(!is.is_open()) {
-            throw string("File " + inFileName + " could not be opened");
+            throw string("File " + fileName + " could not be opened");
         }
     
         delete dsInt::pDataSource;
@@ -136,7 +136,7 @@ void dsAddValueRow(const std::vector<std::wstring>& valueVector) {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsGetInactiveColumnNames()}
 // [[Rcpp::export]]
@@ -169,7 +169,7 @@ void dsDeactivateColumns(const std::vector<int>& columnVector) {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(iris)
 //' dsGetActiveColumnNames()
 //' dsDeactivateColumns(c(5))
 //' dsGetActiveColumnNames()
@@ -205,7 +205,7 @@ void dsActivateColumns(const std::vector<int>& columnVector) {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsGetActiveColumnNames()}
 // [[Rcpp::export]]
@@ -233,7 +233,7 @@ std::vector<std::wstring> dsGetActiveColumnNames() {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsGetInactiveColumnNames()}
 // [[Rcpp::export]]
@@ -261,7 +261,7 @@ std::vector<std::wstring> dsGetInactiveColumnNames() {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
+//' \donttest{dsCreateWithDataFrame(iris)
 //' dsGetNumberOfRows()}
 // [[Rcpp::export]]
 int dsGetNumberOfRows() {
@@ -288,8 +288,8 @@ int dsGetNumberOfRows() {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(dataFrame = iris)
-//' dsGetRow(1000)}
+//' \donttest{dsCreateWithDataFrame(iris)
+//' dsGetRow(1)}
 // [[Rcpp::export]]
 List dsGetRow(int index) {
     try {

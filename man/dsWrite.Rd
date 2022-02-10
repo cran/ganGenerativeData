@@ -4,10 +4,10 @@
 \alias{dsWrite}
 \title{Write a data source to file}
 \usage{
-dsWrite(outFileName)
+dsWrite(fileName)
 }
 \arguments{
-\item{outFileName}{Name of data source file}
+\item{fileName}{Name of data source file}
 }
 \value{
 None
@@ -17,7 +17,7 @@ Write a data source including settings of active columns to a file in binary for
 This file will be used as input in functions for generation of generative data.\cr
 }
 \examples{
-\donttest{dsCreateWithDataFrame(dataFrame = iris)
+\donttest{dsCreateWithDataFrame(iris)
 dsDeactivateColumns(c(5))
 dsWrite("iris4d.bin")}
 }
