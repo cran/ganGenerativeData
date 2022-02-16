@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(iris)
+#' \dontrun{dsCreateWithDataFrame(iris)
 #' dsDeactivateColumns(c(5))
 #' dsWrite("iris4d.bin")}
 dsWrite <- function(fileName) {
@@ -32,7 +32,7 @@ dsWrite <- function(fileName) {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(iris)
+#' \dontrun{dsCreateWithDataFrame(iris)
 #' dsDeactivateColumns(c(5))
 #' dsWrite("iris4d.bin")
 #' dsRead("iris4d.bin")}
@@ -341,7 +341,7 @@ gdKNearestNeighbors <- function(dataRecord, k = 1L, useSearchTree = FALSE) {
 #' 
 #' Search for first nearest neighbor in generative data for incomplete data record containing NA values.
 #' Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
-#' gdKNearestNeighbor with parameter k equal to 1.
+#' gdKNearestNeighbor() with parameter k equal to 1.
 #' 
 #' @param dataRecord List containing incomplete data record
 #' @param useSearchTree Boolean value indicating if a search tree should be used.

@@ -732,7 +732,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
 //' 
 //' Search for first nearest neighbor in generative data for incomplete data record containing NA values.
 //' Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
-//' gdKNearestNeighbor with parameter k equal to 1.
+//' gdKNearestNeighbor() with parameter k equal to 1.
 //' 
 //' @param dataRecord List containing incomplete data record
 //' @param useSearchTree Boolean value indicating if a search tree should be used.

@@ -233,13 +233,3 @@ gdPlot2dProjection <- function(imageFileName, title, columnIndices,
   gdPng(imageFileName, title, columnIndices, generativeDataParameters, dataSourceParameters, batchSize, dataDimension)  
 }
 
-gdPlot2dProjectionSequence <- function(imageFileName, title, columnIndices, densityValues, numberOfRandomGdPoints, numberOfRandomDsPoints) {
-  for(densityValue in densityValues) {
-    densityValueImageFileName <- gdBuildFileName(imageFileName, densityValue)
-    gdPlot2dProjection(densityValueImageFileName,
-                       title,
-                       columnIndices,
-                       gdPlotParameters(numberOfRandomGdPoints, c(densityValue), c("red", "green")),
-                       gdPlotDataSourceParameters(numberOfRandomDsPoints))
-  }
-}

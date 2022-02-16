@@ -79,9 +79,9 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 \examples{
 # Generate generative data for the iris dataset
 
-# This package imports package tensorflow 
+# Package ganGenerativeData imports package tensorflow 
 # which offers an interface to machine learning framework TensorFlow.
-# It is needed to train neural networks and must be installed by the user.
+# It is used for training of neural networks and must be installed by the user.
 \dontrun{library(tensorflow)
 install_tensorflow()}
 
@@ -90,7 +90,7 @@ library(ganGenerativeData)
 
 # 1. Definition of data source for the iris dataset
 
-# Create a data source with built in iris data frame.
+# Create a data source with iris data frame.
 dsCreateWithDataFrame(iris)
 
 # Deactivate the column with name Species and index 5 in order to exclude it in 
@@ -102,7 +102,7 @@ dsGetActiveColumnNames()
 
 # Write the data source including settings of active columns to file "iris4d.bin" in binary format.
 \dontshow{iris4d <- tempfile("iris4d")
-dsWrite(iris4d)}\donttest{dsWrite("iris4d.bin")}
+dsWrite(iris4d)}\dontrun{dsWrite("iris4d.bin")}
 
 # 2. Generation of generative data for the iris data source
 

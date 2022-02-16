@@ -25,7 +25,7 @@ namespace dsInt {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(iris)
+//' \dontrun{dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsWrite("iris4d.bin")}
 // [[Rcpp::export]]
@@ -63,7 +63,7 @@ void dsWrite(const std::string& fileName) {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(iris)
+//' \dontrun{dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsWrite("iris4d.bin")
 //' dsRead("iris4d.bin")}
