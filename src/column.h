@@ -12,6 +12,7 @@ const string cInvalidColumnType = "Invalid column type";
 const string cInvalidActiveColumn = "Invalid active column";
 const string cInvalidScaleType = "Invalid scale type";
 const string cInvalidIndex = "Invalid index";
+const string cSuffixInvalidColumnType = "invalid column type";
 
 class Column{
 public:

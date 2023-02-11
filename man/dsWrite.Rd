@@ -17,7 +17,8 @@ Write a data source including settings of active columns to a file in binary for
 This file will be used as input in functions for generation of generative data.\cr
 }
 \examples{
-\dontrun{dsCreateWithDataFrame(iris)
+\dontrun{
+dsCreateWithDataFrame(iris)
 dsDeactivateColumns(c(5))
-dsWrite("iris4d.bin")}
+dsWrite("ds.bin")}
 }

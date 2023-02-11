@@ -19,5 +19,6 @@ In function gdPlotParameters() density value thresholds with assigned colors can
 to draw generative data for different density value ranges.
 }
 \examples{
-\dontrun{gdCalculateDensityValues("gd.bin")}
+\dontrun{
+gdCalculateDensityValues("gd.bin")}
 }

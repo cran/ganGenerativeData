@@ -19,15 +19,13 @@ namespace dsInt {
 //' @param fileName Name of data source file
 //'
 //' @return None
-//' 
-//' 
-//' 
 //' @export
 //'
 //' @examples
-//' \dontrun{dsCreateWithDataFrame(iris)
+//' \dontrun{
+//' dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
-//' dsWrite("iris4d.bin")}
+//' dsWrite("ds.bin")}
 // [[Rcpp::export]]
 void dsWrite(const std::string& fileName) {
     try {
@@ -63,10 +61,11 @@ void dsWrite(const std::string& fileName) {
 //' @export
 //'
 //' @examples
-//' \dontrun{dsCreateWithDataFrame(iris)
+//' \dontrun{
+//' dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
-//' dsWrite("iris4d.bin")
-//' dsRead("iris4d.bin")}
+//' dsWrite("ds.bin")
+//' dsRead("ds.bin")}
 // [[Rcpp::export]]
 void dsRead(const std::string& fileName) {
     try {
@@ -127,8 +126,8 @@ void dsAddValueRow(const std::vector<std::wstring>& valueVector) {
 //' Deactivate columns
 //'
 //' Deactivate columns of a data source in order to exclude them in generation of generative data.
-//' Note that in this version only columns with values of type double or float can be used in generation of generative data.
-//' All columns with values of other type have to be deactivated.
+//' Note that in this version only columns of type R-class numeric and R-type double can be used in generaton of generative data.
+//' All columns of other type have to be deactivated.
 //'
 //' @param columnVector Vector of column indices
 //'
@@ -136,7 +135,8 @@ void dsAddValueRow(const std::vector<std::wstring>& valueVector) {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(iris)
+//' \donttest{
+//' dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsGetInactiveColumnNames()}
 // [[Rcpp::export]]
@@ -169,7 +169,8 @@ void dsDeactivateColumns(const std::vector<int>& columnVector) {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(iris)
+//' \donttest{
+//' dsCreateWithDataFrame(iris)
 //' dsGetActiveColumnNames()
 //' dsDeactivateColumns(c(5))
 //' dsGetActiveColumnNames()
@@ -199,13 +200,12 @@ void dsActivateColumns(const std::vector<int>& columnVector) {
 //'
 //' Get active column names of a data source
 //'
-//' 
-//'
 //' @return Vector of names of active columns
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(iris)
+//' \donttest{
+//' dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsGetActiveColumnNames()}
 // [[Rcpp::export]]
@@ -233,7 +233,8 @@ std::vector<std::wstring> dsGetActiveColumnNames() {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(iris)
+//' \donttest{
+//' dsCreateWithDataFrame(iris)
 //' dsDeactivateColumns(c(5))
 //' dsGetInactiveColumnNames()}
 // [[Rcpp::export]]
@@ -261,7 +262,8 @@ std::vector<std::wstring> dsGetInactiveColumnNames() {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(iris)
+//' \donttest{
+//' dsCreateWithDataFrame(iris)
 //' dsGetNumberOfRows()}
 // [[Rcpp::export]]
 int dsGetNumberOfRows() {
@@ -288,7 +290,8 @@ int dsGetNumberOfRows() {
 //' @export
 //'
 //' @examples
-//' \donttest{dsCreateWithDataFrame(iris)
+//' \donttest{
+//' dsCreateWithDataFrame(iris)
 //' dsGetRow(1)}
 // [[Rcpp::export]]
 List dsGetRow(int index) {
@@ -308,6 +311,12 @@ List dsGetRow(int index) {
             } else if(type == Column::NUMERICAL) {
                 vector<float> numberVector = columnVector[j]->getNumberVector(index - 1);
                 float value = numberVector[0];
+                if(isnan(value)) {
+                    //list.insert(list.end(), "NA");
+                    list.insert(list.end(), NA_REAL);
+                    continue;
+                }
+                
                 list.insert(list.end(), value);
             } else {
                 throw string(cInvalidColumnType);

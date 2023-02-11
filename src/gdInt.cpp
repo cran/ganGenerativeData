@@ -27,7 +27,7 @@ namespace gdInt {
     string inDataSourceFileName = "";
     int batchSize = 256;
     int maxSize = batchSize * 50000;
-    int nNearestNeighbors = 25;
+    int nNearestNeighbors = 20;
   
     const string cMaxSizeExceeded = "Max size of generative data exceeded";
 }
@@ -177,20 +177,71 @@ void gdGenerativeDataWrite(const std::string& outFileName) {
     }
 }
 
+//' Write subset of generative data
+//'
+//' Write subset of randomly selected rows of generative data
+//'
+//' @param fileName Name of subset generative data file
+//' @param percent Percent of randomly selected rows
+//'
+//' @return None
+//' @export
+//'
+//' @examples
+//' \dontrun{
+//' gdRead("gd.bin")
+//' gdWriteSubset("gds.bin", 50)}
+// [[Rcpp::export]]
+void gdWriteSubset(const std::string& fileName, float percent) {
+    try {
+        if(gdInt::pGenerativeData == 0) {
+            throw string("No generative data");
+        }
+    
+        ofstream outFile;
+        outFile.open(fileName.c_str(), std::ios::binary);
+        if(!outFile.is_open()) {
+            throw string("File " + fileName + " could not be opened");
+        }
+    
+        vector<int> randomIndices = RandomIndicesWithoutReplacement()(gdInt::pGenerativeData->getNormalizedSize(), percent);
+        sort(randomIndices.begin(), randomIndices.end());
+    
+        GenerativeData generativeData(dynamic_cast<DataSource&>(*gdInt::pGenerativeData));
+        for(int i = 0; i < (int)randomIndices.size(); i++) {
+            vector<float> normalizedNumberVector = gdInt::pGenerativeData->getNormalizedNumberVector(randomIndices[i]);
+            generativeData.addValueLine(normalizedNumberVector);
+        }
+        
+        if(gdInt::pGenerativeData->getDensityVector()->getNormalizedSize() > 0) {
+            generativeData.getDensityVector()->getNormalizedValueVector().resize(randomIndices.size(), 0);
+            for(int i = 0; i < (int)randomIndices.size(); i++) {
+                generativeData.getDensityVector()->getNormalizedValueVector()[i] = gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector()[randomIndices[i]];
+            }
+        }
+                                      
+        generativeData.DataSource::write(outFile);
+        outFile.close();
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
 // [[Rcpp::export]]
 void gdCreateGenerativeData() {
-  try {
-    if(gdInt::pDataSource == 0) {
-      throw string("No datasource");
-    }
+    try {
+        if(gdInt::pDataSource == 0) {
+            throw string("No datasource");
+        }
     
-    delete gdInt::pGenerativeData;
-    gdInt::pGenerativeData = new GenerativeData(*gdInt::pDataSource);
-  } catch (const string& e) {
-    ::Rf_error(e.c_str());
-  } catch(...) {
-    ::Rf_error("C++ exception (unknown reason)");
-  }
+        delete gdInt::pGenerativeData;
+        gdInt::pGenerativeData = new GenerativeData(*gdInt::pDataSource);
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
 }
 
 // [[Rcpp::export]]
@@ -226,13 +277,15 @@ std::vector<float> gdDataSourceGetNormalizedDataRandom(int rowCount) {
 }
 
 // [[Rcpp::export]]
-std::vector<float> gdGenerativeDataGetNormalizedDataRandom(int rowCount) {
+std::vector<float> gdDataSourceGetNormalizedDataRandomReference(int rowCount) {
     try {
-        if(gdInt::pGenerativeData == 0) {
-            throw string("No generative data");
+        if(gdInt::pDataSource == 0) {
+            throw string("No datasource");
         }
-  
-        std::vector<float> v = ((DataSource*)gdInt::pGenerativeData)->getNormalizedDataRandom(rowCount);
+    
+        std::vector<float> v;
+        v.reserve(rowCount * gdInt::pDataSource->getDimension());
+        gdInt::pDataSource->getNormalizedDataRandomReference(v, rowCount);
         return v;
     } catch (const string& e) {
         ::Rf_error(e.c_str());
@@ -242,14 +295,22 @@ std::vector<float> gdGenerativeDataGetNormalizedDataRandom(int rowCount) {
 }
 
 // [[Rcpp::export]]
-std::vector<float> gdGenerativeDataGetDenormalizedDataRandom(int rowCount) {
+std::vector<float> gdDataSourceGetDataRandomPercent(float percent) {
     try {
-        if(gdInt::pGenerativeData == 0) {
-            throw string("No generative data");
+        if(gdInt::pDataSource == 0) {
+            throw string("No datasource");
         }
     
-        std::vector<float> v = ((DataSource*)gdInt::pGenerativeData)->getDenormalizedDataRandom(rowCount);
-        return v;
+        vector<int> randomIndices = RandomIndicesWithoutReplacement()(gdInt::pDataSource->getSize(), percent);
+    
+        vector<float> dataSource;
+        for(int i = 0; i < (int)randomIndices.size(); i++) {
+            int index = randomIndices[i];
+            vector<float> numberVector = gdInt::pDataSource->getRow(index);
+            dataSource.insert(dataSource.end(), numberVector.begin(), numberVector.end());
+        }
+    
+        return dataSource;
     } catch (const string& e) {
         ::Rf_error(e.c_str());
     } catch(...) {
@@ -258,14 +319,56 @@ std::vector<float> gdGenerativeDataGetDenormalizedDataRandom(int rowCount) {
 }
 
 // [[Rcpp::export]]
-std::vector<std::vector<float>> gdGenerativeDataGetDenormalizedDataRandomWithDensities(int rowCount) {
+std::vector<float> gdGenerativeDataGetDenormalizedDataRandom(float percent) {
     try {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
     
-        std::vector<std::vector<float>> v = gdInt::pGenerativeData->getDenormalizedDataRandomWithDensities(rowCount);
-        return v;
+        vector<int> randomIndices = RandomIndicesWithoutReplacement()(gdInt::pGenerativeData->getNormalizedSize(), percent);
+    
+        vector<float> denormalizedGenerativeData;
+        for(int i = 0; i < (int)randomIndices.size(); i++) {
+            int index = randomIndices[i];
+            vector<float> denormalizedNumberVector = ((DataSource*)gdInt::pGenerativeData)->getDenormalizedRow(index);
+            denormalizedGenerativeData.insert(denormalizedGenerativeData.end(), denormalizedNumberVector.begin(), denormalizedNumberVector.end());
+        }
+      
+        return denormalizedGenerativeData;
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+std::vector<std::vector<float>> gdGenerativeDataGetDenormalizedDataRandomWithDensities(float percent) {
+    try {
+        if(gdInt::pGenerativeData == 0) {
+            throw string("No generative data");
+        }
+    
+        if(gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector().size() == 0) {
+            throw string(cNoDensities);
+        }
+    
+        vector<int> randomIndices = RandomIndicesWithoutReplacement()(gdInt::pGenerativeData->getNormalizedSize(), percent);
+    
+        vector<float> densityVector(randomIndices.size(), 0);
+        vector<float> denormalizedGenerativeDataVector;
+        for(int i = 0; i < (int)randomIndices.size(); i++) {
+            int index = randomIndices[i];
+            vector<float> denormalizedNumberVector = ((DataSource*)gdInt::pGenerativeData)->getDenormalizedRow(index);
+            denormalizedGenerativeDataVector.insert(denormalizedGenerativeDataVector.end(), denormalizedNumberVector.begin(), denormalizedNumberVector.end());
+            
+            densityVector[i] = gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector()[index];
+        }
+
+        vector<vector<float>> denormalizeGnerativeDataWithDensities;
+        denormalizeGnerativeDataWithDensities.push_back(denormalizedGenerativeDataVector);
+        denormalizeGnerativeDataWithDensities.push_back(densityVector);
+        return denormalizeGnerativeDataWithDensities;
     } catch (const string& e) {
         ::Rf_error(e.c_str());
     } catch(...) {
@@ -292,7 +395,7 @@ int gdGetDataSourceDimension() {
 void gdAddValueRows(const std::vector<float>& valueRows) {
     try {
         if(gdInt::pGenerativeData == 0) {
-            gdInt::pGenerativeData = new GenerativeData(*gdInt::pDataSource);
+            throw string("No generative data");
         }
     
         gdInt::pGenerativeData->addValueLines(valueRows); 
@@ -311,7 +414,8 @@ void gdAddValueRows(const std::vector<float>& valueRows) {
 //' @export
 //'
 //' @examples
-//' \dontrun{gdRead("gd.bin")
+//' \dontrun{
+//' gdRead("gd.bin")
 //' gdGetNumberOfRows()}
 // [[Rcpp::export]]
 int gdGetNumberOfRows() {
@@ -392,7 +496,8 @@ std::vector<std::wstring> gdGetNumberVectorIndexNames(std::vector<int>& numberVe
 //' @export
 //'
 //' @examples
-//' \dontrun{gdRead("gd.bin")
+//' \dontrun{
+//' gdRead("gd.bin")
 //' gdGetRow(1000)}
 // [[Rcpp::export]]
 List gdGetRow(int index) {
@@ -517,7 +622,8 @@ void gdIntCalculateDensityValues() {
 //' @export
 //'
 //' @examples
-//' \dontrun{gdRead("gd.bin")
+//' \dontrun{
+//' gdRead("gd.bin")
 //' gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 // [[Rcpp::export]]
 float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
@@ -575,7 +681,8 @@ float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
 //' @export
 //'
 //' @examples
-//' \dontrun{gdRead("gd.bin")
+//' \dontrun{
+//' gdRead("gd.bin")
 //' gdCalculateDensityValueQuantile(50)}
 // [[Rcpp::export]]
 float gdCalculateDensityValueQuantile(float percent) {
@@ -625,7 +732,8 @@ std::string gdBuildFileName(const std::string& fileName, float niveau) {
 //' @export
 //'
 //' @examples
-//' \dontrun{gdRead("gd.bin")
+//' \dontrun{
+//' gdRead("gd.bin")
 //' gdKNearestNeighbors(list(5.1, 3.5, 1.4, 0.2), 3)}
 // [[Rcpp::export]]
 List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false) {
@@ -732,7 +840,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
 //' 
 //' Search for first nearest neighbor in generative data for incomplete data record containing NA values.
 //' Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
-//' gdKNearestNeighbor() with parameter k equal to 1.
+//' gdKNearestNeighbors() with parameter k equal to 1.
 //' 
 //' @param dataRecord List containing incomplete data record
 //' @param useSearchTree Boolean value indicating if a search tree should be used.
@@ -741,7 +849,8 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
 //' @export
 //'
 //' @examples
-//' \dontrun{gdRead("gd.bin")
+//' \dontrun{
+//' gdRead("gd.bin")
 //' gdComplete(list(5.1, 3.5, 1.4, NA))}
 // [[Rcpp::export]]
 List gdComplete(List dataRecord, bool useSearchTree = false) {
@@ -771,32 +880,4 @@ List gdComplete(List dataRecord, bool useSearchTree = false) {
     }
 
     return completedList;
-}
-
-// [[Rcpp::export]]
-void gdTest(int begin, int end) {
-    try {
-        if(gdInt::pGenerativeData == 0) {
-            throw string("No generative data");
-        }
-    
-        Function f("message");
-        VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
-        vector<float> reference{1, 1, NAN, 1};
-        if(isnan(reference[2])) {
-            f("true");
-        }
-        L2DistanceNanIndexed l2DistanceIndexed(reference);
-    
-        L2DistanceNanIndexed l2Distance22(reference);
-        l2Distance22 = l2DistanceIndexed;
-    
-        Progress progress(gdInt::pGenerativeData->getNormalizedSize());
-        VpTree vpTree;
-        vpTree.build(&vpGenerativeData, &l2DistanceIndexed, &progress);
-    } catch (const string& e) {
-        ::Rf_error(e.c_str());
-    } catch(...) {
-        ::Rf_error("C++ exception (unknown reason)");
-    }
 }

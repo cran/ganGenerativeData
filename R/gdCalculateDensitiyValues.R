@@ -3,7 +3,7 @@
 
 library(Rcpp)
 
-Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
+Sys.setenv("PKG_CXXFLAGS"="-std=c++17")
 sourceCpp("src/gdInt.cpp")
 
 #' Calculate density values for generative data
@@ -19,12 +19,16 @@ sourceCpp("src/gdInt.cpp")
 #' @export
 #'
 #' @examples
-#' \dontrun{gdCalculateDensityValues("gd.bin")}
+#' \dontrun{
+#' gdCalculateDensityValues("gd.bin")}
 gdCalculateDensityValues <- function(generativeDataFileName) {
-  gdReset()
+  start <- Sys.time()
   
+  gdReset()
   gdGenerativeDataRead(generativeDataFileName)
   gdIntCalculateDensityValues()
   gdGenerativeDataWrite(generativeDataFileName)
+  
+  end <- Sys.time()
+  message(round(difftime(end, start, units = "secs"), 3), " seconds")
 }
-

@@ -8,7 +8,7 @@
 #include <random>
 #include <cmath>
 
-#include "inOut.h"
+#include "utils.h"
 #include "progress.h"
 #include "generativeData.h"
 
@@ -118,39 +118,33 @@ public:
     virtual ~VpTreeData() {
     }
     
-    virtual vector<float> getNumberVector(int i) = 0;
+    virtual vector<float>& getNumberVector(int i) = 0;
     virtual int getSize() = 0;
-    virtual VpTreeData& assign(const VpTreeData& vpTreeData) = 0;
 };
 
 class VpGenerativeData : public VpTreeData {
 public:
-    VpGenerativeData(GenerativeData& generativeData): _generativeData(&generativeData) {}
-    VpGenerativeData(const VpGenerativeData& vpGenerativeData): _generativeData(vpGenerativeData._generativeData) {
+    VpGenerativeData(GenerativeData& generativeData): _pGenerativeData(&generativeData) {
     }
-    virtual VpTreeData& assign(const VpTreeData& vpTreeData) {
-        *this = dynamic_cast<const VpGenerativeData&>(vpTreeData);
-        return *this;
+    VpGenerativeData(const VpGenerativeData& vpGenerativeData): _pGenerativeData(vpGenerativeData._pGenerativeData) {
     }
     
-    virtual vector<float> getNumberVector(int i) {
-        return  _generativeData->getNormalizedNumberVector(i);
+    virtual vector<float>& getNumberVector(int i) {
+        return  _pGenerativeData->getNormalizedNumberVectorReference(i);
     }
     virtual int getSize() {
-        return _generativeData->getNormalizedSize();  
+        return _pGenerativeData->getNormalizedSize();  
     }
     
 private:
-    GenerativeData* _generativeData;
+    GenerativeData* _pGenerativeData;
 };
 
 struct Distance {
     Distance(VpTreeData& vpTreeData, LpDistance& lpDistance): _vpTreeData(vpTreeData), _lpDistance(lpDistance) {}
     float operator()(const int& a, const int& b) {
-        vector<float> aNumberVector;
-        vector<float> bNumberVector;
-        aNumberVector = _vpTreeData.getNumberVector(a);
-        bNumberVector = _vpTreeData.getNumberVector(b);
+        vector<float>& aNumberVector = _vpTreeData.getNumberVector(a);
+        vector<float>& bNumberVector = _vpTreeData.getNumberVector(b);
         return _lpDistance(aNumberVector, bNumberVector);
     }
   
@@ -161,12 +155,9 @@ struct Distance {
 struct VpDistance {
     VpDistance(VpTreeData& vpTreeData, int index, LpDistance& lpDistance): _vpTreeData(vpTreeData), _index(index), _lpDistance(lpDistance) {}
     bool operator()(const int& a, const int& b) {
-        vector<float> aNumberVector;
-        vector<float> bNumberVector;
-        vector<float> cNumberVector;
-        aNumberVector = _vpTreeData.getNumberVector(a);
-        bNumberVector = _vpTreeData.getNumberVector(b);
-        cNumberVector = _vpTreeData.getNumberVector(_index);
+        vector<float>& aNumberVector = _vpTreeData.getNumberVector(a);
+        vector<float>& bNumberVector = _vpTreeData.getNumberVector(b);
+        vector<float>& cNumberVector = _vpTreeData.getNumberVector(_index);
         if(_lpDistance(aNumberVector, cNumberVector) < _lpDistance(bNumberVector, cNumberVector)) {
             return true;
         } else {
@@ -213,12 +204,12 @@ public:
         return getDistance() < vpElement.getDistance();
     }
     
-    void write3(ofstream& os) {
+    void write(ofstream& os) {
         InOut::Write(os, _index);
         InOut::Write(os, _distance);
         InOut::Write(os, _category);
     }
-    void read3(ifstream& is) {
+    void read(ifstream& is) {
         InOut::Read(is, _index);
         InOut::Read(is, _distance);
         InOut::Read(is, _category);
@@ -286,17 +277,13 @@ private:
 
 class VpTree {
 public:
-    VpTree(): _pVpNode(0), _pVpTreeData(0), _tau(numeric_limits<float>::max()), _pProgress(0), _pLpDistance(0), _pG(new mt19937(_rd())), _pR(0), _pGd(0) {
+    VpTree(): _pVpNode(0), _pVpTreeData(0), _tau(numeric_limits<float>::max()), _pProgress(0), _pLpDistance(0) {
     }
-    VpTree(VpTreeData* pVpTreeData, LpDistance* pLpDistance, Progress* pProgress): _pVpNode(0), _pVpTreeData(pVpTreeData), _tau(numeric_limits<float>::max()), _pProgress(pProgress), _pLpDistance(pLpDistance), _pG(new mt19937(_rd())), _pR(0), _pGd(0) {
+    VpTree(VpTreeData* pVpTreeData, LpDistance* pLpDistance, Progress* pProgress): _pVpNode(0), _pVpTreeData(pVpTreeData), _tau(numeric_limits<float>::max()), _pProgress(pProgress), _pLpDistance(pLpDistance) {
     }
     ~VpTree() {
         delete _pVpNode;
-        delete _pR;
-        delete _pG;
-        delete _pGd;
     }
-    
     VpNode* build(int lower, int upper) {
         if(_pProgress != 0) {
             (*_pProgress)(_i);
@@ -310,7 +297,7 @@ public:
         pVpNode->setIndex(lower);
     
         if(upper - lower > 1) {
-            int i = (int)((float)(*_pR)(*_pGd) / (float)(_pVpTreeData->getSize() - 1) * (float)(upper - lower - 1)) + lower;
+            int i = _uniformIntDistribution.setParameters(lower, upper - 1)();
             
             swap(_indexVector[lower], _indexVector[i]);
             int median = (upper + lower) / 2;
@@ -336,18 +323,11 @@ public:
         _pProgress = pProgress;
         _i = 0;
         
-        //if(_pProgress != 0) {
-        //    (*_pProgress)(0);
-        //}
-        
         _indexVector.resize(_pVpTreeData->getSize());
         for(int i = 0; i < _pVpTreeData->getSize(); i++) {
             _indexVector[i] = i;
         }
-        delete _pGd;
-        _pGd = new default_random_engine(30);
-        delete _pR;
-        _pR = new uniform_int_distribution<int>(0, _pVpTreeData->getSize() - 1);
+        _uniformIntDistribution.seed(23);
         _pVpNode = build(0, _indexVector.size());
         
         if(_pProgress != 0) {
@@ -369,9 +349,7 @@ public:
         
         vector<VpElement> kNearestNeighbors;
         for(int i = 0; i < k; i++) {
-            delete _pR;
-            _pR = new uniform_int_distribution<int>(0, nearestNeighbors.size() - 1);
-            int r = (*_pR)(*_pG);
+            int r = _uniformIntDistribution.setParameters(0, nearestNeighbors.size() - 1)();
             kNearestNeighbors.push_back(nearestNeighbors[r]);
             nearestNeighbors.erase(nearestNeighbors.begin() + r);
         }
@@ -402,7 +380,7 @@ public:
             return;
         }
         
-        vector<float> numberVector = _pVpTreeData->getNumberVector(_indexVector[pVpNode->getIndex()]);
+        vector<float>& numberVector = _pVpTreeData->getNumberVector(_indexVector[pVpNode->getIndex()]);
         float d = (*_pLpDistance)(numberVector, target);
         if(d <= _tau) {
             _unique.insert(d);
@@ -454,7 +432,6 @@ public:
                     
                 } else {
                     priorityQueue.push(VpElement(i, d));      
-                    _tau = priorityQueue.top().getDistance();
                 }
             }
         }
@@ -507,14 +484,10 @@ private:
     Progress* _pProgress;
     LpDistance* _pLpDistance;
     
-    random_device _rd;
-    mt19937* _pG;
-    uniform_int_distribution<int>* _pR;
-    
     set<float> _unique;
     int _i;
     
-    default_random_engine *_pGd;
+    UniformIntDistribution _uniformIntDistribution;
 };
 
 #endif

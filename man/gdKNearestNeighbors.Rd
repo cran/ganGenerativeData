@@ -24,6 +24,7 @@ which is built once in the first function call.
 Building a tree is also triggered when NA values in data records change in subsequent function calls.
 }
 \examples{
-\dontrun{gdRead("gd.bin")
+\dontrun{
+gdRead("gd.bin")
 gdKNearestNeighbors(list(5.1, 3.5, 1.4, 0.2), 3)}
 }

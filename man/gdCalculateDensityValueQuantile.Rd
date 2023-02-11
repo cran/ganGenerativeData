@@ -16,6 +16,7 @@ Normalized density value quantile number
 Calculate density value quantile for a percent value.
 }
 \examples{
-\dontrun{gdRead("gd.bin")
+\dontrun{
+gdRead("gd.bin")
 gdCalculateDensityValueQuantile(50)}
 }

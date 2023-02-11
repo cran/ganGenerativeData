@@ -6,7 +6,7 @@
   Generate generative data for a data source
 }
 \description{
-Generative Adversarial Networks are applied to generate generative data for a data source. In iterative training steps the distribution of generated data converges to that of the data source. Direct applications of generative data are the created functions for outlier detection and missing data completion.
+Generative Adversarial Networks are applied to generate generative data for a data source. In iterative training steps the distribution of generated data converges to that of the data source. Direct applications of generative data are the created functions for data classifying and missing data completion.
 
 The inserted images show two-dimensional projections of generative data for the iris dataset:\cr
 \if{html}{\figure{gd34d.png}}
@@ -27,7 +27,7 @@ The API includes functions for topics "definition of data source" and "generatio
 
 \strong{\code{dsActivateColumns()}} Activate columns of a data source in order to include them in generation of generative data. By default columns are active.\cr
 
-\strong{\code{dsDeactivateColumns()}} Deactivate columns of a data source in order to exclude them in generation of generative data. Note that in this version only columns with values of type double or float can be used in generation of generative data. All columns with values of other type have to be deactivated.\cr
+\strong{\code{dsDeactivateColumns()}} Deactivate columns of a data source in order to exclude them in generation of generative data. Note that in this version only columns of type R-class numeric and R-type double can be used in generation of generative data. All columns of other type have to be deactivated.\cr
 
 \strong{\code{dsGetActiveColumnNames()}} Get names of active columns of a data source.\cr
 
@@ -43,6 +43,8 @@ The API includes functions for topics "definition of data source" and "generatio
 
 \strong{2. Generation of generative data}\cr
 
+\strong{\code{gdGenerateParameters()}} Specify parameters for generation of generative data.\cr
+
 \strong{\code{gdGenerate()}} Read a data source from a file, generate generative data for the data source in iterative training steps and write generated data to a file in binary format.\cr
 
 \strong{\code{gdCalculateDensityValues()}} Read generative data from a file, calculate density values and write generative data with density values to original file.\cr
@@ -53,7 +55,7 @@ The API includes functions for topics "definition of data source" and "generatio
 
 \strong{\code{gdPlotDataSourceParameters()}} Specify plot parameters for data source.\cr
 
-\strong{\code{gdPlot2dProjection()}} Create an image file containing two-dimensional projections of generative data and data source.\cr
+\strong{\code{gdPlotProjection()}} Create an image file containing two-dimensional projections of generative data and data source.\cr
 
 \strong{\code{gdGetNumberOfRows()}} Get number of rows in generative data.\cr
 
@@ -63,9 +65,11 @@ The API includes functions for topics "definition of data source" and "generatio
 
 \strong{\code{gdCalculateDensityValueQuantile()}} Calculate density value quantile for a percent value.\cr
 
-\strong{\code{gdKNearestNeighbors()}} Search for k nearest neighbors.\cr
+\strong{\code{gdKNearestNeighbors()}} Search for k nearest neighbors in generative data.\cr
 
-\strong{\code{gdCompletee()}} Complete incomplete data record.
+\strong{\code{gdComplete()}} Complete incomplete data record.\cr
+
+\strong{\code{gdWriteSubset()}} Write subset of generative data.
 }
 \author{
 Werner Mueller
@@ -77,13 +81,21 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 }
 \keyword{ package }
 \examples{
-# Generate generative data for the iris dataset
+# Environment used for execution of examples:
 
-# Package ganGenerativeData imports package tensorflow 
-# which offers an interface to machine learning framework TensorFlow.
-# It is used for training of neural networks and must be installed by the user.
-\dontrun{library(tensorflow)
+# Operating system: Ubuntu 22.04.1
+# Compiler: g++ 11.3.0 (supports C++17 standard)
+# R applications: R version 4.1.2, RStudio 2022.02.2
+# Installed packages: 'Rcpp', 'tensorflow', 'ganGenerativeData'
+
+# Package 'tensorflow' provides an interface to machine learning framework
+# TensorFlow. To complete the installation function install_tensorflow() has to
+# be called.
+\dontrun{
+library(tensorflow)
 install_tensorflow()}
+
+# Generate generative data for the iris dataset
 
 # Load library
 library(ganGenerativeData)
@@ -97,57 +109,79 @@ dsCreateWithDataFrame(iris)
 # generation of generative data.
 dsDeactivateColumns(c(5))
 
-# Get the active column names: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width.
+# Get the active column names: Sepal.Length, Sepal.Width, Petal.Length,
+# Petal.Width.
 dsGetActiveColumnNames()
 
-# Write the data source including settings of active columns to file "iris4d.bin" in binary format.
-\dontshow{iris4d <- tempfile("iris4d")
-dsWrite(iris4d)}\dontrun{dsWrite("iris4d.bin")}
+# Write the data source including settings of active columns to file
+# "iris4d.bin" in binary format.
+\dontshow{
+ds <- tempfile("ds")
+dsWrite(ds)}\dontrun{
+dsWrite("ds.bin")}
 
 # 2. Generation of generative data for the iris data source
 
-# Read data source from file "iris4d.bin",
-# generate generative data in iterative training steps and
-# write generated generative data to file "gd.bin".
-\dontrun{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
+# Read data source from file "ds.bin",
+# generate generative data in iterative training steps (in tests 50000
+# iterations are used) and write generated generative data to file "gd.bin".
+\dontrun{
+gdGenerate("gd.bin", "ds.bin", c(1, 2), gdGenerateParameters(2500))}
 
 # Read generative data from file "gd.bin", calculate density values and
 # write generative data with density values to original file.
-\dontrun{gdCalculateDensityValues("gd.bin")}
+\dontrun{
+gdCalculateDensityValues("gd.bin")}
 
-# Read generative data from file "gd.bin" and data source from "iris4d.bin"
-\dontrun{gdRead("gd.bin", "iris4d.bin")}
+# Read generative data from file "gd.bin" and data source from "ds.bin"
+\dontrun{
+gdRead("gd.bin", "ds.bin")}
 
 # Create an image showing two-dimensional projections of generative data and
 # data source for column indices 3, 4 and write it to file "gd34d.png"
-\dontrun{gdPlot2dProjection("gd34d.png",
-"Generative Data for the Iris Dataset", c(3, 4),
-gdPlotParameters(250000),
-gdPlotDataSourceParameters(2500))}
+\dontrun{
+gdPlotProjection("gd34d.png",
+"Generative Data for the Iris Dataset",
+c(3, 4),
+gdPlotParameters(25),
+gdPlotDataSourceParameters(100))}
 
-# Create an image showing two-dimensional projections of generative data and data source for
-# column indices 3, 4 with density value threshold 0.71 and write it to file "gd34ddv.png"
-\dontrun{gdPlot2dProjection("gd34ddv.png",
+# Create an image showing two-dimensional projections of generative data and 
+# data source for column indices 3, 4 with density value threshold 0.71 and
+# write it to file "gd34ddv.png"
+\dontrun{
+gdPlotProjection("gd34ddv.png",
 "Generative Data with a Density Value Threshold for the Iris Dataset", c(3, 4),
-gdPlotParameters(250000, c(0.71), c("red", "green")),
-gdPlotDataSourceParameters(2500))}
+gdPlotParameters(25, c(0.71), c("red", "green")),
+gdPlotDataSourceParameters(100))}
 
 # Get number of rows in generative data
-\dontrun{gdGetNumberOfRows()}
+\dontrun{
+gdGetNumberOfRows()}
 
 # Get row with index 1000 in generative data
-\dontrun{gdGetRow(1000)}
+\dontrun{
+gdGetRow(1000)}
 
 # Calculate density value for a data record
-\dontrun{gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
+\dontrun{
+gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 
 # Calculate density value quantile for 50 percent
-\dontrun{gdCalculateDensityValueQuantile(50)}
+\dontrun{
+gdCalculateDensityValueQuantile(50)}
 
 # Search for k nearest neighbors for a data record 
-\dontrun{gdKNearestNeighbors(list(5.1, 3.5, 1.4, 0.2), 3)}
+\dontrun{
+gdKNearestNeighbors(list(5.1, 3.5, 1.4, 0.2), 3)}
 
 # Complete incomplete data record containing an NA value
-\dontrun{gdComplete(list(5.1, 3.5, 1.4, NA))}
-}
+\dontrun{
+gdComplete(list(5.1, 3.5, 1.4, NA))}
 
+# Write subset containing 50 percent of randomly selected rows of
+# generative data
+\dontrun{
+gdRead("gd.bin")
+gdWriteSubset("gds.bin", 50)}
+}

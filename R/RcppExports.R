@@ -9,15 +9,13 @@
 #' @param fileName Name of data source file
 #'
 #' @return None
-#' 
-#' 
-#' 
 #' @export
 #'
 #' @examples
-#' \dontrun{dsCreateWithDataFrame(iris)
+#' \dontrun{
+#' dsCreateWithDataFrame(iris)
 #' dsDeactivateColumns(c(5))
-#' dsWrite("iris4d.bin")}
+#' dsWrite("ds.bin")}
 dsWrite <- function(fileName) {
     invisible(.Call('_ganGenerativeData_dsWrite', PACKAGE = 'ganGenerativeData', fileName))
 }
@@ -32,10 +30,11 @@ dsWrite <- function(fileName) {
 #' @export
 #'
 #' @examples
-#' \dontrun{dsCreateWithDataFrame(iris)
+#' \dontrun{
+#' dsCreateWithDataFrame(iris)
 #' dsDeactivateColumns(c(5))
-#' dsWrite("iris4d.bin")
-#' dsRead("iris4d.bin")}
+#' dsWrite("ds.bin")
+#' dsRead("ds.bin")}
 dsRead <- function(fileName) {
     invisible(.Call('_ganGenerativeData_dsRead', PACKAGE = 'ganGenerativeData', fileName))
 }
@@ -51,8 +50,8 @@ dsAddValueRow <- function(valueVector) {
 #' Deactivate columns
 #'
 #' Deactivate columns of a data source in order to exclude them in generation of generative data.
-#' Note that in this version only columns with values of type double or float can be used in generation of generative data.
-#' All columns with values of other type have to be deactivated.
+#' Note that in this version only columns of type R-class numeric and R-type double can be used in generaton of generative data.
+#' All columns of other type have to be deactivated.
 #'
 #' @param columnVector Vector of column indices
 #'
@@ -60,7 +59,8 @@ dsAddValueRow <- function(valueVector) {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(iris)
+#' \donttest{
+#' dsCreateWithDataFrame(iris)
 #' dsDeactivateColumns(c(5))
 #' dsGetInactiveColumnNames()}
 dsDeactivateColumns <- function(columnVector) {
@@ -77,7 +77,8 @@ dsDeactivateColumns <- function(columnVector) {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(iris)
+#' \donttest{
+#' dsCreateWithDataFrame(iris)
 #' dsGetActiveColumnNames()
 #' dsDeactivateColumns(c(5))
 #' dsGetActiveColumnNames()
@@ -91,13 +92,12 @@ dsActivateColumns <- function(columnVector) {
 #'
 #' Get active column names of a data source
 #'
-#' 
-#'
 #' @return Vector of names of active columns
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(iris)
+#' \donttest{
+#' dsCreateWithDataFrame(iris)
 #' dsDeactivateColumns(c(5))
 #' dsGetActiveColumnNames()}
 dsGetActiveColumnNames <- function() {
@@ -114,7 +114,8 @@ dsGetActiveColumnNames <- function() {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(iris)
+#' \donttest{
+#' dsCreateWithDataFrame(iris)
 #' dsDeactivateColumns(c(5))
 #' dsGetInactiveColumnNames()}
 dsGetInactiveColumnNames <- function() {
@@ -131,7 +132,8 @@ dsGetInactiveColumnNames <- function() {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(iris)
+#' \donttest{
+#' dsCreateWithDataFrame(iris)
 #' dsGetNumberOfRows()}
 dsGetNumberOfRows <- function() {
     .Call('_ganGenerativeData_dsGetNumberOfRows', PACKAGE = 'ganGenerativeData')
@@ -147,7 +149,8 @@ dsGetNumberOfRows <- function() {
 #' @export
 #'
 #' @examples
-#' \donttest{dsCreateWithDataFrame(iris)
+#' \donttest{
+#' dsCreateWithDataFrame(iris)
 #' dsGetRow(1)}
 dsGetRow <- function(index) {
     .Call('_ganGenerativeData_dsGetRow', PACKAGE = 'ganGenerativeData', index)
@@ -189,6 +192,24 @@ gdGenerativeDataWrite <- function(outFileName) {
     invisible(.Call('_ganGenerativeData_gdGenerativeDataWrite', PACKAGE = 'ganGenerativeData', outFileName))
 }
 
+#' Write subset of generative data
+#'
+#' Write subset of randomly selected rows of generative data
+#'
+#' @param fileName Name of subset generative data file
+#' @param percent Percent of randomly selected rows
+#'
+#' @return None
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' gdRead("gd.bin")
+#' gdWriteSubset("gds.bin", 50)}
+gdWriteSubset <- function(fileName, percent) {
+    invisible(.Call('_ganGenerativeData_gdWriteSubset', PACKAGE = 'ganGenerativeData', fileName, percent))
+}
+
 gdCreateGenerativeData <- function() {
     invisible(.Call('_ganGenerativeData_gdCreateGenerativeData', PACKAGE = 'ganGenerativeData'))
 }
@@ -201,16 +222,20 @@ gdDataSourceGetNormalizedDataRandom <- function(rowCount) {
     .Call('_ganGenerativeData_gdDataSourceGetNormalizedDataRandom', PACKAGE = 'ganGenerativeData', rowCount)
 }
 
-gdGenerativeDataGetNormalizedDataRandom <- function(rowCount) {
-    .Call('_ganGenerativeData_gdGenerativeDataGetNormalizedDataRandom', PACKAGE = 'ganGenerativeData', rowCount)
+gdDataSourceGetNormalizedDataRandomReference <- function(rowCount) {
+    .Call('_ganGenerativeData_gdDataSourceGetNormalizedDataRandomReference', PACKAGE = 'ganGenerativeData', rowCount)
 }
 
-gdGenerativeDataGetDenormalizedDataRandom <- function(rowCount) {
-    .Call('_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandom', PACKAGE = 'ganGenerativeData', rowCount)
+gdDataSourceGetDataRandomPercent <- function(percent) {
+    .Call('_ganGenerativeData_gdDataSourceGetDataRandomPercent', PACKAGE = 'ganGenerativeData', percent)
 }
 
-gdGenerativeDataGetDenormalizedDataRandomWithDensities <- function(rowCount) {
-    .Call('_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandomWithDensities', PACKAGE = 'ganGenerativeData', rowCount)
+gdGenerativeDataGetDenormalizedDataRandom <- function(percent) {
+    .Call('_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandom', PACKAGE = 'ganGenerativeData', percent)
+}
+
+gdGenerativeDataGetDenormalizedDataRandomWithDensities <- function(percent) {
+    .Call('_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandomWithDensities', PACKAGE = 'ganGenerativeData', percent)
 }
 
 gdGetDataSourceDimension <- function() {
@@ -229,7 +254,8 @@ gdAddValueRows <- function(valueRows) {
 #' @export
 #'
 #' @examples
-#' \dontrun{gdRead("gd.bin")
+#' \dontrun{
+#' gdRead("gd.bin")
 #' gdGetNumberOfRows()}
 gdGetNumberOfRows <- function() {
     .Call('_ganGenerativeData_gdGetNumberOfRows', PACKAGE = 'ganGenerativeData')
@@ -257,7 +283,8 @@ gdGetNumberVectorIndexNames <- function(numberVectorIndices) {
 #' @export
 #'
 #' @examples
-#' \dontrun{gdRead("gd.bin")
+#' \dontrun{
+#' gdRead("gd.bin")
 #' gdGetRow(1000)}
 gdGetRow <- function(index) {
     .Call('_ganGenerativeData_gdGetRow', PACKAGE = 'ganGenerativeData', index)
@@ -289,7 +316,8 @@ gdIntCalculateDensityValues <- function() {
 #' @export
 #'
 #' @examples
-#' \dontrun{gdRead("gd.bin")
+#' \dontrun{
+#' gdRead("gd.bin")
 #' gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 gdCalculateDensityValue <- function(dataRecord, useSearchTree = FALSE) {
     .Call('_ganGenerativeData_gdCalculateDensityValue', PACKAGE = 'ganGenerativeData', dataRecord, useSearchTree)
@@ -305,7 +333,8 @@ gdCalculateDensityValue <- function(dataRecord, useSearchTree = FALSE) {
 #' @export
 #'
 #' @examples
-#' \dontrun{gdRead("gd.bin")
+#' \dontrun{
+#' gdRead("gd.bin")
 #' gdCalculateDensityValueQuantile(50)}
 gdCalculateDensityValueQuantile <- function(percent) {
     .Call('_ganGenerativeData_gdCalculateDensityValueQuantile', PACKAGE = 'ganGenerativeData', percent)
@@ -331,7 +360,8 @@ gdBuildFileName <- function(fileName, niveau) {
 #' @export
 #'
 #' @examples
-#' \dontrun{gdRead("gd.bin")
+#' \dontrun{
+#' gdRead("gd.bin")
 #' gdKNearestNeighbors(list(5.1, 3.5, 1.4, 0.2), 3)}
 gdKNearestNeighbors <- function(dataRecord, k = 1L, useSearchTree = FALSE) {
     .Call('_ganGenerativeData_gdKNearestNeighbors', PACKAGE = 'ganGenerativeData', dataRecord, k, useSearchTree)
@@ -341,7 +371,7 @@ gdKNearestNeighbors <- function(dataRecord, k = 1L, useSearchTree = FALSE) {
 #' 
 #' Search for first nearest neighbor in generative data for incomplete data record containing NA values.
 #' Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
-#' gdKNearestNeighbor() with parameter k equal to 1.
+#' gdKNearestNeighbors() with parameter k equal to 1.
 #' 
 #' @param dataRecord List containing incomplete data record
 #' @param useSearchTree Boolean value indicating if a search tree should be used.
@@ -350,13 +380,10 @@ gdKNearestNeighbors <- function(dataRecord, k = 1L, useSearchTree = FALSE) {
 #' @export
 #'
 #' @examples
-#' \dontrun{gdRead("gd.bin")
+#' \dontrun{
+#' gdRead("gd.bin")
 #' gdComplete(list(5.1, 3.5, 1.4, NA))}
 gdComplete <- function(dataRecord, useSearchTree = FALSE) {
     .Call('_ganGenerativeData_gdComplete', PACKAGE = 'ganGenerativeData', dataRecord, useSearchTree)
-}
-
-gdTest <- function(begin, end) {
-    invisible(.Call('_ganGenerativeData_gdTest', PACKAGE = 'ganGenerativeData', begin, end))
 }
 

@@ -38,6 +38,10 @@ public:
             float fMin = numeric_limits<float>::max();
             for(int i = 0; i < pNumberColumn->getValueVector().size(); i++) {
                 float number = pNumberColumn->getValueVector()[i];
+                if(isnan(number)) {
+                    continue;    
+                }
+                
                 if(number > fMax) {
                     fMax = number;
                 }
@@ -46,17 +50,23 @@ public:
                 }
             }
             if(calculateMinMax) {
+                if(fMax == numeric_limits<float>::min()) {
+                    fMax = 1.0;
+                }
+                if(fMin == numeric_limits<float>::max()) {
+                    fMin = 0.0;
+                }
                 pNumberColumn->setMax(fMax);
                 pNumberColumn->setMin(fMin);
             }
             
-            //Function f("message");
-            //f("norm");
-            //f(pNumberColumn->getMax());
-            //f(pNumberColumn->getMin());
-        
             pNumberColumn->getNormalizedValueVector().resize(pNumberColumn->getValueVector().size(), 0);
             for(int j = 0; j < (int)pNumberColumn->getValueVector().size(); j++) {
+                if(isnan(pNumberColumn->getValueVector()[j])) {
+                    pNumberColumn->getNormalizedValueVector()[j] = pNumberColumn->getValueVector()[j];
+                    continue;    
+                }
+                
                 float normalizedNumber = 0;
                 if(scaleType == NumberColumn::LINEAR) {
                     if(pNumberColumn->getMax() - pNumberColumn->getMin() > 0) {
@@ -84,9 +94,23 @@ public:
                 pNumberColumn->getNormalizedValueVector()[j] = normalizedNumber;
             }
         } else if(type == Column::STRING) {
-            throw string(cInvalidColumnType);
+            string invalidColumnType = cInvalidColumnPrefix + " ";
+            for(int i = 0; i < pColumn->getName().length(); i++) {
+                char c = static_cast<char>(pColumn->getName()[i]);
+                invalidColumnType += c;
+            }
+            invalidColumnType += " " + cInvalidTypeSuffix;;
+                
+            throw string(invalidColumnType);
         } else {
-            throw string(cInvalidColumnType);
+            string invalidColumnType = cInvalidColumnPrefix + " ";
+            for(int i = 0; i < pColumn->getName().length(); i++) {
+                char c = static_cast<char>(pColumn->getName()[i]);
+                invalidColumnType += c;
+            }
+            invalidColumnType += " " + cInvalidTypeSuffix;;
+            
+            throw string(invalidColumnType);
         }
     }
     
@@ -111,9 +135,6 @@ public:
             return number;    
         }
         
-        //Function f("message");
-        //f("normalized");
-            
         Column::COLUMN_TYPE type = pColumn->getColumnType();
         if(type == Column::NUMERICAL) {
             NumberColumn* pNumberColumn = dynamic_cast<NumberColumn*>(pColumn);
@@ -142,9 +163,6 @@ public:
                 if(pNumberColumn->getMax() - pNumberColumn->getMin() > 0) {
                     normalizedNumber = log(number - pNumberColumn->getMin() + 1) /
                         log(pNumberColumn->getMax() - pNumberColumn->getMin() + 1);
-                    //f(normalizedNumber);
-                    //f(pNumberColumn->getMax());
-                    //f(pNumberColumn->getMin());
                 } else {
                     if(pNumberColumn->getMax() > 0) {
                         //normalizedNumber = pNumberColumn->getMax();
@@ -160,22 +178,20 @@ public:
         }
     }
     float getDenormalizedNumber(Column* pColumn, float number) {
+        if(isnan(number)) {
+            return number;
+        }
+        
         Column::COLUMN_TYPE type = pColumn->getColumnType();
         if(type == Column::NUMERICAL) {
             NumberColumn* pNumberColumn = dynamic_cast<NumberColumn*>(pColumn);
             NumberColumn::SCALE_TYPE scaleType = pNumberColumn->getScaleType();
-        
-            //Function f("message");
-            //f("denormalized");
         
             float denormalizedNumber;
             if(scaleType == Column::LINEAR) {
                 denormalizedNumber = pNumberColumn->getMin() + (pNumberColumn->getMax() - pNumberColumn->getMin()) * number;
             } else if(scaleType == NumberColumn::LOGARITHMIC) {
                 denormalizedNumber = pNumberColumn->getMin() - 1 + exp(number * log(pNumberColumn->getMax() - pNumberColumn->getMin() + 1));
-                //f(denormalizedNumber);
-                //f(pNumberColumn->getMax());
-                //f(pNumberColumn->getMin());
             } else {
                 throw cInvalidScaleType;
             }

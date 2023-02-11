@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // dsWrite
 void dsWrite(const std::string& fileName);
 RcppExport SEXP _ganGenerativeData_dsWrite(SEXP fileNameSEXP) {
@@ -196,6 +201,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// gdWriteSubset
+void gdWriteSubset(const std::string& fileName, float percent);
+RcppExport SEXP _ganGenerativeData_gdWriteSubset(SEXP fileNameSEXP, SEXP percentSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type fileName(fileNameSEXP);
+    Rcpp::traits::input_parameter< float >::type percent(percentSEXP);
+    gdWriteSubset(fileName, percent);
+    return R_NilValue;
+END_RCPP
+}
 // gdCreateGenerativeData
 void gdCreateGenerativeData();
 RcppExport SEXP _ganGenerativeData_gdCreateGenerativeData() {
@@ -227,36 +243,47 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gdGenerativeDataGetNormalizedDataRandom
-std::vector<float> gdGenerativeDataGetNormalizedDataRandom(int rowCount);
-RcppExport SEXP _ganGenerativeData_gdGenerativeDataGetNormalizedDataRandom(SEXP rowCountSEXP) {
+// gdDataSourceGetNormalizedDataRandomReference
+std::vector<float> gdDataSourceGetNormalizedDataRandomReference(int rowCount);
+RcppExport SEXP _ganGenerativeData_gdDataSourceGetNormalizedDataRandomReference(SEXP rowCountSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type rowCount(rowCountSEXP);
-    rcpp_result_gen = Rcpp::wrap(gdGenerativeDataGetNormalizedDataRandom(rowCount));
+    rcpp_result_gen = Rcpp::wrap(gdDataSourceGetNormalizedDataRandomReference(rowCount));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdDataSourceGetDataRandomPercent
+std::vector<float> gdDataSourceGetDataRandomPercent(float percent);
+RcppExport SEXP _ganGenerativeData_gdDataSourceGetDataRandomPercent(SEXP percentSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type percent(percentSEXP);
+    rcpp_result_gen = Rcpp::wrap(gdDataSourceGetDataRandomPercent(percent));
     return rcpp_result_gen;
 END_RCPP
 }
 // gdGenerativeDataGetDenormalizedDataRandom
-std::vector<float> gdGenerativeDataGetDenormalizedDataRandom(int rowCount);
-RcppExport SEXP _ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandom(SEXP rowCountSEXP) {
+std::vector<float> gdGenerativeDataGetDenormalizedDataRandom(float percent);
+RcppExport SEXP _ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandom(SEXP percentSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type rowCount(rowCountSEXP);
-    rcpp_result_gen = Rcpp::wrap(gdGenerativeDataGetDenormalizedDataRandom(rowCount));
+    Rcpp::traits::input_parameter< float >::type percent(percentSEXP);
+    rcpp_result_gen = Rcpp::wrap(gdGenerativeDataGetDenormalizedDataRandom(percent));
     return rcpp_result_gen;
 END_RCPP
 }
 // gdGenerativeDataGetDenormalizedDataRandomWithDensities
-std::vector<std::vector<float>> gdGenerativeDataGetDenormalizedDataRandomWithDensities(int rowCount);
-RcppExport SEXP _ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandomWithDensities(SEXP rowCountSEXP) {
+std::vector<std::vector<float>> gdGenerativeDataGetDenormalizedDataRandomWithDensities(float percent);
+RcppExport SEXP _ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandomWithDensities(SEXP percentSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type rowCount(rowCountSEXP);
-    rcpp_result_gen = Rcpp::wrap(gdGenerativeDataGetDenormalizedDataRandomWithDensities(rowCount));
+    Rcpp::traits::input_parameter< float >::type percent(percentSEXP);
+    rcpp_result_gen = Rcpp::wrap(gdGenerativeDataGetDenormalizedDataRandomWithDensities(percent));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -424,17 +451,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gdTest
-void gdTest(int begin, int end);
-RcppExport SEXP _ganGenerativeData_gdTest(SEXP beginSEXP, SEXP endSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type begin(beginSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    gdTest(begin, end);
-    return R_NilValue;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_dsWrite", (DL_FUNC) &_ganGenerativeData_dsWrite, 1},
@@ -456,10 +472,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_gdDataSourceRead", (DL_FUNC) &_ganGenerativeData_gdDataSourceRead, 1},
     {"_ganGenerativeData_gdGenerativeDataRead", (DL_FUNC) &_ganGenerativeData_gdGenerativeDataRead, 1},
     {"_ganGenerativeData_gdGenerativeDataWrite", (DL_FUNC) &_ganGenerativeData_gdGenerativeDataWrite, 1},
+    {"_ganGenerativeData_gdWriteSubset", (DL_FUNC) &_ganGenerativeData_gdWriteSubset, 2},
     {"_ganGenerativeData_gdCreateGenerativeData", (DL_FUNC) &_ganGenerativeData_gdCreateGenerativeData, 0},
     {"_ganGenerativeData_gdDataSourceGetDataRandom", (DL_FUNC) &_ganGenerativeData_gdDataSourceGetDataRandom, 1},
     {"_ganGenerativeData_gdDataSourceGetNormalizedDataRandom", (DL_FUNC) &_ganGenerativeData_gdDataSourceGetNormalizedDataRandom, 1},
-    {"_ganGenerativeData_gdGenerativeDataGetNormalizedDataRandom", (DL_FUNC) &_ganGenerativeData_gdGenerativeDataGetNormalizedDataRandom, 1},
+    {"_ganGenerativeData_gdDataSourceGetNormalizedDataRandomReference", (DL_FUNC) &_ganGenerativeData_gdDataSourceGetNormalizedDataRandomReference, 1},
+    {"_ganGenerativeData_gdDataSourceGetDataRandomPercent", (DL_FUNC) &_ganGenerativeData_gdDataSourceGetDataRandomPercent, 1},
     {"_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandom", (DL_FUNC) &_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandom, 1},
     {"_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandomWithDensities", (DL_FUNC) &_ganGenerativeData_gdGenerativeDataGetDenormalizedDataRandomWithDensities, 1},
     {"_ganGenerativeData_gdGetDataSourceDimension", (DL_FUNC) &_ganGenerativeData_gdGetDataSourceDimension, 0},
@@ -477,7 +495,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_gdBuildFileName", (DL_FUNC) &_ganGenerativeData_gdBuildFileName, 2},
     {"_ganGenerativeData_gdKNearestNeighbors", (DL_FUNC) &_ganGenerativeData_gdKNearestNeighbors, 3},
     {"_ganGenerativeData_gdComplete", (DL_FUNC) &_ganGenerativeData_gdComplete, 2},
-    {"_ganGenerativeData_gdTest", (DL_FUNC) &_ganGenerativeData_gdTest, 2},
     {NULL, NULL, 0}
 };
 

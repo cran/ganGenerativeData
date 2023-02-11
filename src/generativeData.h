@@ -19,7 +19,7 @@ public:
 		_typeId = cGenerativeDataSourceTypeId;
 	}
 	GenerativeData(const DataSource& dataSource) {
-		_typeId = cGenerativeDataSourceTypeId;
+	   	_typeId = cGenerativeDataSourceTypeId;
 		_normalized = dataSource.getNormalized();
 
 		for(int i = 0; i < (int)dataSource.getColumnVector().size(); i++) {
@@ -35,6 +35,9 @@ public:
 				throw string(cInvalidColumnType);
 			}
 		}
+		
+		delete _pDensityVector;
+		_pDensityVector = new NumberColumn(*dataSource.getDensityVector());
 	}
 	void addValueLine(const vector<float>& valueVector, int offset = 0) {
 		int index = offset;
@@ -65,27 +68,6 @@ public:
 			addValueLine(valueVector, i * dimension);
 		}
 	}
-
-	vector<float> getNormalizedDataRandom(int rowCount, int indexVector) {
-		vector<float> numberVector;
-		if(!_normalized) {
-			throw string(cDataSourceNotNormalized);
-		}
-
-		if(_pRVector[indexVector] == 0) {
-			_pRVector[indexVector] = new uniform_int_distribution<int>(0, (int)_indexVectors[indexVector].size() - 1);
-		}
-		_indexVector.resize(rowCount, 0);
-		for(int i = 0; i < (int)_indexVector.size(); i++) {
-			_indexVector[i] = (*_pRVector[indexVector])(*_pG);
-		}
-
-		for(int i = 0; i < rowCount; i++) {
-			vector<float> rowNumberVector = getNormalizedNumberVector(_indexVectors[indexVector][(_indexVector)[i]]);
-			numberVector.insert(numberVector.end(), rowNumberVector.begin(), rowNumberVector.end());
-		}
-		return numberVector;
-	}
     
 	void read(ifstream& is) {
 		InOut::Read(is, _typeId);
@@ -94,10 +76,11 @@ public:
 		}
 
 		readWithoutTypeId(is);
+		
+		buildNormalizedNumberVectorVector();
 	}
-
+    
 private:
-	vector<vector<int>> _indexVectors;
 	vector<uniform_int_distribution<int>*> _pRVector;
 };
 

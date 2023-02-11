@@ -16,8 +16,9 @@ None
 Read a data source from a file in binary format
 }
 \examples{
-\dontrun{dsCreateWithDataFrame(iris)
+\dontrun{
+dsCreateWithDataFrame(iris)
 dsDeactivateColumns(c(5))
-dsWrite("iris4d.bin")
-dsRead("iris4d.bin")}
+dsWrite("ds.bin")
+dsRead("ds.bin")}
 }

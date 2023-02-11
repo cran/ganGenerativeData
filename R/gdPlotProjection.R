@@ -4,7 +4,7 @@
 library(tensorflow)
 library(Rcpp)
 
-Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
+Sys.setenv("PKG_CXXFLAGS"="-std=c++17")
 sourceCpp("src/gdInt.cpp")
 
 #' Read generative data and data source
@@ -19,7 +19,8 @@ sourceCpp("src/gdInt.cpp")
 #' @export
 #'
 #' @examples
-#' \dontrun{gdRead("gd.bin", "iris4d.bin")}
+#' \dontrun{
+#' gdRead("gd.bin", "ds.bin")}
 gdRead <- function(generativeDataFileName, dataSourceFileName = "") {
   gdReset()
   
@@ -29,13 +30,13 @@ gdRead <- function(generativeDataFileName, dataSourceFileName = "") {
   }
 }
 
-gdPlot <- function(title, dataDimension, columnIndices) {
+gdPlot <- function(title, dimension, columnIndices) {
   numberVectorIndexNames <- gdGetNumberVectorIndexNames(columnIndices)
   minX <- gdGetMin(columnIndices[1])
   maxX <- gdGetMax(columnIndices[1])
   minY <- NULL
   maxY <- NULL
-  if(dataDimension == 1) {
+  if(dimension == 1) {
     minY <- 0
     maxY <- 1
   } else {
@@ -46,63 +47,66 @@ gdPlot <- function(title, dataDimension, columnIndices) {
   plot(c(), c(), pch = 1, main = title, cex.main = 2.5, font.main = 1, xlim = c(minX, maxX), ylim = c(minY, maxY), col = "blue", xlab = numberVectorIndexNames[1], ylab = numberVectorIndexNames[2], cex.lab = 2.5, cex.axis = 2.5)
 }
 
-gdGenerativeDatadataPoints <- function(numberOfRandomGdPoints, batchSize, dataDimension, columnIndices, niveau, gdColor, greaterEqual, withDensityValues) {
-  i <- 0
-  while(numberOfRandomGdPoints > 0 && i <= numberOfRandomGdPoints) {
-    if(withDensityValues) {
-      gd <- gdGenerativeDataGetDenormalizedDataRandomWithDensities(batchSize)
-      gdv <- array_reshape(gd[1], c(batchSize, dataDimension))
-      gdd <- array_reshape(gd[2], c(batchSize))
+gdGenerativeDataDataPoints <- function(percent, dimension, columnIndices, level, gdColor, greaterEqual, withDensityValues) {
+  if(percent == 0) {
+    return()
+  }
+  
+  if(withDensityValues) {
+    gd <- gdGenerativeDataGetDenormalizedDataRandomWithDensities(percent)
+    size <- length(gd[[1]]) / dimension
+    if(size > 0) {
+      gdv <- array_reshape(gd[[1]], c(size, dimension))
+      gdd <- array_reshape(gd[[2]], c(size))
       gdvX <- gdv[,columnIndices[1]]
       gdvY <- NULL
-      if(dataDimension == 1) {
-        gdvY <- array(0, c(batchSize))
+      if(dimension == 1) {
+        gdvY <- array(0, c(size))
       } else {
         gdvY <- gdv[,columnIndices[2]]
       }
-      
+
       if(greaterEqual) {
-        points(gdvX, gdvY, pch = 1, col = ifelse(gdd >= niveau, gdColor, rgb(0, 0, 0, alpha = 0.0)), cex = 1.0)
+        points(gdvX, gdvY, pch = 1, col = ifelse(gdd >= level, gdColor, rgb(0, 0, 0, alpha = 0.0)), cex = 1.0)
       } else {
-        points(gdvX, gdvY, pch = 1, col = ifelse(gdd < niveau, gdColor, rgb(0, 0, 0, alpha = 0.0)), cex = 1.0)
+        points(gdvX, gdvY, pch = 1, col = ifelse(gdd < level, gdColor, rgb(0, 0, 0, alpha = 0.0)), cex = 1.0)
       }
-    } else {
-      gd <- gdGenerativeDataGetDenormalizedDataRandom(batchSize)
-      gd <- array_reshape(gd, c(batchSize, dataDimension))
+    }
+  } else {
+    gd <- gdGenerativeDataGetDenormalizedDataRandom(percent)
+    size <- length(gd) / dimension
+    if(size > 0) {
+      gd <- array_reshape(gd, c(size, dimension))
       gdX <- gd[,columnIndices[1]]
       gdY <- NULL
-      if(dataDimension == 1) {
-        gdY <- array(0, c(batchSize))
+      if(dimension == 1) {
+        gdY <- array(0, c(size))
       } else {
         gdY <- gd[,columnIndices[2]]
       }
       points(gdX, gdY, pch = 1, col = gdColor, cex = 1.0)
     }
-  
-    i <- i + batchSize
   }
 }
 
-gdDataSourcePoints <- function(numberOfRandomPoints, batchSize, dataDimension, columnIndices, dsColor) {
-  if(numberOfRandomPoints == 0) {
+gdDataSourcePoints <- function(percent, dimension, columnIndices, dsColor) {
+  if(percent == 0) {
     return()
   }
   
   if(gdGetDataSourceFileName() != "") {
-    i <- 0
-    while(numberOfRandomPoints > 0 && i <= numberOfRandomPoints) {
-      ds <- gdDataSourceGetDataRandom(batchSize)
-      ds <- array_reshape(ds, c(batchSize, dataDimension))
+    ds <-  gdDataSourceGetDataRandomPercent(percent)
+    size <- length(ds) / dimension
+    if(size > 0) {
+      ds <- array_reshape(ds, c(size, dimension))
       dsX <- ds[,columnIndices[1]]
       dsY <- NULL
-      if(dataDimension == 1) {
-        dsY <- array(0, c(batchSize))
+      if(dimension == 1) {
+        dsY <- array(0, c(size))
       } else {
         dsY <- ds[,columnIndices[2]]
       }
       points(dsX, dsY, pch = 1, col = dsColor, cex = 1.1)
-    
-      i <- i + batchSize
     }
   }
 }
@@ -135,23 +139,23 @@ gdLegend <- function(densityValues, colors, dsColor, intervalGenerativeDataParam
   }
 }
 
-gdPng <- function(outImageFileName, title, columnIndices, generativeDataParameters, dataSourceParameters, batchSize, dataDimension) {
+gdPng <- function(outImageFileName, title, columnIndices, generativeDataParameters, dataSourceParameters, dimension) {
   png(outImageFileName, width = 2000, height = 2000, units = "px")
   
   sessionPar <- par(no.readonly = TRUE)
   on.exit(par(sessionPar))
   par(mar = c(6, 6, 6, 6))
   
-  gdPlot(title, dataDimension, columnIndices)
+  gdPlot(title, dimension, columnIndices)
   if(length(generativeDataParameters[[2]]) > 0) {
-    gdGenerativeDatadataPoints(generativeDataParameters[[1]], batchSize, dataDimension, columnIndices, 0, generativeDataParameters[[3]][1], TRUE, TRUE)
+    gdGenerativeDataDataPoints(generativeDataParameters[[1]], dimension, columnIndices, 0, generativeDataParameters[[3]][1], TRUE, TRUE)
     for(i in 1:length(generativeDataParameters[[2]])) {
-      gdGenerativeDatadataPoints(generativeDataParameters[[1]], batchSize, dataDimension, columnIndices, generativeDataParameters[[2]][i], generativeDataParameters[[3]][i+1], TRUE, TRUE)
+      gdGenerativeDataDataPoints(generativeDataParameters[[1]], dimension, columnIndices, generativeDataParameters[[2]][i], generativeDataParameters[[3]][i+1], TRUE, TRUE)
     }
-    gdDataSourcePoints(dataSourceParameters[[1]], batchSize, dataDimension, columnIndices, dataSourceParameters[[2]])
+    gdDataSourcePoints(dataSourceParameters[[1]], dimension, columnIndices, dataSourceParameters[[2]])
   } else {
-    gdGenerativeDatadataPoints(generativeDataParameters[[1]], batchSize, dataDimension, columnIndices, NULL, generativeDataParameters[[3]][1], FALSE, FALSE)
-    gdDataSourcePoints(dataSourceParameters[[1]], batchSize, dataDimension, columnIndices, dataSourceParameters[[2]])
+    gdGenerativeDataDataPoints(generativeDataParameters[[1]], dimension, columnIndices, NULL, generativeDataParameters[[3]][1], FALSE, FALSE)
+    gdDataSourcePoints(dataSourceParameters[[1]], dimension, columnIndices, dataSourceParameters[[2]])
   }
   gdLegend(generativeDataParameters[[2]], generativeDataParameters[[3]], dataSourceParameters[[2]])
   
@@ -160,31 +164,39 @@ gdPng <- function(outImageFileName, title, columnIndices, generativeDataParamete
 
 #' Specify plot parameters for generative data
 #' 
-#' Specify plot parameters for generative data passed to function gdPlot2dProjection().
+#' Specify plot parameters for generative data passed to function gdPlotProjection().
 #' When density value thresholds with assigned colors are specified generative data is drawn for density value ranges in increasing order.
 #'
-#' @param numberOfRandomPoints Number of randomly selected rows in generative data
+#' @param percent Percent of randomly selected rows in generative data
 #' @param densityValueThresholds Vector of density value thresholds
 #' @param densityValueColors Vector of colors assigned to density value thresholds. The size must be the size
 #' of densityValueThresholds plus one.
 #' 
+#' @return List of plot parameters for generative data
+#' @export
+#' 
 #' @examples
-#' \dontrun{gdPlotParameters(250000, c(0.75), c("red", "green"))}
-gdPlotParameters <- function(numberOfRandomPoints = 0, densityValueThresholds = c(), densityValueColors = c("red")) {
-  parameters <- list(numberOfRandomPoints = numberOfRandomPoints, densityValueThresholds = densityValueThresholds, densityValueColors = densityValueColors)
+#' \dontrun{
+#' gdPlotParameters(50, c(0.75), c("red", "green"))}
+gdPlotParameters <- function(percent = 0, densityValueThresholds = c(), densityValueColors = c("red")) {
+  parameters <- list(percent = percent, densityValueThresholds = densityValueThresholds, densityValueColors = densityValueColors)
 }
 
 #' Specify plot parameters for data source
 #' 
-#' Specify plot parameters for data source passed to function gdPlot2dProjection().
+#' Specify plot parameters for data source passed to function gdPlotProjection().
 #'
-#' @param numberOfRandomPoints Number of randomly selected rows in data source
+#' @param percent Percent of randomly selected rows in data source
 #' @param color Colour for data points of data source
 #' 
+#' @return List of plot parameters for data source
+#' @export
+#' 
 #' @examples
-#' \dontrun{gdPlotDataSourceParameters(2500)}
-gdPlotDataSourceParameters <- function(numberOfRandomPoints = 0, color = "blue") {
-  parameters <- list(numberOfRandomPoints = numberOfRandomPoints, color = color)
+#' \dontrun{
+#' gdPlotDataSourceParameters(2500)}
+gdPlotDataSourceParameters <- function(percent = 100, color = "blue") {
+  parameters <- list(percent = percent, color = color)
 }
 
 #' Create an image file for generative data and data source
@@ -203,25 +215,25 @@ gdPlotDataSourceParameters <- function(numberOfRandomPoints = 0, color = "blue")
 #' @export
 #' 
 #' @examples
-#' \dontrun{gdRead("gd.bin", "iris4d.bin")
-#' gdPlot2dProjection("gd12ddv.png",
+#' \dontrun{
+#' gdRead("gd.bin", "ds.bin")
+#' gdPlotProjection("gd12ddv.png",
 #'  "Generative Data with a Density Value Threshold for the Iris Dataset", c(1, 2),
 #' gdPlotParameters(250000, c(0.71), c("red", "green")),
 #' gdPlotDataSourceParameters(2500))
-#' gdPlot2dProjection("gd34ddv.png",
+#' gdPlotProjection("gd34ddv.png",
 #' "Generative Data with a Density Value Threshold for the Iris Dataset", c(3, 4),
 #' gdPlotParameters(250000, c(0.71), c("red", "green")),
 #' gdPlotDataSourceParameters(2500))}
-gdPlot2dProjection <- function(imageFileName, title, columnIndices, 
-  generativeDataParameters = gdPlotParameters(numberOfRandomPoints = 0, densityValueThresholds = c(), densityValueColors = c("red")), 
-  dataSourceParameters = gdPlotDataSourceParameters(numberOfRandomPoints = 0, color = "blue")) {
-  batchSize <- gdGetBatchSize()
-  dataDimension <- gdGetGenerativeDataDimension()
+gdPlotProjection <- function(imageFileName, title, columnIndices, 
+  generativeDataParameters = gdPlotParameters(percent = 0, densityValueThresholds = c(), densityValueColors = c("red")), 
+  dataSourceParameters = gdPlotDataSourceParameters(percent = 100, color = "blue")) {
+  dimension <- gdGetGenerativeDataDimension()
   
-  if(dataDimension > 1 && length(columnIndices) != 2) {
+  if(dimension > 1 && length(columnIndices) != 2) {
     message("size of vector columnIndices must be equal to two\n")
     return()
-  } else if (dataDimension == 1 && length(columnIndices) != 1) {
+  } else if (dimension == 1 && length(columnIndices) != 1) {
     message("size of vector columnIndices must be equal to one\n")
     return()
   }
@@ -230,6 +242,5 @@ gdPlot2dProjection <- function(imageFileName, title, columnIndices,
     return()
   }
 
-  gdPng(imageFileName, title, columnIndices, generativeDataParameters, dataSourceParameters, batchSize, dataDimension)  
+  gdPng(imageFileName, title, columnIndices, generativeDataParameters, dataSourceParameters, dimension)  
 }
-

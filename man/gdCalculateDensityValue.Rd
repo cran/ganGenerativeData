@@ -21,6 +21,7 @@ When a search tree is used search is performed on a tree for generative data
 which is built once in the first function call.
 }
 \examples{
-\dontrun{gdRead("gd.bin")
+\dontrun{
+gdRead("gd.bin")
 gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 }

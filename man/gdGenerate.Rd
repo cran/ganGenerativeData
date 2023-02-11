@@ -5,25 +5,22 @@
 \title{Generate generative data for a data source}
 \usage{
 gdGenerate(
-  dataSourceFileName,
   generativeDataFileName,
-  numberOfIterations,
-  keepProbability,
-  columnIndices
+  dataSourceFileName,
+  columnIndices,
+  generateParameters = gdGenerateParameters(numberOfIterations = 25000, learningRate =
+    1e-04, keepProbability = 0.95)
 )
 }
 \arguments{
-\item{dataSourceFileName}{Name of data source file}
-
 \item{generativeDataFileName}{Name of generative data file}
 
-\item{numberOfIterations}{Number of iterations.
-In this version the limit of number of iterations is set to 50000.}
-
-\item{keepProbability}{Value in the range of 0 to 1 which is used in training of neural networks to train generalized networks.}
+\item{dataSourceFileName}{Name of data source file}
 
 \item{columnIndices}{Vector of two column indices that are used to plot two-dimensional projections of normalized generated generative data and
 data source for a training step. Indices refer to indices of active columns of data source.}
+
+\item{generateParameters}{Generation of generative data parameters, see function gdGenerateParameters().}
 }
 \value{
 None
@@ -34,5 +31,7 @@ write generated data to a file in binary format. When a higher number of iterati
 the distribution of generated data gets closer to that of the data source.
 }
 \examples{
-\dontrun{gdGenerate("iris4d.bin", "gd.bin", 2500, 0.95, c(1, 2))}
+\dontrun{
+generateParameters = gdGenerateParameters(numberOfIterations = 5000)
+gdGenerate("gd.bin", "ds.bin", c(1, 2), generateParameters)}
 }

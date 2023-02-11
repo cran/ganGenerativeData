@@ -25,7 +25,7 @@ public:
                 (*_pProgress)(i);
             }
             
-            vector<float> numberVector = _dataSource.getNormalizedNumberVector(i);
+            vector<float>& numberVector = _dataSource.getNormalizedNumberVectorReference(i);
             vector<VpElement> nearestNeighbours;
             _vpTree.search(numberVector, _nNearestNeighbors, nearestNeighbours);
             

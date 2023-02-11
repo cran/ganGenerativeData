@@ -17,9 +17,10 @@ List containing completed data record
 \description{
 Search for first nearest neighbor in generative data for incomplete data record containing NA values.
 Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
-gdKNearestNeighbor() with parameter k equal to 1.
+gdKNearestNeighbors() with parameter k equal to 1.
 }
 \examples{
-\dontrun{gdRead("gd.bin")
+\dontrun{
+gdRead("gd.bin")
 gdComplete(list(5.1, 3.5, 1.4, NA))}
 }

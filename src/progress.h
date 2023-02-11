@@ -22,8 +22,6 @@ public:
     }
     void operator()(int n) {
 #ifdef GD_RCPP
-        //Function f("message");
-        
         if(n == 0 && _lastPercent == -1) {
             Function f("message");
             f("0%");

@@ -5,6 +5,7 @@
 #define NUMBER_COLUMN
 
 #include "column.h"
+#include "utils.h"
 
 #define GD_RCPP
 
@@ -56,9 +57,13 @@ public:
 			throw string(cInvalidIndex);
 		}
 
+		float value = _normalizedValueVector[i];
+		if(isnan(value)) {
+		    value = _uniformRealDistribution();
+		}
 		vector<float> numberVector;
 		if(_scaleType == LINEAR) {
-			numberVector.push_back(_normalizedValueVector[i]);
+			numberVector.push_back(value);
 	    } else {
 	        throw cInvalidScaleType;
 	    }
@@ -129,6 +134,8 @@ private:
 	float _min;
 	vector<float> _valueVector;
 	vector<float> _normalizedValueVector;
+	
+	UniformRealDistribution _uniformRealDistribution;
 };
 
 #endif

@@ -10,8 +10,8 @@
 
 using namespace std;
 
-const string cSeparator = "_";
-const string cPeriod = ".";
+//const string cSeparator = "_";
+//const string cPeriod = ".";
 
 class InOut {
 public:
@@ -194,6 +194,7 @@ public:
 	}
 };
 
+/*
 class BuildFileName {
 public:
     string operator()(const string& name, float value, const string& extension) {
@@ -243,5 +244,6 @@ public:
         return ss.str();
     }
 };
-    
+*/
+
 #endif

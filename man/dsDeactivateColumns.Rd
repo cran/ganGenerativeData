@@ -14,11 +14,12 @@ None
 }
 \description{
 Deactivate columns of a data source in order to exclude them in generation of generative data.
-Note that in this version only columns with values of type double or float can be used in generation of generative data.
-All columns with values of other type have to be deactivated.
+Note that in this version only columns of type R-class numeric and R-type double can be used in generaton of generative data.
+All columns of other type have to be deactivated.
 }
 \examples{
-\donttest{dsCreateWithDataFrame(iris)
+\donttest{
+dsCreateWithDataFrame(iris)
 dsDeactivateColumns(c(5))
 dsGetInactiveColumnNames()}
 }

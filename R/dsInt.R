@@ -3,7 +3,7 @@
 
 library(Rcpp)
  
-Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
+Sys.setenv("PKG_CXXFLAGS"="-std=c++17")
 sourceCpp("src/dsInt.cpp")
 
 #' Create a data source with passed data frame
@@ -16,8 +16,8 @@ sourceCpp("src/dsInt.cpp")
 #' @export
 #'
 #' @examples
-#' # Create a data source and with built in iris data frame.
-#' \donttest{dsCreateWithDataFrame(iris)}
+#' \donttest{
+#' dsCreateWithDataFrame(iris)}
 dsCreateWithDataFrame <- function (dataFrame) {
     if(!is.data.frame(dataFrame)) {
       message("Passed object is not a data frame\n")

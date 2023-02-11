@@ -13,6 +13,7 @@ Number of rows
 Get number of rows in a data source
 }
 \examples{
-\donttest{dsCreateWithDataFrame(iris)
+\donttest{
+dsCreateWithDataFrame(iris)
 dsGetNumberOfRows()}
 }
