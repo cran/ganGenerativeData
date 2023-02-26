@@ -178,7 +178,7 @@ gdPng <- function(outImageFileName, title, columnIndices, generativeDataParamete
 #' @examples
 #' \dontrun{
 #' gdPlotParameters(50, c(0.75), c("red", "green"))}
-gdPlotParameters <- function(percent = 0, densityValueThresholds = c(), densityValueColors = c("red")) {
+gdPlotParameters <- function(percent = 10, densityValueThresholds = c(), densityValueColors = c("red")) {
   parameters <- list(percent = percent, densityValueThresholds = densityValueThresholds, densityValueColors = densityValueColors)
 }
 
@@ -226,7 +226,7 @@ gdPlotDataSourceParameters <- function(percent = 100, color = "blue") {
 #' gdPlotParameters(250000, c(0.71), c("red", "green")),
 #' gdPlotDataSourceParameters(2500))}
 gdPlotProjection <- function(imageFileName, title, columnIndices, 
-  generativeDataParameters = gdPlotParameters(percent = 0, densityValueThresholds = c(), densityValueColors = c("red")), 
+  generativeDataParameters = gdPlotParameters(percent = 10, densityValueThresholds = c(), densityValueColors = c("red")), 
   dataSourceParameters = gdPlotDataSourceParameters(percent = 100, color = "blue")) {
   dimension <- gdGetGenerativeDataDimension()
   

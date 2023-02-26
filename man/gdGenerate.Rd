@@ -8,8 +8,9 @@ gdGenerate(
   generativeDataFileName,
   dataSourceFileName,
   columnIndices,
-  generateParameters = gdGenerateParameters(numberOfIterations = 25000, learningRate =
-    1e-04, keepProbability = 0.95)
+  generateParameters = gdGenerateParameters(numberOfIterations = 25000,
+    numberOfHiddenLayerUnits = 1024, learningRate = 1e-04, keepProbability = 0.95,
+    collectBeginningAtIteration = 1)
 )
 }
 \arguments{
@@ -17,21 +18,25 @@ gdGenerate(
 
 \item{dataSourceFileName}{Name of data source file}
 
-\item{columnIndices}{Vector of two column indices that are used to plot two-dimensional projections of normalized generated generative data and
-data source for a training step. Indices refer to indices of active columns of data source.}
+\item{columnIndices}{Vector of two column indices that are used to plot
+two-dimensional projections of normalized generated generative data and data
+source for a training step. Indices refer to indices of active columns of
+data source. Plotting can be disabled by passing NULL or an empty vector.}
 
-\item{generateParameters}{Generation of generative data parameters, see function gdGenerateParameters().}
+\item{generateParameters}{Generation of generative data parameters, see
+function gdGenerateParameters().}
 }
 \value{
 None
 }
 \description{
-Read a data source from a file, generate generative data for the data source in iterative training steps and
-write generated data to a file in binary format. When a higher number of iterations is used 
-the distribution of generated data gets closer to that of the data source.
+Read a data source from a file, generate generative data for the data source 
+in iterative training steps and write generated data to a file in binary
+format. When a higher number of iterations is used the distribution of
+generated data gets closer to that of the data source.
 }
 \examples{
 \dontrun{
-generateParameters = gdGenerateParameters(numberOfIterations = 5000)
+generateParameters <- gdGenerateParameters(numberOfIterations = 5000)
 gdGenerate("gd.bin", "ds.bin", c(1, 2), generateParameters)}
 }

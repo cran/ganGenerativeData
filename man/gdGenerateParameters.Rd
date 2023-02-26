@@ -5,26 +5,34 @@
 \title{Specify parameters for generation of generative data}
 \usage{
 gdGenerateParameters(
-  numberOfIterations = 25000,
+  numberOfIterations = 50000,
+  numberOfHiddenLayerUnits = 1024,
   learningRate = 1e-04,
-  keepProbability = 0.95
+  keepProbability = 0.95,
+  collectBeginningAtIteration = 1
 )
 }
 \arguments{
 \item{numberOfIterations}{Number of training steps}
 
+\item{numberOfHiddenLayerUnits}{Number of hidden layer units}
+
 \item{learningRate}{Learning rate for training of neural networks}
 
-\item{keepProbability}{Value in the range of 0 to 1 which is used to train generalized neural networks.}
+\item{keepProbability}{Value in the range of 0 to 1 which is used to train
+generalized neural networks.}
+
+\item{collectBeginningAtIteration}{Collect generative data beginning at
+iteration}
 }
 \value{
 List of parameters for generation of generative data
 }
 \description{
-Specify parameters for training of neural networks used for generation of generative data.
-These parameters are passed to function gdGenerate().
+Specify parameters for training of neural networks used for generation of
+generative data. These parameters are passed to function gdGenerate().
 }
 \examples{
 \dontrun{
-gdPlotParameters(50, c(0.75), c("red", "green"))}
+generateParameters <- gdGenerateParameters(numberOfIterations = 5000)}
 }

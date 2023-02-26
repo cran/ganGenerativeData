@@ -5,7 +5,7 @@
 \title{Specify plot parameters for generative data}
 \usage{
 gdPlotParameters(
-  percent = 0,
+  percent = 10,
   densityValueThresholds = c(),
   densityValueColors = c("red")
 )

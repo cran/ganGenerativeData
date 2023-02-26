@@ -8,7 +8,7 @@ gdPlotProjection(
   imageFileName,
   title,
   columnIndices,
-  generativeDataParameters = gdPlotParameters(percent = 0, densityValueThresholds = c(),
+  generativeDataParameters = gdPlotParameters(percent = 10, densityValueThresholds = c(),
     densityValueColors = c("red")),
   dataSourceParameters = gdPlotDataSourceParameters(percent = 100, color = "blue")
 )

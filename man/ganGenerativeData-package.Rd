@@ -85,8 +85,9 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 
 # Operating system: Ubuntu 22.04.1
 # Compiler: g++ 11.3.0 (supports C++17 standard)
-# R applications: R version 4.1.2, RStudio 2022.02.2
-# Installed packages: 'Rcpp', 'tensorflow', 'ganGenerativeData'
+# R applications: R 4.1.2, RStudio 2022.02.2
+# Installed packages: 'Rcpp' 1.0.10, 'tensorflow' 2.11.0,
+# 'ganGenerativeData' 1.4.2
 
 # Package 'tensorflow' provides an interface to machine learning framework
 # TensorFlow. To complete the installation function install_tensorflow() has to
@@ -122,11 +123,11 @@ dsWrite("ds.bin")}
 
 # 2. Generation of generative data for the iris data source
 
-# Read data source from file "ds.bin",
-# generate generative data in iterative training steps (in tests 50000
-# iterations are used) and write generated generative data to file "gd.bin".
+# Read data source from file "ds.bin", generate generative data in iterative
+# training steps (in tests 50000 iterations and 1024 hidden layer units are
+# used) and write generated generative data to file "gd.bin".
 \dontrun{
-gdGenerate("gd.bin", "ds.bin", c(1, 2), gdGenerateParameters(2500))}
+gdGenerate("gd.bin", "ds.bin", c(1, 2), gdGenerateParameters(2500, 512))}
 
 # Read generative data from file "gd.bin", calculate density values and
 # write generative data with density values to original file.
@@ -151,7 +152,8 @@ gdPlotDataSourceParameters(100))}
 # write it to file "gd34ddv.png"
 \dontrun{
 gdPlotProjection("gd34ddv.png",
-"Generative Data with a Density Value Threshold for the Iris Dataset", c(3, 4),
+"Generative Data with a Density Value Threshold for the Iris Dataset",
+c(3, 4),
 gdPlotParameters(25, c(0.71), c("red", "green")),
 gdPlotDataSourceParameters(100))}
 
