@@ -124,10 +124,10 @@ dsWrite("ds.bin")}
 # 2. Generation of generative data for the iris data source
 
 # Read data source from file "ds.bin", generate generative data in iterative
-# training steps (in tests 50000 iterations and 1024 hidden layer units are
-# used) and write generated generative data to file "gd.bin".
+# training steps (in tests 50000 iterations are used) and write generated
+# generative data to file "gd.bin".
 \dontrun{
-gdGenerate("gd.bin", "ds.bin", c(1, 2), gdGenerateParameters(2500, 512))}
+gdGenerate("gd.bin", "ds.bin", c(1, 2), gdGenerateParameters(2500))}
 
 # Read generative data from file "gd.bin", calculate density values and
 # write generative data with density values to original file.

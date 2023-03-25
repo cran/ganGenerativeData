@@ -63,18 +63,14 @@ public:
 		InOut::Write(os, _active);
 		
 		int st = static_cast<int>(_scaleType);
-		//Function f("message");
-		//f(st);
 		InOut::Write(os, st);
 	}
 	virtual void read(ifstream& is) {
 		InOut::Read(is, _name);
 		InOut::Read(is, _active);
 		
-		int st;
+		int st = 0;
 		InOut::Read(is, st);
-		//Function f("message");
-		//f(st);
 		_scaleType = static_cast<SCALE_TYPE>(st);
 	}
 	
