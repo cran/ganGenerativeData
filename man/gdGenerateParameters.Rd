@@ -4,35 +4,23 @@
 \alias{gdGenerateParameters}
 \title{Specify parameters for generation of generative data}
 \usage{
-gdGenerateParameters(
-  numberOfIterations = 50000,
-  numberOfHiddenLayerUnits = 1024,
-  learningRate = 1e-04,
-  keepProbability = 0.95,
-  collectBeginningAtIteration = 1
-)
+gdGenerateParameters(numberOfSamples = 1e+05, dropout = 0.05)
 }
 \arguments{
-\item{numberOfIterations}{Number of training steps}
+\item{numberOfSamples}{Number of generated samples}
 
-\item{numberOfHiddenLayerUnits}{Number of hidden layer units}
-
-\item{learningRate}{Learning rate for training of neural networks}
-
-\item{keepProbability}{Value in the range of 0 to 1 which is used to train
-generalized neural networks.}
-
-\item{collectBeginningAtIteration}{Collect generative data beginning at
-iteration}
+\item{dropout}{Value in the range of 0 to 1. Specifies the rate of hidden
+units that are dropped. Dropout is a regularization method to prevent
+overfitting. See function gdTrainParameters().}
 }
 \value{
 List of parameters for generation of generative data
 }
 \description{
-Specify parameters for training of neural networks used for generation of
-generative data. These parameters are passed to function gdGenerate().
+Specify parameters for generation of generative data. These parameters are
+passed to function gdGenerate().
 }
 \examples{
 \dontrun{
-generateParameters <- gdGenerateParameters(numberOfIterations = 5000)}
+generateParameters <- gdGenerateParameters(numberOfSamples = 100000)}
 }

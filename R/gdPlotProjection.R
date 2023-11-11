@@ -24,8 +24,19 @@ sourceCpp("src/gdInt.cpp")
 gdRead <- function(generativeDataFileName, dataSourceFileName = "") {
   gdReset()
   
-  gdGenerativeDataRead(generativeDataFileName)
-  if(dataSourceFileName != "") {
+  if(!is.null(generativeDataFileName) && nchar(generativeDataFileName) > 0) {
+    if(!gdGenerativeDataRead(generativeDataFileName)) {
+      error <- append("File ", generativeDataFileName)
+      error <- append(error, " could not be opened\n")
+      message(error)
+      return()
+     }
+  } else {
+    message("No generateDataFileName specified")
+    return()
+  }
+
+  if(!is.null(dataSourceFileName) && nchar(dataSourceFileName) > 0) {
     gdDataSourceRead(dataSourceFileName)
   }
 }
@@ -202,7 +213,7 @@ gdPlotDataSourceParameters <- function(percent = 100, color = "blue") {
 #' Create an image file for generative data and data source
 #'
 #' Create an image file containing two-dimensional projections of generative data and data source.
-#' Plot parameters for generative data and data source are passed by functions gdPlotParameters() and
+#' Plot pagd_2500_6.binrameters for generative data and data source are passed by functions gdPlotParameters() and
 #' gdPlotDataSourceParameters(). Data points of data source are drawn above data points of generative data.
 #'
 #' @param imageFileName Name of image file

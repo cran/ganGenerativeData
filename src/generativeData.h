@@ -18,9 +18,10 @@ public:
 	GenerativeData() {
 		_typeId = cGenerativeDataSourceTypeId;
 	}
+    
 	GenerativeData(const DataSource& dataSource) {
 	   	_typeId = cGenerativeDataSourceTypeId;
-		_normalized = dataSource.getNormalized();
+		_normalized = true;
 
 		for(int i = 0; i < (int)dataSource.getColumnVector().size(); i++) {
 			if(!(dataSource.getColumnVector())[i]->getActive()) {
@@ -39,6 +40,7 @@ public:
 		delete _pDensityVector;
 		_pDensityVector = new NumberColumn(*dataSource.getDensityVector());
 	}
+
 	void addValueLine(const vector<float>& valueVector, int offset = 0) {
 		int index = offset;
 		for(int i = 0; i < (int)_columnVector.size(); i++) {
@@ -48,6 +50,10 @@ public:
 				NumberColumn* pNumberColumn = dynamic_cast<NumberColumn*>(_columnVector[i]);
 				pNumberColumn->addNormalizedValue(valueVector[index]);
 				dimension = pNumberColumn->getDimension();
+				
+				
+				
+				
 			} else {
 				throw string(cInvalidColumnType);
 			}
@@ -59,6 +65,7 @@ public:
 			throw string(cInvalidIndex);
 		}
 	}
+
 	void addValueLines(const vector<float>& valueVector) {
 		int dimension = getDimension();
 		if(valueVector.size() % dimension != 0) {

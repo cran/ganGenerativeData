@@ -6,7 +6,9 @@
   Generate generative data for a data source
 }
 \description{
-Generative Adversarial Networks are applied to generate generative data for a data source. In iterative training steps the distribution of generated data converges to that of the data source. Direct applications of generative data are the created functions for data classifying and missing data completion.
+Generative Adversarial Networks are applied to generate generative data for a data source. A generative model consisting of a generator and a discriminator network is trained. In iterative training steps the distribution of generated data converges to that of the data source. Direct applications of generative data are the created functions for data classifying and missing data completion.
+
+Generated data can be written to a file in the training process and after completed training in a generation process. The used generative model in the first case is dynamic and in the second case static.
 
 The inserted images show two-dimensional projections of generative data for the iris dataset:\cr
 \if{html}{\figure{gd34d.png}}
@@ -19,7 +21,7 @@ The inserted images show two-dimensional projections of generative data for the 
 \if{latex}{\figure{gd12ddv.png}}
 }
 \details{
-The API includes functions for topics "definition of data source" and "generation of generative data". Main function of first topic is \strong{\code{dsCreateWithDataFrame()}} which creates a data source with passed data frame. Main function of second topic is \strong{\code{gdGenerate()}} which generates generative data for a data source.\cr
+The API includes functions for topics "definition of data source" and "generation of generative data". Main function of first topic is \strong{\code{dsCreateWithDataFrame()}} which creates a data source with passed data frame. Main functions of second topic are \strong{\code{gdTrain()}} which trains a generative model for a data source and \strong{\code{gdGenerate()}} which uses trained generative model to generate generative data.\cr
 
 \strong{1. Definition of data source}\cr
 
@@ -43,9 +45,13 @@ The API includes functions for topics "definition of data source" and "generatio
 
 \strong{2. Generation of generative data}\cr
 
+\strong{\code{gdTrainParameters()}} Specify parameters for training of generative model.\cr
+
+\strong{\code{gdTrain()}} Read a data source from a file, train a generative model that generates generative data for the data source in iterative training steps, write trained generative model and generated data in training steps to a file in binary format..\cr
+
 \strong{\code{gdGenerateParameters()}} Specify parameters for generation of generative data.\cr
 
-\strong{\code{gdGenerate()}} Read a data source from a file, generate generative data for the data source in iterative training steps and write generated data to a file in binary format.\cr
+\strong{\code{gdGenerate()}} Read a generative model and a data source from a file, generate generative data for the data source and write generated data to a file in binary format.\cr
 
 \strong{\code{gdCalculateDensityValues()}} Read generative data from a file, calculate density values and write generative data with density values to original file.\cr
 
@@ -115,7 +121,7 @@ dsDeactivateColumns(c(5))
 dsGetActiveColumnNames()
 
 # Write the data source including settings of active columns to file
-# "iris4d.bin" in binary format.
+# "ds.bin" in binary format.
 \dontshow{
 ds <- tempfile("ds")
 dsWrite(ds)}\dontrun{
@@ -123,11 +129,11 @@ dsWrite("ds.bin")}
 
 # 2. Generation of generative data for the iris data source
 
-# Read data source from file "ds.bin", generate generative data in iterative
-# training steps (in tests 50000 iterations are used) and write generated
-# generative data to file "gd.bin".
+# Read data source from file "ds.bin", train a generative model in iterative
+# training steps, write trained generative model and generated data in training
+# steps to files "gm.bin" and "gd.bin"
 \dontrun{
-gdGenerate("gd.bin", "ds.bin", c(1, 2), gdGenerateParameters(2500))}
+gdTrain("gm.bin", "gd.bin", "ds.bin", c(1, 2), gdTrainParameters(2500))}
 
 # Read generative data from file "gd.bin", calculate density values and
 # write generative data with density values to original file.

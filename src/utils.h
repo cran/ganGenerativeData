@@ -12,22 +12,6 @@ using namespace std;
 const string cSeparator = "_";
 const string cPeriod = ".";
 
-class BuildFileName {
-public:
-    string operator()(const string& name, float value, const string& extension) {
-        stringstream ss;
-        ss << name;
-        ss << cSeparator;
-        ss << value;
-        if(extension != "") {
-            ss << cPeriod;
-            ss << extension;
-        }
-        
-        return ss.str();
-    }
-};
-
 class GetFileName {
 public:
     string operator()(const string& name) {
@@ -37,6 +21,20 @@ public:
         } else {
             return name; 
         }
+    }
+};
+
+class BuildFileName {
+public:
+    string operator()(const string& name, const string& extension) {
+        stringstream ss;
+        ss << GetFileName()(name);
+        if(extension != "") {
+            ss << cPeriod;
+            ss << extension;
+        }
+        
+        return ss.str();
     }
 };
 

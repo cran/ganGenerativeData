@@ -180,12 +180,28 @@ gdGetMaxSize <- function() {
     .Call('_ganGenerativeData_gdGetMaxSize', PACKAGE = 'ganGenerativeData')
 }
 
+gdGetFileName <- function(fileName) {
+    .Call('_ganGenerativeData_gdGetFileName', PACKAGE = 'ganGenerativeData', fileName)
+}
+
+gdCreateGenerativeModel <- function() {
+    invisible(.Call('_ganGenerativeData_gdCreateGenerativeModel', PACKAGE = 'ganGenerativeData'))
+}
+
+gdWriteWithReadingTrainedModel <- function(outFileName) {
+    invisible(.Call('_ganGenerativeData_gdWriteWithReadingTrainedModel', PACKAGE = 'ganGenerativeData', outFileName))
+}
+
+gdReadGenerativeModel <- function(inFileName) {
+    .Call('_ganGenerativeData_gdReadGenerativeModel', PACKAGE = 'ganGenerativeData', inFileName)
+}
+
 gdDataSourceRead <- function(inFileName) {
     invisible(.Call('_ganGenerativeData_gdDataSourceRead', PACKAGE = 'ganGenerativeData', inFileName))
 }
 
 gdGenerativeDataRead <- function(inFileName) {
-    invisible(.Call('_ganGenerativeData_gdGenerativeDataRead', PACKAGE = 'ganGenerativeData', inFileName))
+    .Call('_ganGenerativeData_gdGenerativeDataRead', PACKAGE = 'ganGenerativeData', inFileName)
 }
 
 gdGenerativeDataWrite <- function(outFileName) {
@@ -212,6 +228,10 @@ gdWriteSubset <- function(fileName, percent) {
 
 gdCreateGenerativeData <- function() {
     invisible(.Call('_ganGenerativeData_gdCreateGenerativeData', PACKAGE = 'ganGenerativeData'))
+}
+
+gdCreateDataSourceFromGenerativeModel <- function() {
+    invisible(.Call('_ganGenerativeData_gdCreateDataSourceFromGenerativeModel', PACKAGE = 'ganGenerativeData'))
 }
 
 gdDataSourceGetDataRandom <- function(rowCount) {
@@ -296,6 +316,10 @@ gdGetMax <- function(i) {
 
 gdGetMin <- function(i) {
     .Call('_ganGenerativeData_gdGetMin', PACKAGE = 'ganGenerativeData', i)
+}
+
+gdResetDensitiyValues <- function() {
+    invisible(.Call('_ganGenerativeData_gdResetDensitiyValues', PACKAGE = 'ganGenerativeData'))
 }
 
 gdIntCalculateDensityValues <- function() {
@@ -385,5 +409,37 @@ gdKNearestNeighbors <- function(dataRecord, k = 1L, useSearchTree = FALSE) {
 #' gdComplete(list(5.1, 3.5, 1.4, NA))}
 gdComplete <- function(dataRecord, useSearchTree = FALSE) {
     .Call('_ganGenerativeData_gdComplete', PACKAGE = 'ganGenerativeData', dataRecord, useSearchTree)
+}
+
+gdGenerativeModelGetNumberOfIterations <- function() {
+    .Call('_ganGenerativeData_gdGenerativeModelGetNumberOfIterations', PACKAGE = 'ganGenerativeData')
+}
+
+gdGenerativeModelSetNumberOfIterations <- function(numberOfIterations) {
+    invisible(.Call('_ganGenerativeData_gdGenerativeModelSetNumberOfIterations', PACKAGE = 'ganGenerativeData', numberOfIterations))
+}
+
+gdGenerativeModelGetNumberOfHiddenLayerUnits <- function() {
+    .Call('_ganGenerativeData_gdGenerativeModelGetNumberOfHiddenLayerUnits', PACKAGE = 'ganGenerativeData')
+}
+
+gdGenerativeModelSetNumberOfHiddenLayerUnits <- function(numberOfHiddenLayerUnits) {
+    invisible(.Call('_ganGenerativeData_gdGenerativeModelSetNumberOfHiddenLayerUnits', PACKAGE = 'ganGenerativeData', numberOfHiddenLayerUnits))
+}
+
+gdGenerativeModelGetLearningRate <- function() {
+    .Call('_ganGenerativeData_gdGenerativeModelGetLearningRate', PACKAGE = 'ganGenerativeData')
+}
+
+gdGenerativeModelSetLearningRate <- function(learningRate) {
+    invisible(.Call('_ganGenerativeData_gdGenerativeModelSetLearningRate', PACKAGE = 'ganGenerativeData', learningRate))
+}
+
+gdGenerativeModelGetDropout <- function() {
+    .Call('_ganGenerativeData_gdGenerativeModelGetDropout', PACKAGE = 'ganGenerativeData')
+}
+
+gdGenerativeModelSetDropout <- function(dropout) {
+    invisible(.Call('_ganGenerativeData_gdGenerativeModelSetDropout', PACKAGE = 'ganGenerativeData', dropout))
 }
 

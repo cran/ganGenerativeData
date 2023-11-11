@@ -7,11 +7,13 @@ using namespace Rcpp;
 using namespace std;
 
 #include "density.h"
+#include "generativeModel.h"
 
 const string cInvalidNearestNeighborsSize = "Invalid size of nearest neighbors";
 const string cDifferentListSizes = "Sizes of lists are different";
 
 namespace gdInt {
+    GenerativeModel* pGenerativeModel = 0;
     DataSource* pDataSource = 0;
     GenerativeData* pGenerativeData = 0;
     
@@ -35,6 +37,8 @@ namespace gdInt {
 // [[Rcpp::export]]
 void gdReset() {
     try {
+        delete gdInt::pGenerativeModel;
+        gdInt::pGenerativeModel = 0;
         delete gdInt::pDataSource;
         gdInt::pDataSource = 0;
         delete gdInt::pGenerativeData;
@@ -108,6 +112,74 @@ int gdGetMaxSize() {
 }
 
 // [[Rcpp::export]]
+std::string gdGetFileName(const std::string& fileName) {
+    try {
+        return GetFileName()(fileName);
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+void gdCreateGenerativeModel() {
+    try {
+        delete gdInt::pGenerativeModel;
+        gdInt::pGenerativeModel = new GenerativeModel(*gdInt::pDataSource);
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+void gdWriteWithReadingTrainedModel(const std::string& outFileName) {
+    try {
+        ofstream os;
+        os.open(outFileName.c_str(), std::ios::binary);
+        if(!os.is_open()) {
+            throw string("File " + outFileName + " could not be opened");
+        }
+        
+        //delete gdInt::pGenerativeModel;
+        //gdInt::pGenerativeModel = new GenerativeModel(*gdInt::pDataSource);
+        
+        gdInt::pGenerativeModel->writeWithReadingTrainedModel(os, GetFileName()(outFileName));
+        os.close();
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+bool gdReadGenerativeModel(const std::string& inFileName) {
+    try {
+        ifstream is;
+        is.open(inFileName.c_str(), std::ios::binary);
+        if(!is.is_open()) {
+            //throw string("File " + inFileName + " could not be opened");
+            return false;
+        }
+        
+        delete gdInt::pGenerativeModel;
+        gdInt::pGenerativeModel = new GenerativeModel();
+        
+        gdInt::pGenerativeModel->read(is, GetFileName()(inFileName));
+        is.close();
+        
+        return true;
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
 void gdDataSourceRead(const std::string& inFileName) {
     try {
         ifstream is;
@@ -130,12 +202,13 @@ void gdDataSourceRead(const std::string& inFileName) {
 }
 
 // [[Rcpp::export]]
-void gdGenerativeDataRead(const std::string& inFileName) {
+bool gdGenerativeDataRead(const std::string& inFileName) {
     try {
         ifstream is;
         is.open(inFileName.c_str(), std::ios::binary);
         if(!is.is_open()) {
-            throw string("File " + inFileName + " could not be opened");
+            //throw string("File " + inFileName + " could not be opened");
+            return false;
         }
         gdInt::inGenerativeDataFileName = inFileName;
     
@@ -147,6 +220,8 @@ void gdGenerativeDataRead(const std::string& inFileName) {
         if(gdInt::pGenerativeData->getNormalizedSize() > gdInt::maxSize) {
             throw string(gdInt::cMaxSizeExceeded);
         }
+        
+        return true;
     
     } catch (const string& e) {
         ::Rf_error(e.c_str());
@@ -228,6 +303,7 @@ void gdWriteSubset(const std::string& fileName, float percent) {
         ::Rf_error("C++ exception (unknown reason)");
     }
 }
+
 // [[Rcpp::export]]
 void gdCreateGenerativeData() {
     try {
@@ -237,6 +313,22 @@ void gdCreateGenerativeData() {
     
         delete gdInt::pGenerativeData;
         gdInt::pGenerativeData = new GenerativeData(*gdInt::pDataSource);
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+void gdCreateDataSourceFromGenerativeModel() {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("generative model");
+        }
+        
+        delete gdInt::pDataSource;
+        gdInt::pDataSource = new DataSource(gdInt::pGenerativeModel->getDataSource());
     } catch (const string& e) {
         ::Rf_error(e.c_str());
     } catch(...) {
@@ -389,7 +481,7 @@ int gdGetDataSourceDimension() {
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
-}
+} 
 
 // [[Rcpp::export]]
 void gdAddValueRows(const std::vector<float>& valueRows) {
@@ -585,6 +677,21 @@ float gdGetMin(int i) {
 }
 
 // [[Rcpp::export]]
+void gdResetDensitiyValues() {
+    try {
+        if(gdInt::pGenerativeData == 0) {
+            throw string("No generative data");
+        }
+        
+        gdInt::pGenerativeData->getDensityVector()->clear();
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
 void gdIntCalculateDensityValues() {
     try {
         if(gdInt::pGenerativeData == 0) {
@@ -708,7 +815,7 @@ float gdCalculateDensityValueQuantile(float percent) {
 // [[Rcpp::export]]
 std::string gdBuildFileName(const std::string& fileName, float niveau) {
     try {
-        return BuildFileName()(GetFileName()(fileName), niveau, GetExtension()(fileName));
+        return BuildFileName()(GetFileName()(fileName), GetExtension()(fileName));
     } catch (const string& e) {
         ::Rf_error(e.c_str());
     } catch(...) {
@@ -880,4 +987,125 @@ List gdComplete(List dataRecord, bool useSearchTree = false) {
     }
 
     return completedList;
+}
+
+
+// [[Rcpp::export]]
+int gdGenerativeModelGetNumberOfIterations() {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+       return gdInt::pGenerativeModel->getNumberOfIterations();
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+void gdGenerativeModelSetNumberOfIterations(int numberOfIterations) {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+        gdInt::pGenerativeModel->setNumberOfIterations(numberOfIterations);
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+int gdGenerativeModelGetNumberOfHiddenLayerUnits() {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+        return gdInt::pGenerativeModel->getNumberOfHiddenLayerUnits();
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+void gdGenerativeModelSetNumberOfHiddenLayerUnits(int numberOfHiddenLayerUnits) {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+        gdInt::pGenerativeModel->setNumberOfHiddenLayerUnits(numberOfHiddenLayerUnits);
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+float gdGenerativeModelGetLearningRate() {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+        return gdInt::pGenerativeModel->getLearningRate();
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+void gdGenerativeModelSetLearningRate(float learningRate) {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+        gdInt::pGenerativeModel->setLearningRate(learningRate);
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+float gdGenerativeModelGetDropout() {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+        return gdInt::pGenerativeModel->getDropout();
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+void gdGenerativeModelSetDropout(float dropout) {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+        gdInt::pGenerativeModel->setDropout(dropout);
+    } catch (const string& e) {
+        ::Rf_error(e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
 }

@@ -6,22 +6,14 @@
 \usage{
 gdGenerate(
   generativeDataFileName,
-  dataSourceFileName,
-  columnIndices,
-  generateParameters = gdGenerateParameters(numberOfIterations = 25000,
-    numberOfHiddenLayerUnits = 1024, learningRate = 1e-04, keepProbability = 0.95,
-    collectBeginningAtIteration = 1)
+  generativeModelFileName,
+  generateParameters = gdGenerateParameters(numberOfSamples = 10000, dropout = 0.05)
 )
 }
 \arguments{
 \item{generativeDataFileName}{Name of generative data file}
 
-\item{dataSourceFileName}{Name of data source file}
-
-\item{columnIndices}{Vector of two column indices that are used to plot
-two-dimensional projections of normalized generated generative data and data
-source for a training step. Indices refer to indices of active columns of
-data source. Plotting can be disabled by passing NULL or an empty vector.}
+\item{generativeModelFileName}{Name of generative model file}
 
 \item{generateParameters}{Generation of generative data parameters, see
 function gdGenerateParameters().}
@@ -30,13 +22,11 @@ function gdGenerateParameters().}
 None
 }
 \description{
-Read a data source from a file, generate generative data for the data source 
-in iterative training steps and write generated data to a file in binary
-format. When a higher number of iterations is used the distribution of
-generated data gets closer to that of the data source.
+Read a trained generative model for a data source, generate generative data
+and write generated data to a file in binary format.
 }
 \examples{
 \dontrun{
-generateParameters <- gdGenerateParameters(numberOfIterations = 5000)
-gdGenerate("gd.bin", "ds.bin", c(1, 2), generateParameters)}
+generateParameters <- gdGenerateParameters(numberOfSamples = 10000)
+gdGenerate("gd.bin", "gm.bin", generateParameters)}
 }

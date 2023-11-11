@@ -29,7 +29,7 @@ None
 }
 \description{
 Create an image file containing two-dimensional projections of generative data and data source.
-Plot parameters for generative data and data source are passed by functions gdPlotParameters() and
+Plot pagd_2500_6.binrameters for generative data and data source are passed by functions gdPlotParameters() and
 gdPlotDataSourceParameters(). Data points of data source are drawn above data points of generative data.
 }
 \examples{

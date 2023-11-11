@@ -171,6 +171,47 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gdGetFileName
+std::string gdGetFileName(const std::string& fileName);
+RcppExport SEXP _ganGenerativeData_gdGetFileName(SEXP fileNameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type fileName(fileNameSEXP);
+    rcpp_result_gen = Rcpp::wrap(gdGetFileName(fileName));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdCreateGenerativeModel
+void gdCreateGenerativeModel();
+RcppExport SEXP _ganGenerativeData_gdCreateGenerativeModel() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    gdCreateGenerativeModel();
+    return R_NilValue;
+END_RCPP
+}
+// gdWriteWithReadingTrainedModel
+void gdWriteWithReadingTrainedModel(const std::string& outFileName);
+RcppExport SEXP _ganGenerativeData_gdWriteWithReadingTrainedModel(SEXP outFileNameSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type outFileName(outFileNameSEXP);
+    gdWriteWithReadingTrainedModel(outFileName);
+    return R_NilValue;
+END_RCPP
+}
+// gdReadGenerativeModel
+bool gdReadGenerativeModel(const std::string& inFileName);
+RcppExport SEXP _ganGenerativeData_gdReadGenerativeModel(SEXP inFileNameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type inFileName(inFileNameSEXP);
+    rcpp_result_gen = Rcpp::wrap(gdReadGenerativeModel(inFileName));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gdDataSourceRead
 void gdDataSourceRead(const std::string& inFileName);
 RcppExport SEXP _ganGenerativeData_gdDataSourceRead(SEXP inFileNameSEXP) {
@@ -182,13 +223,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // gdGenerativeDataRead
-void gdGenerativeDataRead(const std::string& inFileName);
+bool gdGenerativeDataRead(const std::string& inFileName);
 RcppExport SEXP _ganGenerativeData_gdGenerativeDataRead(SEXP inFileNameSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type inFileName(inFileNameSEXP);
-    gdGenerativeDataRead(inFileName);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(gdGenerativeDataRead(inFileName));
+    return rcpp_result_gen;
 END_RCPP
 }
 // gdGenerativeDataWrite
@@ -218,6 +260,15 @@ RcppExport SEXP _ganGenerativeData_gdCreateGenerativeData() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     gdCreateGenerativeData();
+    return R_NilValue;
+END_RCPP
+}
+// gdCreateDataSourceFromGenerativeModel
+void gdCreateDataSourceFromGenerativeModel();
+RcppExport SEXP _ganGenerativeData_gdCreateDataSourceFromGenerativeModel() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    gdCreateDataSourceFromGenerativeModel();
     return R_NilValue;
 END_RCPP
 }
@@ -382,6 +433,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gdResetDensitiyValues
+void gdResetDensitiyValues();
+RcppExport SEXP _ganGenerativeData_gdResetDensitiyValues() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    gdResetDensitiyValues();
+    return R_NilValue;
+END_RCPP
+}
 // gdIntCalculateDensityValues
 void gdIntCalculateDensityValues();
 RcppExport SEXP _ganGenerativeData_gdIntCalculateDensityValues() {
@@ -451,6 +511,86 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gdGenerativeModelGetNumberOfIterations
+int gdGenerativeModelGetNumberOfIterations();
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelGetNumberOfIterations() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(gdGenerativeModelGetNumberOfIterations());
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdGenerativeModelSetNumberOfIterations
+void gdGenerativeModelSetNumberOfIterations(int numberOfIterations);
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelSetNumberOfIterations(SEXP numberOfIterationsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type numberOfIterations(numberOfIterationsSEXP);
+    gdGenerativeModelSetNumberOfIterations(numberOfIterations);
+    return R_NilValue;
+END_RCPP
+}
+// gdGenerativeModelGetNumberOfHiddenLayerUnits
+int gdGenerativeModelGetNumberOfHiddenLayerUnits();
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelGetNumberOfHiddenLayerUnits() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(gdGenerativeModelGetNumberOfHiddenLayerUnits());
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdGenerativeModelSetNumberOfHiddenLayerUnits
+void gdGenerativeModelSetNumberOfHiddenLayerUnits(int numberOfHiddenLayerUnits);
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelSetNumberOfHiddenLayerUnits(SEXP numberOfHiddenLayerUnitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type numberOfHiddenLayerUnits(numberOfHiddenLayerUnitsSEXP);
+    gdGenerativeModelSetNumberOfHiddenLayerUnits(numberOfHiddenLayerUnits);
+    return R_NilValue;
+END_RCPP
+}
+// gdGenerativeModelGetLearningRate
+float gdGenerativeModelGetLearningRate();
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelGetLearningRate() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(gdGenerativeModelGetLearningRate());
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdGenerativeModelSetLearningRate
+void gdGenerativeModelSetLearningRate(float learningRate);
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelSetLearningRate(SEXP learningRateSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type learningRate(learningRateSEXP);
+    gdGenerativeModelSetLearningRate(learningRate);
+    return R_NilValue;
+END_RCPP
+}
+// gdGenerativeModelGetDropout
+float gdGenerativeModelGetDropout();
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelGetDropout() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(gdGenerativeModelGetDropout());
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdGenerativeModelSetDropout
+void gdGenerativeModelSetDropout(float dropout);
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelSetDropout(SEXP dropoutSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type dropout(dropoutSEXP);
+    gdGenerativeModelSetDropout(dropout);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_dsWrite", (DL_FUNC) &_ganGenerativeData_dsWrite, 1},
@@ -469,11 +609,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_gdGetGenerativeDataFileName", (DL_FUNC) &_ganGenerativeData_gdGetGenerativeDataFileName, 0},
     {"_ganGenerativeData_gdGetBatchSize", (DL_FUNC) &_ganGenerativeData_gdGetBatchSize, 0},
     {"_ganGenerativeData_gdGetMaxSize", (DL_FUNC) &_ganGenerativeData_gdGetMaxSize, 0},
+    {"_ganGenerativeData_gdGetFileName", (DL_FUNC) &_ganGenerativeData_gdGetFileName, 1},
+    {"_ganGenerativeData_gdCreateGenerativeModel", (DL_FUNC) &_ganGenerativeData_gdCreateGenerativeModel, 0},
+    {"_ganGenerativeData_gdWriteWithReadingTrainedModel", (DL_FUNC) &_ganGenerativeData_gdWriteWithReadingTrainedModel, 1},
+    {"_ganGenerativeData_gdReadGenerativeModel", (DL_FUNC) &_ganGenerativeData_gdReadGenerativeModel, 1},
     {"_ganGenerativeData_gdDataSourceRead", (DL_FUNC) &_ganGenerativeData_gdDataSourceRead, 1},
     {"_ganGenerativeData_gdGenerativeDataRead", (DL_FUNC) &_ganGenerativeData_gdGenerativeDataRead, 1},
     {"_ganGenerativeData_gdGenerativeDataWrite", (DL_FUNC) &_ganGenerativeData_gdGenerativeDataWrite, 1},
     {"_ganGenerativeData_gdWriteSubset", (DL_FUNC) &_ganGenerativeData_gdWriteSubset, 2},
     {"_ganGenerativeData_gdCreateGenerativeData", (DL_FUNC) &_ganGenerativeData_gdCreateGenerativeData, 0},
+    {"_ganGenerativeData_gdCreateDataSourceFromGenerativeModel", (DL_FUNC) &_ganGenerativeData_gdCreateDataSourceFromGenerativeModel, 0},
     {"_ganGenerativeData_gdDataSourceGetDataRandom", (DL_FUNC) &_ganGenerativeData_gdDataSourceGetDataRandom, 1},
     {"_ganGenerativeData_gdDataSourceGetNormalizedDataRandom", (DL_FUNC) &_ganGenerativeData_gdDataSourceGetNormalizedDataRandom, 1},
     {"_ganGenerativeData_gdDataSourceGetNormalizedDataRandomReference", (DL_FUNC) &_ganGenerativeData_gdDataSourceGetNormalizedDataRandomReference, 1},
@@ -489,12 +634,21 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_gdGetRow", (DL_FUNC) &_ganGenerativeData_gdGetRow, 1},
     {"_ganGenerativeData_gdGetMax", (DL_FUNC) &_ganGenerativeData_gdGetMax, 1},
     {"_ganGenerativeData_gdGetMin", (DL_FUNC) &_ganGenerativeData_gdGetMin, 1},
+    {"_ganGenerativeData_gdResetDensitiyValues", (DL_FUNC) &_ganGenerativeData_gdResetDensitiyValues, 0},
     {"_ganGenerativeData_gdIntCalculateDensityValues", (DL_FUNC) &_ganGenerativeData_gdIntCalculateDensityValues, 0},
     {"_ganGenerativeData_gdCalculateDensityValue", (DL_FUNC) &_ganGenerativeData_gdCalculateDensityValue, 2},
     {"_ganGenerativeData_gdCalculateDensityValueQuantile", (DL_FUNC) &_ganGenerativeData_gdCalculateDensityValueQuantile, 1},
     {"_ganGenerativeData_gdBuildFileName", (DL_FUNC) &_ganGenerativeData_gdBuildFileName, 2},
     {"_ganGenerativeData_gdKNearestNeighbors", (DL_FUNC) &_ganGenerativeData_gdKNearestNeighbors, 3},
     {"_ganGenerativeData_gdComplete", (DL_FUNC) &_ganGenerativeData_gdComplete, 2},
+    {"_ganGenerativeData_gdGenerativeModelGetNumberOfIterations", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetNumberOfIterations, 0},
+    {"_ganGenerativeData_gdGenerativeModelSetNumberOfIterations", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetNumberOfIterations, 1},
+    {"_ganGenerativeData_gdGenerativeModelGetNumberOfHiddenLayerUnits", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetNumberOfHiddenLayerUnits, 0},
+    {"_ganGenerativeData_gdGenerativeModelSetNumberOfHiddenLayerUnits", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetNumberOfHiddenLayerUnits, 1},
+    {"_ganGenerativeData_gdGenerativeModelGetLearningRate", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetLearningRate, 0},
+    {"_ganGenerativeData_gdGenerativeModelSetLearningRate", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetLearningRate, 1},
+    {"_ganGenerativeData_gdGenerativeModelGetDropout", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetDropout, 0},
+    {"_ganGenerativeData_gdGenerativeModelSetDropout", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetDropout, 1},
     {NULL, NULL, 0}
 };
 

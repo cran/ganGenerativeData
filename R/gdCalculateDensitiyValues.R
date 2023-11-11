@@ -25,7 +25,18 @@ gdCalculateDensityValues <- function(generativeDataFileName) {
   start <- Sys.time()
   
   gdReset()
-  gdGenerativeDataRead(generativeDataFileName)
+  if(!is.null(generativeDataFileName) && nchar(generativeDataFileName) > 0) {
+    if(!gdGenerativeDataRead(generativeDataFileName)) {
+       error <- append("File ", generativeDataFileName)
+       error <- append(error, " could not be opened\n")
+       message(error)
+       return()
+    }
+  } else {
+      message("No generateDataFileName specified")
+      return()
+  }
+  
   gdIntCalculateDensityValues()
   gdGenerativeDataWrite(generativeDataFileName)
   
