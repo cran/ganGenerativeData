@@ -6,9 +6,9 @@
   Generate generative data for a data source
 }
 \description{
-Generative Adversarial Networks are applied to generate generative data for a data source. A generative model consisting of a generator and a discriminator network is trained. In iterative training steps the distribution of generated data converges to that of the data source. Direct applications of generative data are the created functions for data classifying and missing data completion.
+Generative Adversarial Networks are applied to generate generative data for a data source. A generative model consisting of a generator and a discriminator network is trained. In iterative training steps the distribution of generated data is converging to that of the data source. Direct applications of generative data are the created functions for data classifying and missing data completion.
 
-Generated data can be written to a file in the training process and after completed training in a generation process. The used generative model in the first case is dynamic and in the second case static.
+Generated data can be written to a file in the training process and after finished training in a generation process. The used generative model in the first case is dynamic and in the second case static.
 
 The inserted images show two-dimensional projections of generative data for the iris dataset:\cr
 \if{html}{\figure{gd34d.png}}

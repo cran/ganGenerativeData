@@ -198,6 +198,8 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
     }
     
     train <- function(){
+        message("Iteration")
+        
         numberOfIterations <- trainParameters$numberOfIterations
         
         iteration <- 1
@@ -235,6 +237,8 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
     }
     
     generate <- function() {
+        message("Number of samples")
+        
         numberOfSamples <- generateParameters$numberOfSamples
         
         n <- 1
