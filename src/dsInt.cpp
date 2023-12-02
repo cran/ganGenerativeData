@@ -45,7 +45,7 @@ void dsWrite(const std::string& fileName) {
         dsInt::pDataSource->write(outFile);
         outFile.close();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -81,7 +81,7 @@ void dsRead(const std::string& fileName) {
         is.close();
     
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -102,7 +102,7 @@ void dsCreate(const std::vector<std::wstring>& columnTypes, const std::vector<st
         }
         dsInt::pDataSource = new DataSource(enumColumnTypes, columnNames);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -117,7 +117,7 @@ void dsAddValueRow(const std::vector<std::wstring>& valueVector) {
     
         dsInt::pDataSource->addValueRow(valueVector);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -153,7 +153,7 @@ void dsDeactivateColumns(const std::vector<int>& columnVector) {
         
         dsInt::pDataSource->setColumnsActive(cV, false);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -190,7 +190,7 @@ void dsActivateColumns(const std::vector<int>& columnVector) {
         
         dsInt::pDataSource->setColumnsActive(cV, true);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -217,7 +217,7 @@ std::vector<std::wstring> dsGetActiveColumnNames() {
     
         return dsInt::pDataSource->getActiveColumnNames();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -246,7 +246,7 @@ std::vector<std::wstring> dsGetInactiveColumnNames() {
     
         return dsInt::pDataSource->getInactiveColumnNames();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -274,7 +274,7 @@ int dsGetNumberOfRows() {
     
         return dsInt::pDataSource->getSize();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -325,7 +325,7 @@ List dsGetRow(int index) {
     
         return list;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -340,7 +340,7 @@ bool dsGetNormalized() {
     
         return dsInt::pDataSource->getNormalized();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }

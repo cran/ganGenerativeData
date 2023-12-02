@@ -61,7 +61,7 @@ void gdReset() {
         gdInt::inGenerativeDataFileName = "";
         gdInt::inDataSourceFileName = "";
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -72,7 +72,7 @@ std::string gdGetDataSourceFileName() {
     try {
         return gdInt::inDataSourceFileName;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -83,7 +83,7 @@ std::string gdGetGenerativeDataFileName() {
     try {
         return gdInt::inGenerativeDataFileName;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -94,7 +94,7 @@ int gdGetBatchSize() {
     try {
         return gdInt::batchSize;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -105,7 +105,7 @@ int gdGetMaxSize() {
     try {
         return gdInt::maxSize;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -116,7 +116,7 @@ std::string gdGetFileName(const std::string& fileName) {
     try {
         return GetFileName()(fileName);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -128,7 +128,7 @@ void gdCreateGenerativeModel() {
         delete gdInt::pGenerativeModel;
         gdInt::pGenerativeModel = new GenerativeModel(*gdInt::pDataSource);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -149,7 +149,7 @@ void gdWriteWithReadingTrainedModel(const std::string& outFileName) {
         gdInt::pGenerativeModel->writeWithReadingTrainedModel(os, GetFileName()(outFileName));
         os.close();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -173,7 +173,7 @@ bool gdReadGenerativeModel(const std::string& inFileName) {
         
         return true;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -195,7 +195,7 @@ void gdDataSourceRead(const std::string& inFileName) {
         is.close();
     
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -224,7 +224,7 @@ bool gdGenerativeDataRead(const std::string& inFileName) {
         return true;
     
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -246,7 +246,7 @@ void gdGenerativeDataWrite(const std::string& outFileName) {
         gdInt::pGenerativeData->DataSource::write(outFile);
         outFile.close();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -298,7 +298,7 @@ void gdWriteSubset(const std::string& fileName, float percent) {
         generativeData.DataSource::write(outFile);
         outFile.close();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -314,7 +314,7 @@ void gdCreateGenerativeData() {
         delete gdInt::pGenerativeData;
         gdInt::pGenerativeData = new GenerativeData(*gdInt::pDataSource);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -330,7 +330,7 @@ void gdCreateDataSourceFromGenerativeModel() {
         delete gdInt::pDataSource;
         gdInt::pDataSource = new DataSource(gdInt::pGenerativeModel->getDataSource());
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -346,7 +346,7 @@ std::vector<float> gdDataSourceGetDataRandom(int rowCount) {
         std::vector<float> v = gdInt::pDataSource->getDataRandom(rowCount);
         return v;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -362,7 +362,7 @@ std::vector<float> gdDataSourceGetNormalizedDataRandom(int rowCount) {
         std::vector<float> v = gdInt::pDataSource->getNormalizedDataRandom(rowCount);
         return v;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -380,7 +380,7 @@ std::vector<float> gdDataSourceGetNormalizedDataRandomReference(int rowCount) {
         gdInt::pDataSource->getNormalizedDataRandomReference(v, rowCount);
         return v;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -404,7 +404,7 @@ std::vector<float> gdDataSourceGetDataRandomPercent(float percent) {
     
         return dataSource;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -428,7 +428,7 @@ std::vector<float> gdGenerativeDataGetDenormalizedDataRandom(float percent) {
       
         return denormalizedGenerativeData;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -462,7 +462,7 @@ std::vector<std::vector<float>> gdGenerativeDataGetDenormalizedDataRandomWithDen
         denormalizeGnerativeDataWithDensities.push_back(densityVector);
         return denormalizeGnerativeDataWithDensities;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -477,7 +477,7 @@ int gdGetDataSourceDimension() {
     
         return gdInt::pDataSource->getDimension();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -492,7 +492,7 @@ void gdAddValueRows(const std::vector<float>& valueRows) {
     
         gdInt::pGenerativeData->addValueLines(valueRows); 
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -518,7 +518,7 @@ int gdGetNumberOfRows() {
     
         return gdInt::pGenerativeData->getNormalizedSize();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -537,7 +537,7 @@ std::vector<std::wstring> gdGetColumnNames(std::vector<int>& indexVector) {
         vector<wstring> columnNames = gdInt::pGenerativeData->getColumnNames(indexVector);
         return columnNames;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -552,7 +552,7 @@ int gdGetGenerativeDataDimension() {
     
         return gdInt::pGenerativeData->getDimension();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -572,7 +572,7 @@ std::vector<std::wstring> gdGetNumberVectorIndexNames(std::vector<int>& numberVe
         vector<wstring> numberVectorIndexNames = gdInt::pGenerativeData->getNumbeVectorIndexNames(indexVector);
         return numberVectorIndexNames;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -612,7 +612,7 @@ List gdGetRow(int index) {
         }
         return list;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -641,7 +641,7 @@ float gdGetMax(int i) {
         }
         return max;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -670,7 +670,7 @@ float gdGetMin(int i) {
         }
         return min;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -685,7 +685,7 @@ void gdResetDensitiyValues() {
         
         gdInt::pGenerativeData->getDensityVector()->clear();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -709,7 +709,7 @@ void gdIntCalculateDensityValues() {
          
         progress(gdInt::pGenerativeData->getNormalizedSize());
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -772,7 +772,7 @@ float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
         }
         return d;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -806,7 +806,7 @@ float gdCalculateDensityValueQuantile(float percent) {
         float q = density.calculateQuantile(percent);
         return q;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -817,7 +817,7 @@ std::string gdBuildFileName(const std::string& fileName, float niveau) {
     try {
         return BuildFileName()(GetFileName()(fileName), GetExtension()(fileName));
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -937,7 +937,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
 
         return completeDataRecordList;
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -961,32 +961,38 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
 //' gdComplete(list(5.1, 3.5, 1.4, NA))}
 // [[Rcpp::export]]
 List gdComplete(List dataRecord, bool useSearchTree = false) {
-    List nearestNeighbors = gdKNearestNeighbors(dataRecord, 1, useSearchTree);
-    
-    if(nearestNeighbors.size() != 1) {
-        throw(string(cInvalidNearestNeighborsSize));
-    }
-    List nearestNeighbor = as<List>(nearestNeighbors[0]);
-    if(nearestNeighbor.size() != dataRecord.size()) {
-        throw(string(cDifferentListSizes));
-    }
-
-    List completedList;
-    List::iterator iterator;
-    List::iterator nearestNeighborIterator;
-    for(iterator = dataRecord.begin(), nearestNeighborIterator = nearestNeighbor.begin();
-        iterator != dataRecord.end() && nearestNeighborIterator != nearestNeighbor.end();
-        ++iterator, ++nearestNeighborIterator) {
-        float number = (float)as<double>(*iterator);
-        float nearestNeighborNumber = (float)as<double>(*nearestNeighborIterator);
-        if(!isnan(number)) {
-            completedList.insert(completedList.end(), number);
-        } else {
-            completedList.insert(completedList.end(), nearestNeighborNumber);
+    try {
+        List nearestNeighbors = gdKNearestNeighbors(dataRecord, 1, useSearchTree);
+        
+        if(nearestNeighbors.size() != 1) {
+            throw(string(cInvalidNearestNeighborsSize));
         }
+        List nearestNeighbor = as<List>(nearestNeighbors[0]);
+        if(nearestNeighbor.size() != dataRecord.size()) {
+            throw(string(cDifferentListSizes));
+        }
+    
+        List completedList;
+        List::iterator iterator;
+        List::iterator nearestNeighborIterator;
+        for(iterator = dataRecord.begin(), nearestNeighborIterator = nearestNeighbor.begin();
+            iterator != dataRecord.end() && nearestNeighborIterator != nearestNeighbor.end();
+            ++iterator, ++nearestNeighborIterator) {
+            float number = (float)as<double>(*iterator);
+            float nearestNeighborNumber = (float)as<double>(*nearestNeighborIterator);
+            if(!isnan(number)) {
+                completedList.insert(completedList.end(), number);
+            } else {
+                completedList.insert(completedList.end(), nearestNeighborNumber);
+            }
+        }
+    
+        return completedList;
+    } catch (const string& e) {
+        ::Rf_error("C++ exception (unknown reason)");
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
     }
-
-    return completedList;
 }
 
 
@@ -999,7 +1005,7 @@ int gdGenerativeModelGetNumberOfIterations() {
         
        return gdInt::pGenerativeModel->getNumberOfIterations();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -1014,7 +1020,7 @@ void gdGenerativeModelSetNumberOfIterations(int numberOfIterations) {
         
         gdInt::pGenerativeModel->setNumberOfIterations(numberOfIterations);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -1029,7 +1035,7 @@ int gdGenerativeModelGetNumberOfHiddenLayerUnits() {
         
         return gdInt::pGenerativeModel->getNumberOfHiddenLayerUnits();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -1044,7 +1050,7 @@ void gdGenerativeModelSetNumberOfHiddenLayerUnits(int numberOfHiddenLayerUnits) 
         
         gdInt::pGenerativeModel->setNumberOfHiddenLayerUnits(numberOfHiddenLayerUnits);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -1059,7 +1065,7 @@ float gdGenerativeModelGetLearningRate() {
         
         return gdInt::pGenerativeModel->getLearningRate();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -1074,7 +1080,7 @@ void gdGenerativeModelSetLearningRate(float learningRate) {
         
         gdInt::pGenerativeModel->setLearningRate(learningRate);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -1089,7 +1095,7 @@ float gdGenerativeModelGetDropout() {
         
         return gdInt::pGenerativeModel->getDropout();
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
@@ -1104,7 +1110,7 @@ void gdGenerativeModelSetDropout(float dropout) {
         
         gdInt::pGenerativeModel->setDropout(dropout);
     } catch (const string& e) {
-        ::Rf_error(e.c_str());
+        ::Rf_error("C++ exception (unknown reason)");
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }

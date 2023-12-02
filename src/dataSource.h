@@ -24,7 +24,6 @@ const string cInvalidTypePrefix = "Type of occurred value";
 const string cInvalidTypeSuffix = "is invalid";
 const string cInvalidColumnPrefix = "Type of column";
 
-
 const string cDataSourceTypeId = "c46afa0e-51b6-4877-b4f4-53d909e34a7d";
 const wstring cDensityColumn = L"Densities";
 
