@@ -343,21 +343,14 @@ public:
     }
   
     vector<VpElement> kNearestNeighbors(int k, vector<VpElement>& nearestNeighbors) {
-        if(nearestNeighbors.size() <= k) {
-            return nearestNeighbors;
-        }
-        
-        vector<VpElement> kNearestNeighbors;
-        for(int i = 0; i < k; i++) {
-            int r = _uniformIntDistribution.setParameters(0, nearestNeighbors.size() - 1)();
-            kNearestNeighbors.push_back(nearestNeighbors[r]);
-            nearestNeighbors.erase(nearestNeighbors.begin() + r);
-        }
-        
         VpElementCompare vpElementCompare;
-        sort(kNearestNeighbors.begin(), kNearestNeighbors.end(), vpElementCompare);
+        sort(nearestNeighbors.begin(), nearestNeighbors.end(), vpElementCompare);
         
-        return kNearestNeighbors;
+        if(nearestNeighbors.size() > k) {
+            nearestNeighbors.resize(k);
+        }
+        
+        return nearestNeighbors;
     }
     void search(const vector<float>& target, int k, vector<VpElement>& nearestNeighbors) {
         priority_queue<VpElement> priorityQueue;

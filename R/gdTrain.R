@@ -106,5 +106,3 @@ gdTrain <- function(generativeModelFileName,
     end <- Sys.time()
     message(round(difftime(end, start, units = "secs"), 3), " seconds")
 }
-
-

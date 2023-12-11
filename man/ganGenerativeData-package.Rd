@@ -8,32 +8,54 @@
 \description{
 Generative Adversarial Networks are applied to generate generative data for a data source. A generative model consisting of a generator and a discriminator network is trained. In iterated training steps the distribution of generated data is converging to that of the data source. Direct applications of generative data are the created functions for data classifying and missing data completion.
 
-Generated data can be written to a file in the training process and after finished training in a generation process. The used generative model in the first case is dynamic and in the second case static.
+Generated data can be written to a file in training and after finished training in a separate generation step. The used generative model is dynamic in the first case and static in the second case.
 
 The inserted images show two-dimensional projections of generative data for the iris dataset:\cr
-\if{html}{\figure{gd34d.png}}
-\if{latex}{\figure{gd34d.png}}
-\if{html}{\figure{gd12d.png}}
-\if{latex}{\figure{gd12d.png}}
-\if{html}{\figure{gd34ddv.png}}
-\if{latex}{\figure{gd34ddv.png}}
-\if{html}{\figure{gd12ddv.png}}
-\if{latex}{\figure{gd12ddv.png}}
+\figure{gd34d.png}
 
+\figure{gd12d.png}
+
+\figure{gd34ddv.png}
+
+\figure{gd12ddv.png}
+
+\if{latex}{
 \strong{Method for missing data completion:}
 
 Without loss of generality we consider the case of two continuous random variables \eqn{X,Y}. Let \eqn{g_{XY}(x,y)} be the probability density function of joint distribution \eqn{X,Y} and \eqn{G = \{(x_i,y_i)|i=1\ldots n)\}} be a set of occurrences of \eqn{X,Y}.
 
-In order to complete missing data for a given \eqn{X=x_0} we consider conditional probability density function \eqn{g_{Y|X=x_0}(y)}.
+In order to complete missing data for a given \eqn{X=x_0} we consider the conditional probability density function \eqn{g_{Y|X=x_0}(y)}.
 
 We compute the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} and then the limit by applying the rule of de l´Hospital
 \deqn{\lim \limits_{\epsilon \to 0} 1/2\epsilon \int \limits_{x_0-\epsilon}^{x_0+\epsilon} g_{XY}(x,y) dx=g_{Y|X=x_0}(y)}
-So the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} converges to \eqn{g_{Y|X=x_0}(y)} for \eqn{\epsilon \to 0} and the set of occurrences of \eqn{G} in the interval is given by \eqn{G_{x_0,\epsilon}=\{(x_i,y_i)|(x_i,y_i)\in G,x_i \in[x_0-\epsilon,x_0+\epsilon]\}} A candidate for missing \eqn{Y=y_0} for a given \eqn{X=x_0} is then \eqn{y_k} of a uniformly at random selected \eqn{(x_k,y_k) \in G_{x_0,\epsilon}}.
+So the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} converges to \eqn{g_{Y|X=x_0}(y)} for \eqn{\epsilon \to 0} and the set of occurrences of \eqn{G} in the interval is given by \eqn{G_{x_0,\epsilon}=\{(x_i,y_i)|(x_i,y_i)\in G,x_i \in[x_0-\epsilon,x_0+\epsilon]\}}. A candidate for missing \eqn{Y=y_0} for a given \eqn{X=x_0} is then \eqn{y_k} of a uniform randomly selected \eqn{(x_k,y_k) \in G_{x_0,\epsilon}}.
 
 This is applied for generated generative data as follows:
 
-In function \code{gdComplete()} the nearest neighbor for a given incomplete data record is searched with respect to present values and then utilized to complete the incomplete data record. Also function \code{gdKNearestNeighbors()} can be called. A nearest neighbor uniformly at random selected from retrieved \eqn{n} nearest neighbors can then be utilized for data record completion. 
+In function \code{gdComplete()} the nearest neighbor for a given incomplete data record is searched with respect to present values and then utilized to complete the incomplete data record. Also function \code{gdKNearestNeighbors()} can be called. A nearest neighbor uniform randomly selected from retrieved \eqn{k} nearest neighbors can then be used for data record completion.
+
+For illustration inserted images show \eqn{k} nearest neighbors for a sepal width value:\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\figure{gd34dnn.png}
+
+\figure{gd12dnn.png}
 }
+}
+
 
 \details{
 The API includes functions for topics "definition of data source" and "generation of generative data". Main function of first topic is \strong{\code{dsCreateWithDataFrame()}} which creates a data source with passed data frame. Main functions of second topic are \strong{\code{gdTrain()}} which trains a generative model for a data source and \strong{\code{gdGenerate()}} which uses trained generative model to generate generative data.\cr
@@ -108,7 +130,7 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 # Compiler: g++ 11.3.0 (supports C++17 standard)
 # R applications: R 4.1.2, RStudio 2022.02.2
 # Installed packages: 'Rcpp' 1.0.10, 'tensorflow' 2.11.0,
-# 'ganGenerativeData' 1.5.3
+# 'ganGenerativeData' 1.5.4
 
 # Package 'tensorflow' provides an interface to machine learning framework
 # TensorFlow. To complete the installation function install_tensorflow() has to
