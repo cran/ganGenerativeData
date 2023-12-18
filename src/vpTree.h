@@ -22,7 +22,7 @@ using namespace std;
 
 const string cDifferentSizes = "Sizes of vectors are different";
 const string cNearestNeighborDifferent = "Nearest neighbor is different";
-int cMaxNearestNeighbors = 128;
+int cMaxNearestNeighbors = numeric_limits<int>::max();
 
 struct LpDistance{
     LpDistance() {}

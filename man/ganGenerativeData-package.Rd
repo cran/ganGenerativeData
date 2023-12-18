@@ -26,7 +26,7 @@ Without loss of generality we consider the case of two continuous random variabl
 
 In order to complete missing data for a given \eqn{X=x_0} we consider the conditional probability density function \eqn{g_{Y|X=x_0}(y)}.
 
-We compute the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} and then the limit by applying the rule of de l´Hospital
+We compute the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} and then the limit by applying the rule of de l’Hospital
 \deqn{\lim \limits_{\epsilon \to 0} 1/2\epsilon \int \limits_{x_0-\epsilon}^{x_0+\epsilon} g_{XY}(x,y) dx=g_{Y|X=x_0}(y)}
 So the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} converges to \eqn{g_{Y|X=x_0}(y)} for \eqn{\epsilon \to 0} and the set of occurrences of \eqn{G} in the interval is given by \eqn{G_{x_0,\epsilon}=\{(x_i,y_i)|(x_i,y_i)\in G,x_i \in[x_0-\epsilon,x_0+\epsilon]\}}. A candidate for missing \eqn{Y=y_0} for a given \eqn{X=x_0} is then \eqn{y_k} of a uniform randomly selected \eqn{(x_k,y_k) \in G_{x_0,\epsilon}}.
 
@@ -130,7 +130,7 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 # Compiler: g++ 11.3.0 (supports C++17 standard)
 # R applications: R 4.1.2, RStudio 2022.02.2
 # Installed packages: 'Rcpp' 1.0.10, 'tensorflow' 2.11.0,
-# 'ganGenerativeData' 1.5.4
+# 'ganGenerativeData' 1.5.5
 
 # Package 'tensorflow' provides an interface to machine learning framework
 # TensorFlow. To complete the installation function install_tensorflow() has to
@@ -167,8 +167,9 @@ dsWrite("ds.bin")}
 # 2. Generation of generative data for the iris data source
 
 # Read data source from file "ds.bin", train a generative model in iterative
-# training steps, write trained generative model and generated data in training
-# steps to files "gm.bin" and "gd.bin"
+# training steps (used number of iterations in tests is in the range of 10000 to
+# 50000), write trained generative model and generated data in training steps to
+# files "gm.bin" and "gd.bin".
 \dontrun{
 gdTrain("gm.bin", "gd.bin", "ds.bin", c(1, 2), gdTrainParameters(2500))}
 
@@ -177,12 +178,12 @@ gdTrain("gm.bin", "gd.bin", "ds.bin", c(1, 2), gdTrainParameters(2500))}
 \dontrun{
 gdCalculateDensityValues("gd.bin")}
 
-# Read generative data from file "gd.bin" and data source from "ds.bin"
+# Read generative data from file "gd.bin" and data source from "ds.bin".
 \dontrun{
 gdRead("gd.bin", "ds.bin")}
 
 # Create an image showing two-dimensional projections of generative data and
-# data source for column indices 3, 4 and write it to file "gd34d.png"
+# data source for column indices 3, 4 and write it to file "gd34d.png".
 \dontrun{
 gdPlotProjection("gd34d.png",
 "Generative Data for the Iris Dataset",
@@ -192,7 +193,7 @@ gdPlotDataSourceParameters(100))}
 
 # Create an image showing two-dimensional projections of generative data and 
 # data source for column indices 3, 4 with density value threshold 0.71 and
-# write it to file "gd34ddv.png"
+# write it to file "gd34ddv.png".
 \dontrun{
 gdPlotProjection("gd34ddv.png",
 "Generative Data with a Density Value Threshold for the Iris Dataset",

@@ -1,4 +1,4 @@
-794400ceb63dd9d09bd0d578ca6324fc *DESCRIPTION
+ee95d10ca9627b8e6a0a5d84374e5d24 *DESCRIPTION
 36c5c140c745e77ee04d0b875113de38 *NAMESPACE
 e2cab5092a85e7b9bb3fa379423a0ddc *R/RcppExports.R
 f29e2301d30aa4b0324ad51968ea6a5d *R/dsInt.R
@@ -18,13 +18,11 @@ a5101b5d3e39a2886607991fb78da8a8 *man/dsRead.Rd
 fe33eb6ed767ef223b7d088fbe95e9e4 *man/dsWrite.Rd
 1cd68514e2ece28739e955a600527c69 *man/figures/gd12d.png
 58d585529bd9c40db185f99231e7c371 *man/figures/gd12ddv.png
-9b1dd8e31c5002b8b111105b00f5ea96 *man/figures/gd12dnn.png
-ace8fe50ac2baa612f25edfc02bc9f9d *man/figures/gd12dnn___.png
+55d8c2389eeeb2c3a4d3e37563a1a211 *man/figures/gd12dnn.png
 df9b20e700ac48766e41e767cf82d9c6 *man/figures/gd34d.png
 c59cb3bf622618b259022028a6bd504f *man/figures/gd34ddv.png
-d2f3e18292629f783634aeccf54d4ccf *man/figures/gd34dnn.png
-fa4d1fcb03ab2ff6ce0f0f80a0bdcdf2 *man/figures/gd34dnn___.png
-c55c74f03741346502a71a5545dd1aba *man/ganGenerativeData-package.Rd
+3d3bee3abcedf5592d91f0a072c40b25 *man/figures/gd34dnn.png
+a6fc28f0b849673714753e208c67c547 *man/ganGenerativeData-package.Rd
 30d75cf0baf507610d1f89b61800e324 *man/gdCalculateDensityValue.Rd
 64593cd2f558ab6a1363a22137a934f6 *man/gdCalculateDensityValueQuantile.Rd
 565387af48776504f7242e2593316a51 *man/gdCalculateDensityValues.Rd
@@ -56,4 +54,4 @@ b5b66c4cf92b4b9c0bbcd28632c81c79 *src/numberColumn.h
 2052fe2598d8be3baf452312f3cf4a2e *src/progress.h
 eb86bfc190425ff6b4c4f51a3e16eed1 *src/stringColumn.h
 a57f5968ccd8add4a26b12b134f4e499 *src/utils.h
-db3f24340afbc6ab58f10251e00bf59b *src/vpTree.h
+c897ae84114d6fd1f93a22907022543d *src/vpTree.h
