@@ -1,11 +1,11 @@
-ee95d10ca9627b8e6a0a5d84374e5d24 *DESCRIPTION
+ec85868a8d6304c1775fa03b1a51bb75 *DESCRIPTION
 36c5c140c745e77ee04d0b875113de38 *NAMESPACE
 e2cab5092a85e7b9bb3fa379423a0ddc *R/RcppExports.R
 f29e2301d30aa4b0324ad51968ea6a5d *R/dsInt.R
 ad78b2f06d8d19f3ffafe2e8a7fd34d0 *R/gdCalculateDensitiyValues.R
 f51badeba521ce77a5da7a2a6ea8cb92 *R/gdGenerate.R
 42a025a5bf68825d9301a497bd93b47b *R/gdPlotProjection.R
-182bf92e38fa3f979a83b4fae87bca81 *R/gdTrain.R
+95eb7bdc6c62ce6e0a7aa58471ec1770 *R/gdTrain.R
 68cc7f63c42b362ceeb8a252d1753b25 *R/gdTrainGenerate.R
 7bc425d7b887495adc85e9dfcbae5092 *man/dsActivateColumns.Rd
 a700ecbe3e40348535ba7f2e50aa88e4 *man/dsCreateWithDataFrame.Rd
@@ -22,7 +22,7 @@ fe33eb6ed767ef223b7d088fbe95e9e4 *man/dsWrite.Rd
 df9b20e700ac48766e41e767cf82d9c6 *man/figures/gd34d.png
 c59cb3bf622618b259022028a6bd504f *man/figures/gd34ddv.png
 3d3bee3abcedf5592d91f0a072c40b25 *man/figures/gd34dnn.png
-a6fc28f0b849673714753e208c67c547 *man/ganGenerativeData-package.Rd
+8a86e2770e7f99b0ce3e186e4c0d7fe6 *man/ganGenerativeData-package.Rd
 30d75cf0baf507610d1f89b61800e324 *man/gdCalculateDensityValue.Rd
 64593cd2f558ab6a1363a22137a934f6 *man/gdCalculateDensityValueQuantile.Rd
 565387af48776504f7242e2593316a51 *man/gdCalculateDensityValues.Rd
@@ -44,8 +44,8 @@ daf246d2559a7df53698b1714f020b7a *src/Makevars
 b6d3c882c3e58fe2337f43676e468b71 *src/column.h
 e4f8e5ca5939c9e11e54e06952ec1df2 *src/dataSource.h
 be71ea08345f648e12b788fc04cfb72c *src/density.h
-5dde6e31d15daadfe4ad4516f8120d1e *src/dsInt.cpp
-e6523c17e844b8dfe75b89a94fb1fb59 *src/gdInt.cpp
+0b0ff8a64e7c8df8ecd2e59baa49d781 *src/dsInt.cpp
+a9e3d0cc0ef9ee514c4aeb76aa39a111 *src/gdInt.cpp
 7be610926ac2dd321d0e9e367defd3a0 *src/generativeData.h
 88c62068401ca789ebcb6353725adc17 *src/generativeModel.h
 e9eca45fc02e49d7b7a72bf7f2b7bda2 *src/inOut.h

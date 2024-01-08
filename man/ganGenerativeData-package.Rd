@@ -10,7 +10,7 @@ Generative Adversarial Networks are applied to generate generative data for a da
 
 Generated data can be written to a file in training and after finished training in a separate generation step. The used generative model is dynamic in the first case and static in the second case.
 
-The inserted images show two-dimensional projections of generative data for the iris dataset:\cr
+Inserted images show two-dimensional projections of generative data for the iris dataset:\cr
 \figure{gd34d.png}
 
 \figure{gd12d.png}
@@ -22,7 +22,7 @@ The inserted images show two-dimensional projections of generative data for the 
 \if{latex}{
 \strong{Method for missing data completion:}
 
-Without loss of generality we consider the case of two continuous random variables \eqn{X,Y}. Let \eqn{g_{XY}(x,y)} be the probability density function of joint distribution \eqn{X,Y} and \eqn{G = \{(x_i,y_i)|i=1\ldots n)\}} be a set of occurrences of \eqn{X,Y}.
+Without loss of generality we consider the case of two random variables \eqn{X,Y}. Let \eqn{g_{XY}(x,y)} be the continuous probability density function of joint distribution \eqn{X,Y} and \eqn{G = \{(x_i,y_i)|i=1\ldots n)\}} be a set of occurrences of \eqn{X,Y}.
 
 In order to complete missing data for a given \eqn{X=x_0} we consider the conditional probability density function \eqn{g_{Y|X=x_0}(y)}.
 
@@ -32,7 +32,7 @@ So the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} co
 
 This is applied for generated generative data as follows:
 
-In function \code{gdComplete()} the nearest neighbor for a given incomplete data record is searched with respect to present values and then utilized to complete the incomplete data record. Also function \code{gdKNearestNeighbors()} can be called. A nearest neighbor uniform randomly selected from retrieved \eqn{k} nearest neighbors can then be used for data record completion.
+In function \code{gdComplete()} the nearest neighbor for a given incomplete data record is searched with respect to present values and then utilized to complete the incomplete data record. Also function \code{gdKNearestNeighbors()} can be called. A nearest neighbor uniform randomly selected from returned \eqn{k} nearest neighbors can then be used for data record completion.
 
 For illustration inserted images show \eqn{k} nearest neighbors for a sepal width value:\cr
 \cr
@@ -58,7 +58,7 @@ For illustration inserted images show \eqn{k} nearest neighbors for a sepal widt
 
 
 \details{
-The API includes functions for topics "definition of data source" and "generation of generative data". Main function of first topic is \strong{\code{dsCreateWithDataFrame()}} which creates a data source with passed data frame. Main functions of second topic are \strong{\code{gdTrain()}} which trains a generative model for a data source and \strong{\code{gdGenerate()}} which uses trained generative model to generate generative data.\cr
+The API includes functions for topics "definition of data source" and "generation of generative data". Main function of first topic is \strong{\code{dsCreateWithDataFrame()}} which creates a data source with passed data frame. Main functions of second topic are \strong{\code{gdTrain()}} which trains a generative model for a data source and \strong{\code{gdGenerate()}} which uses a trained generative model to generate generative data.\cr
 
 \strong{1. Definition of data source}\cr
 
