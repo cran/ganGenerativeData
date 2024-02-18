@@ -15,8 +15,9 @@ gdRead(generativeDataFileName, dataSourceFileName = "")
 None
 }
 \description{
-Read generative data and data source from specified files. Read in generative data and data source are accessed in gdPlot2dProjection(),
-generative data is accessed in gdGetRow(), gdCalculateDensityValue() and gdCalculateDensityValueQuantile().
+Read generative data and data source from specified files. Read in generative data and data source are accessed in gdPlotProjection(),
+generative data is accessed in gdGetRow(), gdGetNumberOfRows(), gdCalculateDensityValue(),
+gdCalculateDensityValueQuantile(), gdGetNumberOfRows(), gdKNearestNeighbors() and gdComplete().
 }
 \examples{
 \dontrun{

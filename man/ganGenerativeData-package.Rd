@@ -22,13 +22,15 @@ Inserted images show two-dimensional projections of generative data for the iris
 \if{latex}{
 \strong{Method for missing data completion:}
 
-Without loss of generality we consider the case of two random variables \eqn{X,Y}. Let \eqn{g_{XY}(x,y)} be the continuous probability density function of joint distribution \eqn{X,Y} and \eqn{G = \{(x_i,y_i)|i=1\ldots n)\}} be a set of occurrences of \eqn{X,Y}.
+Without loss of generality we consider the case of two random variables \eqn{X,Y}. Let \eqn{g_{XY}(x,y)} be the continuous probability density function of joint distribution \eqn{X,Y} and \eqn{G=((x_i,y_i))_{i=1}^{n}} a sequence of occurrences of \eqn{X,Y}.
 
 In order to complete missing data for a given \eqn{X=x_0} we consider the conditional probability density function \eqn{g_{Y|X=x_0}(y)}.
 
 We compute the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} and then the limit by applying the rule of de l’Hospital
 \deqn{\lim \limits_{\epsilon \to 0} 1/2\epsilon \int \limits_{x_0-\epsilon}^{x_0+\epsilon} g_{XY}(x,y) dx=g_{Y|X=x_0}(y)}
-So the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} converges to \eqn{g_{Y|X=x_0}(y)} for \eqn{\epsilon \to 0} and the set of occurrences of \eqn{G} in the interval is given by \eqn{G_{x_0,\epsilon}=\{(x_i,y_i)|(x_i,y_i)\in G,x_i \in[x_0-\epsilon,x_0+\epsilon]\}}. A candidate for missing \eqn{Y=y_0} for a given \eqn{X=x_0} is then \eqn{y_k} of a uniform randomly selected \eqn{(x_k,y_k) \in G_{x_0,\epsilon}}.
+So the mean \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} converges to \eqn{g_{Y|X=x_0}(y)} for \eqn{\epsilon \to 0} and the subsequence of occurrences of \eqn{G} in the interval is given by \eqn{G_{x_0,\epsilon}=((x_{i_j},y_{i_j}))} with \eqn{1<=i_j<=n,x_{i_j} \in[x_0-\epsilon,x_0+\epsilon]}.
+
+A candidate for missing \eqn{Y=y_0} for a given \eqn{X=x_0} is then \eqn{y_k} of a uniform randomly selected \eqn{(x_k,y_k)} from \eqn{G_{x_0,\epsilon}}.
 
 This is applied for generated generative data as follows:
 
@@ -130,7 +132,7 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 # Compiler: g++ 11.3.0 (supports C++17 standard)
 # R applications: R 4.1.2, RStudio 2022.02.2
 # Installed packages: 'Rcpp' 1.0.10, 'tensorflow' 2.11.0,
-# 'ganGenerativeData' 1.5.5
+# 'ganGenerativeData' 1.5.7
 
 # Package 'tensorflow' provides an interface to machine learning framework
 # TensorFlow. To complete the installation function install_tensorflow() has to
@@ -178,7 +180,8 @@ gdTrain("gm.bin", "gd.bin", "ds.bin", c(1, 2), gdTrainParameters(2500))}
 \dontrun{
 gdCalculateDensityValues("gd.bin")}
 
-# Read generative data from file "gd.bin" and data source from "ds.bin".
+# Read generative data from file "gd.bin" and data source from "ds.bin". Read in
+# data will be accessed in following function calls.
 \dontrun{
 gdRead("gd.bin", "ds.bin")}
 

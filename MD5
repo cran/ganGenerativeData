@@ -1,10 +1,10 @@
-ec85868a8d6304c1775fa03b1a51bb75 *DESCRIPTION
+e7c662d8d9c35995aa3a8e29186c34c2 *DESCRIPTION
 36c5c140c745e77ee04d0b875113de38 *NAMESPACE
 e2cab5092a85e7b9bb3fa379423a0ddc *R/RcppExports.R
 f29e2301d30aa4b0324ad51968ea6a5d *R/dsInt.R
 ad78b2f06d8d19f3ffafe2e8a7fd34d0 *R/gdCalculateDensitiyValues.R
 f51badeba521ce77a5da7a2a6ea8cb92 *R/gdGenerate.R
-42a025a5bf68825d9301a497bd93b47b *R/gdPlotProjection.R
+2a18abc6d2e2e46b2b6b12f1070aa221 *R/gdPlotProjection.R
 95eb7bdc6c62ce6e0a7aa58471ec1770 *R/gdTrain.R
 68cc7f63c42b362ceeb8a252d1753b25 *R/gdTrainGenerate.R
 7bc425d7b887495adc85e9dfcbae5092 *man/dsActivateColumns.Rd
@@ -22,7 +22,7 @@ fe33eb6ed767ef223b7d088fbe95e9e4 *man/dsWrite.Rd
 df9b20e700ac48766e41e767cf82d9c6 *man/figures/gd34d.png
 c59cb3bf622618b259022028a6bd504f *man/figures/gd34ddv.png
 3d3bee3abcedf5592d91f0a072c40b25 *man/figures/gd34dnn.png
-8a86e2770e7f99b0ce3e186e4c0d7fe6 *man/ganGenerativeData-package.Rd
+985e1a179c4e20dfb1404a38d209ffdf *man/ganGenerativeData-package.Rd
 30d75cf0baf507610d1f89b61800e324 *man/gdCalculateDensityValue.Rd
 64593cd2f558ab6a1363a22137a934f6 *man/gdCalculateDensityValueQuantile.Rd
 565387af48776504f7242e2593316a51 *man/gdCalculateDensityValues.Rd
@@ -35,7 +35,7 @@ ebc78c4205c4fd6674f81b9527d972a4 *man/gdComplete.Rd
 1d068dd4bc113af57bb548942c6db4a3 *man/gdPlotDataSourceParameters.Rd
 73dec71806df5d11b1941ff3556cd011 *man/gdPlotParameters.Rd
 8eb324d43bef7cc3b6cd4441ee690784 *man/gdPlotProjection.Rd
-ad46716295049950c5a8030e21b1dd21 *man/gdRead.Rd
+e6a43e5b8dc8d0fd9aa0f17b3d3cdd4f *man/gdRead.Rd
 3670ea87f2930696563749b7232d0d38 *man/gdTrain.Rd
 fd766b5b97a856dad100e114407933cd *man/gdTrainParameters.Rd
 afd410f50ca9695e5a960a86084b050c *man/gdWriteSubset.Rd
