@@ -16,7 +16,7 @@ class GetFileName {
 public:
     string operator()(const string& name) {
         size_t dotPos = name.find_last_of(".");
-        if(dotPos != string::npos) {
+        if(dotPos != string::npos && dotPos > 0) {
             return name.substr(0, dotPos);
         } else {
             return name; 
@@ -120,7 +120,7 @@ public:
     }
     vector<int> operator()(int size, float percent, int seed = -1) {
         vector<int> indices(size);
-        for(int i = 0; i < indices.size(); i++) {
+        for(int i = 0; i < (int)indices.size(); i++) {
             indices[i] = i;
         }
     

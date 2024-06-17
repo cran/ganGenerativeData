@@ -86,9 +86,9 @@ private:
 
 class GenerativeModel {
 public:
-    GenerativeModel(): _typeId(cGenerativeModelTypeId), _version(1), _numberOfIterations(0), _numberOfHiddenLayerUnits(), _learningRate(), _dropout(0) {
+    GenerativeModel(): _typeId(cGenerativeModelTypeId), _version(1), _numberOfTrainingIterations(0), _numberOfInitializationIterations(0), _numberOfHiddenLayerUnits(), _learningRate(), _dropout(0) {
     }
-    GenerativeModel(DataSource& dataSource): _typeId(cGenerativeModelTypeId), _version(1), _numberOfIterations(0), _numberOfHiddenLayerUnits(), _learningRate(), _dropout(0), _dataSource(dataSource) {
+    GenerativeModel(DataSource& dataSource): _typeId(cGenerativeModelTypeId), _version(1), _numberOfTrainingIterations(0), _numberOfInitializationIterations(0), _numberOfHiddenLayerUnits(), _learningRate(), _dropout(0), _dataSource(dataSource) {
     }
     void writeWithReadingTrainedModel(ofstream& os, const string& modelName, int version = 1) {
         _trainedModel.readVectors(modelName);
@@ -100,7 +100,8 @@ public:
         InOut::Write(os, version);
         
         //_numberOfIterations += numberOfIterations;
-        InOut::Write(os, _numberOfIterations);
+        InOut::Write(os, _numberOfTrainingIterations);
+        InOut::Write(os, _numberOfInitializationIterations);
         InOut::Write(os, _numberOfHiddenLayerUnits);
         InOut::Write(os, _learningRate);
         InOut::Write(os, _dropout);
@@ -116,7 +117,8 @@ public:
         }
         InOut::Read(is, _version);
         
-        InOut::Read(is, _numberOfIterations);
+        InOut::Read(is, _numberOfTrainingIterations);
+        InOut::Read(is, _numberOfInitializationIterations);
         InOut::Read(is, _numberOfHiddenLayerUnits);
         InOut::Read(is, _learningRate);
         InOut::Read(is, _dropout);
@@ -128,11 +130,18 @@ public:
         _trainedModel.writeVectors(modelName);
     }
     
-    int getNumberOfIterations() {
-        return _numberOfIterations;
+    int getNumberOfTrainingIterations() {
+        return _numberOfTrainingIterations;
     }
-    void setNumberOfIterations(int numberOfIterations) {
-        _numberOfIterations = numberOfIterations;
+    void setNumberOfTrainingIterations(int numberOfTrainingIterations) {
+        _numberOfTrainingIterations = numberOfTrainingIterations;
+    }
+    
+    int getNumberOfInitializationIterations() {
+        return _numberOfInitializationIterations;
+    }
+    void setNumberOfInitializationIterations(int numberOfInitializationIterations) {
+        _numberOfInitializationIterations = numberOfInitializationIterations;
     }
     
     int getNumberOfHiddenLayerUnits() {
@@ -166,7 +175,8 @@ public:
 private:
     string _typeId;
     int _version;
-    int _numberOfIterations;
+    int _numberOfTrainingIterations;
+    int _numberOfInitializationIterations;
     int _numberOfHiddenLayerUnits;
     float _learningRate;
     float _dropout;

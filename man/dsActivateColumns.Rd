@@ -13,7 +13,7 @@ dsActivateColumns(columnVector)
 None
 }
 \description{
-Activate columns of a data source in order to include them in generation of generative data. By default columns are active.
+Activate columns in a data source in order to include them in training of generative models. By default columns are active.
 }
 \examples{
 \donttest{

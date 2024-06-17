@@ -18,7 +18,8 @@ class Column{
 public:
 	enum COLUMN_TYPE {
 		STRING,
-		NUMERICAL
+		NUMERICAL,
+		NUMERICAL_ARRAY
 	};
     enum SCALE_TYPE {
         LINEAR,
@@ -47,6 +48,9 @@ public:
 	}
 	const SCALE_TYPE getScaleType() const {
 	    return _scaleType;
+	}
+	void setName(const wstring& name) {
+	    _name = name;
 	}
 	const wstring getName() const {
 		return _name;

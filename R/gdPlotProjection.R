@@ -9,9 +9,8 @@ sourceCpp("src/gdInt.cpp")
 
 #' Read generative data and data source
 #'
-#' Read generative data and data source from specified files. Read in generative data and data source are accessed in gdPlotProjection(),
-#' generative data is accessed in gdGetRow(), gdGetNumberOfRows(), gdCalculateDensityValue(),
-#' gdCalculateDensityValueQuantile(), gdGetNumberOfRows(), gdKNearestNeighbors() and gdComplete().
+#' Read generative data and data source from specified files. Read in generative data and data source are accessed in gdPlot2dProjection(),
+#' generative data is accessed in gdGetRow(), gdCalculateDensityValue() and gdCalculateDensityValueQuantile().
 #'
 #' @param generativeDataFileName Name of generative data file
 #' @param dataSourceFileName Name of data source file
@@ -29,12 +28,10 @@ gdRead <- function(generativeDataFileName, dataSourceFileName = "") {
     if(!gdGenerativeDataRead(generativeDataFileName)) {
       error <- append("File ", generativeDataFileName)
       error <- append(error, " could not be opened\n")
-      message(error)
-      return()
+      stop(error)
      }
   } else {
-    message("No generateDataFileName specified")
-    return()
+    stop("No generateDataFileName specified")
   }
 
   if(!is.null(dataSourceFileName) && nchar(dataSourceFileName) > 0) {
@@ -234,7 +231,7 @@ gdPlotDataSourceParameters <- function(percent = 100, color = "blue") {
 #' gdPlotParameters(250000, c(0.71), c("red", "green")),
 #' gdPlotDataSourceParameters(2500))
 #' gdPlotProjection("gd34ddv.png",
-#' "Generative Data with a Density Value Threshold for the Iris Dataset", c(3, 4),
+#' "Generative Data with a Densit(y Value Threshold for the Iris Dataset", c(3, 4),
 #' gdPlotParameters(250000, c(0.71), c("red", "green")),
 #' gdPlotDataSourceParameters(2500))}
 gdPlotProjection <- function(imageFileName, title, columnIndices, 
@@ -243,15 +240,12 @@ gdPlotProjection <- function(imageFileName, title, columnIndices,
   dimension <- gdGetGenerativeDataDimension()
   
   if(dimension > 1 && length(columnIndices) != 2) {
-    message("size of vector columnIndices must be equal to two\n")
-    return()
+    stop("Size of vector columnIndices must be equal to two\n")
   } else if (dimension == 1 && length(columnIndices) != 1) {
-    message("size of vector columnIndices must be equal to one\n")
-    return()
+    stop("Size of vector columnIndices must be equal to one\n")
   }
   if((length(generativeDataParameters[[2]]) + 1) != length(generativeDataParameters[[3]])) {
-    message("size of vector gdDensityValueColors must be equal to size of vector gdDensityValues plus one\n")
-    return()
+    stop("Size of vector gdDensityValueColors must be equal to size of vector gdDensityValues plus one\n")
   }
 
   gdPng(imageFileName, title, columnIndices, generativeDataParameters, dataSourceParameters, dimension)  

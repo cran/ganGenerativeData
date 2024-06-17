@@ -511,23 +511,43 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gdGenerativeModelGetNumberOfIterations
-int gdGenerativeModelGetNumberOfIterations();
-RcppExport SEXP _ganGenerativeData_gdGenerativeModelGetNumberOfIterations() {
+// gdGenerativeModelGetNumberOfTrainingIterations
+int gdGenerativeModelGetNumberOfTrainingIterations();
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelGetNumberOfTrainingIterations() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(gdGenerativeModelGetNumberOfIterations());
+    rcpp_result_gen = Rcpp::wrap(gdGenerativeModelGetNumberOfTrainingIterations());
     return rcpp_result_gen;
 END_RCPP
 }
-// gdGenerativeModelSetNumberOfIterations
-void gdGenerativeModelSetNumberOfIterations(int numberOfIterations);
-RcppExport SEXP _ganGenerativeData_gdGenerativeModelSetNumberOfIterations(SEXP numberOfIterationsSEXP) {
+// gdGenerativeModelSetNumberOfTrainingIterations
+void gdGenerativeModelSetNumberOfTrainingIterations(int numberOfTrainingIterations);
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelSetNumberOfTrainingIterations(SEXP numberOfTrainingIterationsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type numberOfIterations(numberOfIterationsSEXP);
-    gdGenerativeModelSetNumberOfIterations(numberOfIterations);
+    Rcpp::traits::input_parameter< int >::type numberOfTrainingIterations(numberOfTrainingIterationsSEXP);
+    gdGenerativeModelSetNumberOfTrainingIterations(numberOfTrainingIterations);
+    return R_NilValue;
+END_RCPP
+}
+// gdGenerativeModelGetNumberOfInitializationIterations
+int gdGenerativeModelGetNumberOfInitializationIterations();
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelGetNumberOfInitializationIterations() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(gdGenerativeModelGetNumberOfInitializationIterations());
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdGenerativeModelSetNumberOfInitializationIterations
+void gdGenerativeModelSetNumberOfInitializationIterations(int numberOfInitializationIterations);
+RcppExport SEXP _ganGenerativeData_gdGenerativeModelSetNumberOfInitializationIterations(SEXP numberOfInitializationIterationsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type numberOfInitializationIterations(numberOfInitializationIterationsSEXP);
+    gdGenerativeModelSetNumberOfInitializationIterations(numberOfInitializationIterations);
     return R_NilValue;
 END_RCPP
 }
@@ -591,6 +611,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// gdDataSourceHasActiveStringColumn
+bool gdDataSourceHasActiveStringColumn();
+RcppExport SEXP _ganGenerativeData_gdDataSourceHasActiveStringColumn() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(gdDataSourceHasActiveStringColumn());
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_dsWrite", (DL_FUNC) &_ganGenerativeData_dsWrite, 1},
@@ -641,14 +671,17 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_gdBuildFileName", (DL_FUNC) &_ganGenerativeData_gdBuildFileName, 2},
     {"_ganGenerativeData_gdKNearestNeighbors", (DL_FUNC) &_ganGenerativeData_gdKNearestNeighbors, 3},
     {"_ganGenerativeData_gdComplete", (DL_FUNC) &_ganGenerativeData_gdComplete, 2},
-    {"_ganGenerativeData_gdGenerativeModelGetNumberOfIterations", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetNumberOfIterations, 0},
-    {"_ganGenerativeData_gdGenerativeModelSetNumberOfIterations", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetNumberOfIterations, 1},
+    {"_ganGenerativeData_gdGenerativeModelGetNumberOfTrainingIterations", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetNumberOfTrainingIterations, 0},
+    {"_ganGenerativeData_gdGenerativeModelSetNumberOfTrainingIterations", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetNumberOfTrainingIterations, 1},
+    {"_ganGenerativeData_gdGenerativeModelGetNumberOfInitializationIterations", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetNumberOfInitializationIterations, 0},
+    {"_ganGenerativeData_gdGenerativeModelSetNumberOfInitializationIterations", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetNumberOfInitializationIterations, 1},
     {"_ganGenerativeData_gdGenerativeModelGetNumberOfHiddenLayerUnits", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetNumberOfHiddenLayerUnits, 0},
     {"_ganGenerativeData_gdGenerativeModelSetNumberOfHiddenLayerUnits", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetNumberOfHiddenLayerUnits, 1},
     {"_ganGenerativeData_gdGenerativeModelGetLearningRate", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetLearningRate, 0},
     {"_ganGenerativeData_gdGenerativeModelSetLearningRate", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetLearningRate, 1},
     {"_ganGenerativeData_gdGenerativeModelGetDropout", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelGetDropout, 0},
     {"_ganGenerativeData_gdGenerativeModelSetDropout", (DL_FUNC) &_ganGenerativeData_gdGenerativeModelSetDropout, 1},
+    {"_ganGenerativeData_gdDataSourceHasActiveStringColumn", (DL_FUNC) &_ganGenerativeData_gdDataSourceHasActiveStringColumn, 0},
     {NULL, NULL, 0}
 };
 

@@ -28,10 +28,18 @@ namespace gdInt {
     string inGenerativeDataFileName = "";
     string inDataSourceFileName = "";
     int batchSize = 256;
-    int maxSize = batchSize * 50000;
+    int maxSize = batchSize * 100000;
     int nNearestNeighbors = 20;
   
     const string cMaxSizeExceeded = "Max size of generative data exceeded";
+}
+
+std::wstring ToWstring(std::string Str) {
+    std::vector<wchar_t> buf(Str.size());
+    std::use_facet<std::ctype<wchar_t>>(std::locale()).widen(Str.data(),
+                                        Str.data() + Str.size(),
+                                        buf.data());
+    return std::wstring(buf.data(), buf.size());
 }
 
 // [[Rcpp::export]]
@@ -531,7 +539,7 @@ std::vector<std::wstring> gdGetColumnNames(std::vector<int>& indexVector) {
             throw string("No generative data");
         }
     
-        for(int i = 0; i < indexVector.size(); i++) {
+        for(int i = 0; i < (int)indexVector.size(); i++) {
             indexVector[i] -= 1;
         }
         vector<wstring> columnNames = gdInt::pGenerativeData->getColumnNames(indexVector);
@@ -566,7 +574,7 @@ std::vector<std::wstring> gdGetNumberVectorIndexNames(std::vector<int>& numberVe
         }
     
         vector<int> indexVector = numberVectorIndices;
-        for(int i = 0; i < indexVector.size(); i++) {
+        for(int i = 0; i < (int)indexVector.size(); i++) {
             indexVector[i] -= 1;
         }
         vector<wstring> numberVectorIndexNames = gdInt::pGenerativeData->getNumbeVectorIndexNames(indexVector);
@@ -600,11 +608,15 @@ List gdGetRow(int index) {
     
         List list;
         vector<Column*> const & columnVector = gdInt::pGenerativeData->getColumnVector();
-        for(int i = 0; i < columnVector.size(); i++) {
+        for(int i = 0; i < (int)columnVector.size(); i++) {
             Column::COLUMN_TYPE type = columnVector[i]->getColumnType();
             if(type == Column::NUMERICAL) {
                 vector<float> numberVector = columnVector[i]->getDenormalizedNumberVector(index - 1);
                 float value = numberVector[0];
+                list.insert(list.end(), value);
+            } else if(type == Column::NUMERICAL_ARRAY) {
+                NumberArrayColumn* pNumberArrayColumn = dynamic_cast<NumberArrayColumn*>(columnVector[i]);
+                wstring value = pNumberArrayColumn->getMaxValue(index - 1);
                 list.insert(list.end(), value);
             } else {
                 throw string(cInvalidColumnType);
@@ -636,6 +648,9 @@ float gdGetMax(int i) {
         if(type == Column::NUMERICAL) {
             NumberColumn* pNumberColumn = dynamic_cast<NumberColumn*>(columnVector[j]);
             max = pNumberColumn->getMax();
+        } else if(type == Column::NUMERICAL_ARRAY) {
+            NumberArrayColumn* pNumberArrayColumn = dynamic_cast<NumberArrayColumn*>(columnVector[j]);
+            max = pNumberArrayColumn->getMax();
         } else {
             throw string(cInvalidColumnType);
         }
@@ -665,6 +680,9 @@ float gdGetMin(int i) {
         if(type == Column::NUMERICAL) {
             NumberColumn* pNumberColumn = dynamic_cast<NumberColumn*>(columnVector[j]);
             min = pNumberColumn->getMin();
+        } else if(type == Column::NUMERICAL_ARRAY) {
+            NumberArrayColumn* pNumberArrayColumn = dynamic_cast<NumberArrayColumn*>(columnVector[j]);
+            min = pNumberArrayColumn->getMin();
         } else {
             throw string(cInvalidColumnType);
         }
@@ -848,28 +866,66 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-  
+        
         if(!(k >= 1)) {
-           throw string("k must be greater than or equal to 1");
+            throw string("k must be greater than or equal to 1");
         }
-  
+        
+        vector<Column*>& columnVector = gdInt::pGenerativeData->getColumnVector();
+        if((int)columnVector.size() != dataRecord.length()) {
+            throw string("Invalid length of data record");
+        }
+        
         vector<float> numberVector;
         int isnanCount = 0;
-        for(List::iterator iterator = dataRecord.begin(); iterator != dataRecord.end(); ++iterator) {
-            float number = (float)as<double>(*iterator);
-            numberVector.push_back(number);
-            if(isnan(number)) {
-                isnanCount++;
+        
+        //Function f("message");
+        for(int i = 0; i < (int)columnVector.size(); i++) {
+            Column::COLUMN_TYPE columnType = columnVector[i]->getColumnType();
+            if(columnType == Column::NUMERICAL) {
+                float number = (float)as<double>(dataRecord[i]);
+                numberVector.push_back(number);
+                if(isnan(number)) {
+                    isnanCount++;
+                }
+            } else if(columnType == Column::NUMERICAL_ARRAY) {
+                NumberArrayColumn* pNumberArrayColumn = dynamic_cast<NumberArrayColumn*>(columnVector[i]);
+                
+                float number;
+                try {
+                    number = (float)as<double>(dataRecord[i]);
+                }
+                catch(...) {
+                    ;
+                }
+                
+                wstring value;
+                if(isnan(number)) {
+                    value = cNA;
+                } else {
+                    value = as<wstring>(dataRecord[i]);
+                }
+  
+                vector<float> columnNumberVector = pNumberArrayColumn->getNormalizedNumberVector(value);
+                if(value == cNA) {
+                    for (int j = 0; j < (int)columnNumberVector.size(); j++) {
+                        columnNumberVector[j] = nan("");
+                    }
+                    isnanCount++;
+                }
+                numberVector.insert(numberVector.end(), columnNumberVector.begin(), columnNumberVector.end());
+            } else {
+                throw string(cInvalidColumnType);
             }
         }
-       
-        if(gdInt::pGenerativeData->getDimension() != numberVector.size()) {
+        
+        if(gdInt::pGenerativeData->getDimension() != (int)numberVector.size()) {
             throw string(cInvalidDimension);
         }
-        if(isnanCount == gdInt::pGenerativeData->getDimension()) {
+        if(isnanCount == (int)columnVector.size()) {
             return dataRecord;
         }
-    
+        
         NormalizeData normalizeData;
         vector<float> normalizedNumberVector = normalizeData.getNormalizedNumberVector(*gdInt::pGenerativeData, numberVector);
         
@@ -890,7 +946,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
                     build = true;
                 }
             }
-      
+            
             if(build) {
                 delete gdInt::pVpTree;
                 gdInt::pVpTree = new VpTree();
@@ -903,7 +959,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
                 gdInt::pVpTree->build(gdInt::pVpTreeData, gdInt::pLpDistance, &progress);
             }
         }
-    
+        
         vector<VpElement> nearestNeighbours;
         if(useSearchTree) {
             gdInt::pVpTree->search(normalizedNumberVector,  k, nearestNeighbours);
@@ -918,23 +974,29 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
         if(nearestNeighbours.size() == 0) {
             return completeDataRecordList;  
         }
-    
-        vector<Column*> const & columnVector = gdInt::pGenerativeData->getColumnVector();
+        
         for(int i = 0; i < (int) nearestNeighbours.size(); i++) {
             List completeDataRecord;
-            for(int j = 0; j < columnVector.size(); j++) {
-                Column::COLUMN_TYPE type = columnVector[j]->getColumnType();
-                if(type == Column::NUMERICAL) {
+            for(int j = 0; j < (int)columnVector.size(); j++) {
+                Column::COLUMN_TYPE columnType = columnVector[j]->getColumnType();
+                if(columnType == Column::NUMERICAL) {
                     vector<float> numberVector = columnVector[j]->getDenormalizedNumberVector(nearestNeighbours[i].getIndex());
                     float value = numberVector[0];
                     completeDataRecord.insert(completeDataRecord.end(), value);
+                } else if(columnType == Column::NUMERICAL_ARRAY) {
+                    NumberArrayColumn* pNumberArrayColumn = dynamic_cast<NumberArrayColumn*>(columnVector[j]);
+                    wstring value = pNumberArrayColumn->getMaxValue(nearestNeighbours[i].getIndex());
+                    completeDataRecord.insert(completeDataRecord.end(), value);
+                    if(value == cNA) {
+                        isnanCount++;
+                    }
                 } else {
                     throw string(cInvalidColumnType);
                 }
             }
             completeDataRecordList.insert(completeDataRecordList.end(), completeDataRecord);
         }
-
+        
         return completeDataRecordList;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -971,22 +1033,49 @@ List gdComplete(List dataRecord, bool useSearchTree = false) {
         if(nearestNeighbor.size() != dataRecord.size()) {
             throw(string(cDifferentListSizes));
         }
-    
+        
         List completedList;
-        List::iterator iterator;
-        List::iterator nearestNeighborIterator;
-        for(iterator = dataRecord.begin(), nearestNeighborIterator = nearestNeighbor.begin();
-            iterator != dataRecord.end() && nearestNeighborIterator != nearestNeighbor.end();
-            ++iterator, ++nearestNeighborIterator) {
-            float number = (float)as<double>(*iterator);
-            float nearestNeighborNumber = (float)as<double>(*nearestNeighborIterator);
-            if(!isnan(number)) {
-                completedList.insert(completedList.end(), number);
+        vector<Column*>& columnVector = gdInt::pGenerativeData->getColumnVector();
+        if((int)columnVector.size() != dataRecord.length()) {
+            throw string("Invalid length of data record");
+        }
+
+        for(int i = 0; i < (int)columnVector.size(); i++) {
+            Column::COLUMN_TYPE columnType = columnVector[i]->getColumnType();
+            if(columnType == Column::NUMERICAL) {
+                float number = (float)as<double>(dataRecord[i]);
+                float nearestNeighborNumber = (float)as<double>(nearestNeighbor[i]);
+                if(isnan(number)) {
+                    completedList.insert(completedList.end(), nearestNeighborNumber);
+                } else {
+                    completedList.insert(completedList.end(), number);
+                }
+            } else if(columnType == Column::NUMERICAL_ARRAY) {
+                float number;
+                try {
+                    number = (float)as<double>(dataRecord[i]);
+                }
+                catch(...) {
+                    ;
+                }
+                
+                wstring value;
+                if(isnan(number)) {
+                    value = cNA;
+                } else {
+                    value = as<wstring>(dataRecord[i]);
+                }
+                wstring nearestNeighborValue = as<wstring>(nearestNeighbor[i]);
+                if(value == cNA) {
+                    completedList.insert(completedList.end(), nearestNeighborValue);
+                } else {
+                    completedList.insert(completedList.end(), value);
+                }
             } else {
-                completedList.insert(completedList.end(), nearestNeighborNumber);
+                throw string(cInvalidColumnType);
             }
         }
-    
+
         return completedList;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -995,15 +1084,14 @@ List gdComplete(List dataRecord, bool useSearchTree = false) {
     }
 }
 
-
 // [[Rcpp::export]]
-int gdGenerativeModelGetNumberOfIterations() {
+int gdGenerativeModelGetNumberOfTrainingIterations() {
     try {
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
         
-       return gdInt::pGenerativeModel->getNumberOfIterations();
+       return gdInt::pGenerativeModel->getNumberOfTrainingIterations();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {
@@ -1012,13 +1100,43 @@ int gdGenerativeModelGetNumberOfIterations() {
 }
 
 // [[Rcpp::export]]
-void gdGenerativeModelSetNumberOfIterations(int numberOfIterations) {
+void gdGenerativeModelSetNumberOfTrainingIterations(int numberOfTrainingIterations) {
     try {
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
         
-        gdInt::pGenerativeModel->setNumberOfIterations(numberOfIterations);
+        gdInt::pGenerativeModel->setNumberOfTrainingIterations(numberOfTrainingIterations);
+    } catch (const string& e) {
+        ::Rf_error("%s", e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+int gdGenerativeModelGetNumberOfInitializationIterations() {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+        return gdInt::pGenerativeModel->getNumberOfInitializationIterations();
+    } catch (const string& e) {
+        ::Rf_error("%s", e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+void gdGenerativeModelSetNumberOfInitializationIterations(int numberOfInitializationIterations) {
+    try {
+        if(gdInt::pGenerativeModel == 0) {
+            throw string("No generative model");
+        }
+        
+        gdInt::pGenerativeModel->setNumberOfInitializationIterations(numberOfInitializationIterations);
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {
@@ -1109,6 +1227,30 @@ void gdGenerativeModelSetDropout(float dropout) {
         }
         
         gdInt::pGenerativeModel->setDropout(dropout);
+    } catch (const string& e) {
+        ::Rf_error("%s", e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+bool gdDataSourceHasActiveStringColumn() {
+    try {
+        if(gdInt::pDataSource == 0) {
+            throw string("No datasource");
+        }
+        
+        bool activeStringColumn = false;
+        vector<Column*> const & columnVector = gdInt::pDataSource->getColumnVector();
+        for(int j = 0; j < (int)columnVector.size(); j++) {
+            Column::COLUMN_TYPE type = columnVector[j]->getColumnType();
+            if(type == Column::STRING && columnVector[j]->getActive()) {
+                activeStringColumn= true;
+            }
+        }
+        
+        return activeStringColumn;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {

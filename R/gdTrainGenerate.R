@@ -21,25 +21,24 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
     columnNames <- NULL
     if(showPlot) {
         if(dimension > 1 && length(columnIndices) != 2) {
-            message("size of vector columnIndices must be equal to two\n")
-            return()
+            stop("Size of vector columnIndices must be equal to two\n")
         } else if (dimension == 1 && length(columnIndices) != 1) {
-            message("size of vector columnIndices must be equal to one\n")
-            return()
+            stop("Size of vector columnIndices must be equal to one\n")
         }
         columnNames <- gdGetNumberVectorIndexNames(columnIndices)
     }
     
+    cWriteMessageModulo = 100
     cNumberOfBatchesPerIteration <- 10
-    cWriteIterationsModulo <- 500
-    cInitialIteration <- -100
+    cWriteIterationsModulo <- 1000
+    cResetIterations <- 100
     cEpsilon <- 1.0e-10
     cLevel <- 0.5
-    
+
     numberOfHiddenLayerUnits <- NULL;
     learningRate <- NULL
     dropout <- NULL
-    
+
     if(!is.null(trainParameters)) {
         if(generativeModelRead) {
             numberOfHiddenLayerUnits = gdGenerativeModelGetNumberOfHiddenLayerUnits()
@@ -61,7 +60,7 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
     } else {
         return()
     }
-    
+
     discriminatorHiddenLayer1 <- tf$keras$layers$Dense(units = numberOfHiddenLayerUnits, activation = tf$nn$leaky_relu)
     discriminatorHiddenLayer2 <- tf$keras$layers$Dense(units = numberOfHiddenLayerUnits, activation = tf$nn$leaky_relu)
     discriminatorLogits <- tf$keras$layers$Dense(units = 1)
@@ -83,7 +82,6 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
                                       generatorOptimizer = generatorOptimizer)
     
     if(generativeModelRead) {
-        cInitialIteration <- 1
         checkPoint$read(gdGetFileName(generativeModelFileName))    
     }
 
@@ -98,7 +96,7 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
     generatorNetwork <- function(input, dropout) {
         generatorHiddenLayer1Dropout <- tf$nn$dropout(generatorHiddenLayer1(input), dropout)
         generatorHiddenLayer2Dropout <- tf$nn$dropout(generatorHiddenLayer2(generatorHiddenLayer1Dropout), dropout)
-        generatorLogits(generatorHiddenLayer2Dropout)
+        logits <- generatorLogits(generatorHiddenLayer2Dropout)
     } 
         
     loss <- function(logitsIn, labelsIn) {
@@ -116,15 +114,15 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
             generatorLoss <- -discriminatorLoss
         })
         
-            discriminatorVariables <- append(discriminatorHiddenLayer1$trainable_weights, discriminatorHiddenLayer2$trainable_weights)
-            discriminatorVariables <- append(discriminatorVariables, discriminatorLogits$trainable_weights)
-            discriminatorOptimizer$minimize(discriminatorLoss, discriminatorVariables, tape)
-        
-            generatorVariables <- append(generatorHiddenLayer1$trainable_weights, generatorHiddenLayer2$trainable_weights)
-            generatorVariables <- append(generatorVariables, generatorLogits$trainable_weights)
-            generatorOptimizer$minimize(generatorLoss, generatorVariables, tape)
+        discriminatorVariables <- append(discriminatorHiddenLayer1$trainable_weights, discriminatorHiddenLayer2$trainable_weights)
+        discriminatorVariables <- append(discriminatorVariables, discriminatorLogits$trainable_weights)
+        discriminatorOptimizer$minimize(discriminatorLoss, discriminatorVariables, tape)
+
+        generatorVariables <- append(generatorHiddenLayer1$trainable_weights, generatorHiddenLayer2$trainable_weights)
+        generatorVariables <- append(generatorVariables, generatorLogits$trainable_weights)
+        generatorOptimizer$minimize(generatorLoss, generatorVariables, tape)
     })
-    
+
     generationCore <- tf_function(function(noise, dropout) {
         generatedSamples <- generatorNetwork(noise, dropout)
         logitsFake <- discriminatorNetwork(generatedSamples, dropout)
@@ -137,19 +135,25 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
         return(generatedData)
     })
     
-    trainingIteration <- function(iteration, train, generate) {
+    trainingIteration <- function(iteration, train, step, weight, generate) {
         samples <- NULL
         noise <- NULL
-        
+
         if(train) {
             for(i in 1:cNumberOfBatchesPerIteration) {
                 samples <- array_reshape(gdDataSourceGetNormalizedDataRandom(batchSize), c(batchSize, dimension))
-                noise <- array(runif(batchSize * dimension, -1.0, 1.0), c(batchSize, dimension))
-
-                if(iteration < 1) {
+ 
+                if(step == "Reset") {
                     samples <- array(runif(batchSize * dimension, 0.0, 1.0), c(batchSize, dimension))
                 }
-            
+                
+                noise <- array(runif(batchSize * dimension, -1.0, 1.0), c(batchSize, dimension))
+                
+                if(step == "Initialize") {
+                    noiseSamples <- array(runif(batchSize * dimension, 0.0, 1.0), c(batchSize, dimension))
+                    samples <- noiseSamples + weight * (samples - noiseSamples)
+                }
+                
                 trainingCore(samples, noise, dropout)
             }
         }
@@ -175,7 +179,7 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
             }
         }
         gsp <- array_reshape(gsp, c(k * dimension))
-        if(iteration >= 1) {
+        if((train && step == "Training") || generate) {
             gdAddValueRows(gsp)
         }
             
@@ -198,33 +202,47 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
     }
     
     train <- function(){
-        message("Iteration")
+        numberOfInitializationIterations <- trainParameters$numberOfInitializationIterations
+        numberOfTrainingIterations <- trainParameters$numberOfTrainingIterations
         
-        numberOfIterations <- trainParameters$numberOfIterations
-        
-        iteration <- 1
-        for(iteration in cInitialIteration:numberOfIterations) {
-            trainingIteration(iteration, TRUE, FALSE)
-            
-            if(iteration >= 1) {
-                if(iteration %% cWriteIterationsModulo == 0) {
-                    gdGenerativeDataWrite(generativeDataFileName)
+        if(!generativeModelRead) {
+            message("Initialization iterations")
+
+            for(iteration in 1:numberOfInitializationIterations) {
+                if(iteration <= cResetIterations) {
+                    trainingIteration(iteration, TRUE, "Reset", -1, FALSE)
+                } else {
+                    weight <- (iteration - cResetIterations) / (numberOfInitializationIterations - cResetIterations)
+                    trainingIteration(iteration, TRUE, "Initialize", weight, FALSE)
+                }
+                
+                if(iteration %% cWriteMessageModulo == 0) {
+                    message(iteration)
                 }
             }
+        }
+        
+        message("Training iterations")
+
+        for(iteration in 1:numberOfTrainingIterations) {
+            trainingIteration(iteration, TRUE, "Training", -1, FALSE)
             
-            message(iteration)
+            if(iteration %% cWriteMessageModulo == 0) {
+                message(iteration)
+            }
         }
         
         if(!is.null(generativeModelFileName) && nchar(generativeModelFileName) > 0) {
             if(!generativeModelRead) {
                 gdCreateGenerativeModel()
                 
-                gdGenerativeModelSetNumberOfIterations(numberOfIterations)
+                gdGenerativeModelSetNumberOfTrainingIterations(numberOfTrainingIterations)
+                gdGenerativeModelSetNumberOfInitializationIterations(numberOfInitializationIterations)
                 gdGenerativeModelSetNumberOfHiddenLayerUnits(numberOfHiddenLayerUnits)
                 gdGenerativeModelSetLearningRate(learningRate)
                 gdGenerativeModelSetDropout(dropout)
             } else {
-                gdGenerativeModelSetNumberOfIterations(gdGenerativeModelGetNumberOfIterations() + numberOfIterations)
+                gdGenerativeModelSetNumberOfTrainingIterations(gdGenerativeModelGetNumberOfTrainingIterations() + numberOfTrainingIterations)
             }
             
             checkPoint$write(gdGetFileName(generativeModelFileName))
@@ -243,7 +261,7 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
         
         n <- 1
         while(n < numberOfSamples) {
-            trainingIteration(n, FALSE, TRUE)
+            trainingIteration(n, FALSE, "", -1, TRUE)
             n <- gdGetNumberOfRows()
             
             message(n)

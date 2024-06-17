@@ -13,9 +13,12 @@ dsDeactivateColumns(columnVector)
 None
 }
 \description{
-Deactivate columns of a data source in order to exclude them in generation of generative data.
-Note that in this version only columns of type R-class numeric and R-type double can be used in generaton of generative data.
-All columns of other type have to be deactivated.
+Deactivate columns in a data source in order to exclude them from training
+of generative models. Note that the training function in the package
+supports only columns of type R-class numeric, R-type double. All columns of
+other type have to be deactivated. The training function in the software
+service for accelerated training of generative models supports columns of
+any type.
 }
 \examples{
 \donttest{

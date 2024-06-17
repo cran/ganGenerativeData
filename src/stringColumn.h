@@ -4,9 +4,12 @@
 #ifndef STRING_COLUMN
 #define STRING_COLUMN
 
+#include "utils.h"
 #include "column.h"
 
 using namespace std;
+
+const wstring cNA = L"NA";
 
 const string cInvalidValue = "Invalid value";
 
@@ -64,14 +67,19 @@ public:
 	        throw string(cInvalidIndex);
 	    }
 	  
-		vector<float> numberVector;
-		if(_scaleType == NOMINAL) {
-			numberVector.resize(_valueMap.size(), 0);
-			numberVector[_valueVector[i] - 1] = 1;
-		} else {
-			throw string(cInvalidColumnType);
-		}
-		return numberVector;
+	    vector<float> numberVector;
+	    if(_scaleType == NOMINAL) {
+	        numberVector.resize(_valueMap.size(), 0);
+	        int index = _valueVector[i] - 1;
+	        if(_valueVector[i] == 0) {
+	            index = _uniformIntDistribution() - 1;
+	        }
+	        numberVector[index] = 1;
+	    } else {
+	        throw string(cInvalidColumnType);
+	    }
+
+	    return numberVector;
 	}
     virtual vector<float> getDenormalizedNumberVector(int i) {
         return  getDenormalizedNumberVector(i);
@@ -126,12 +134,16 @@ public:
 		InOut::Read(is, _valueMap);
 		InOut::Read(is, _inverseValueMap);
 		InOut::Read(is, _valueVector);
+		
+		_uniformIntDistribution.setParameters(1, _valueMap.size());
 	}
-
+    
 private:
 	map<wstring, int> _valueMap;
 	map<int, wstring> _inverseValueMap;
 	vector<int> _valueVector;
+	
+	UniformIntDistribution _uniformIntDistribution;
 };
 
 #endif

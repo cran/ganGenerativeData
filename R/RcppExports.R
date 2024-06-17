@@ -49,9 +49,12 @@ dsAddValueRow <- function(valueVector) {
 
 #' Deactivate columns
 #'
-#' Deactivate columns of a data source in order to exclude them in generation of generative data.
-#' Note that in this version only columns of type R-class numeric and R-type double can be used in generaton of generative data.
-#' All columns of other type have to be deactivated.
+#' Deactivate columns in a data source in order to exclude them from training
+#' of generative models. Note that the training function in the package
+#' supports only columns of type R-class numeric, R-type double. All columns of
+#' other type have to be deactivated. The training function in the software
+#' service for accelerated training of generative models supports columns of
+#' any type.
 #'
 #' @param columnVector Vector of column indices
 #'
@@ -69,7 +72,7 @@ dsDeactivateColumns <- function(columnVector) {
 
 #' Activate columns
 #'
-#' Activate columns of a data source in order to include them in generation of generative data. By default columns are active.
+#' Activate columns in a data source in order to include them in training of generative models. By default columns are active.
 #'
 #' @param columnVector Vector of column indices
 #'
@@ -411,12 +414,20 @@ gdComplete <- function(dataRecord, useSearchTree = FALSE) {
     .Call('_ganGenerativeData_gdComplete', PACKAGE = 'ganGenerativeData', dataRecord, useSearchTree)
 }
 
-gdGenerativeModelGetNumberOfIterations <- function() {
-    .Call('_ganGenerativeData_gdGenerativeModelGetNumberOfIterations', PACKAGE = 'ganGenerativeData')
+gdGenerativeModelGetNumberOfTrainingIterations <- function() {
+    .Call('_ganGenerativeData_gdGenerativeModelGetNumberOfTrainingIterations', PACKAGE = 'ganGenerativeData')
 }
 
-gdGenerativeModelSetNumberOfIterations <- function(numberOfIterations) {
-    invisible(.Call('_ganGenerativeData_gdGenerativeModelSetNumberOfIterations', PACKAGE = 'ganGenerativeData', numberOfIterations))
+gdGenerativeModelSetNumberOfTrainingIterations <- function(numberOfTrainingIterations) {
+    invisible(.Call('_ganGenerativeData_gdGenerativeModelSetNumberOfTrainingIterations', PACKAGE = 'ganGenerativeData', numberOfTrainingIterations))
+}
+
+gdGenerativeModelGetNumberOfInitializationIterations <- function() {
+    .Call('_ganGenerativeData_gdGenerativeModelGetNumberOfInitializationIterations', PACKAGE = 'ganGenerativeData')
+}
+
+gdGenerativeModelSetNumberOfInitializationIterations <- function(numberOfInitializationIterations) {
+    invisible(.Call('_ganGenerativeData_gdGenerativeModelSetNumberOfInitializationIterations', PACKAGE = 'ganGenerativeData', numberOfInitializationIterations))
 }
 
 gdGenerativeModelGetNumberOfHiddenLayerUnits <- function() {
@@ -441,5 +452,9 @@ gdGenerativeModelGetDropout <- function() {
 
 gdGenerativeModelSetDropout <- function(dropout) {
     invisible(.Call('_ganGenerativeData_gdGenerativeModelSetDropout', PACKAGE = 'ganGenerativeData', dropout))
+}
+
+gdDataSourceHasActiveStringColumn <- function() {
+    .Call('_ganGenerativeData_gdDataSourceHasActiveStringColumn', PACKAGE = 'ganGenerativeData')
 }
 

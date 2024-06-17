@@ -30,11 +30,11 @@ gdCalculateDensityValues <- function(generativeDataFileName) {
        error <- append("File ", generativeDataFileName)
        error <- append(error, " could not be opened\n")
        message(error)
+       stop(error)
        return()
     }
   } else {
-      message("No generateDataFileName specified")
-      return()
+      stop("No generateDataFileName specified")
   }
   
   gdIntCalculateDensityValues()
@@ -43,4 +43,3 @@ gdCalculateDensityValues <- function(generativeDataFileName) {
   end <- Sys.time()
   message(round(difftime(end, start, units = "secs"), 3), " seconds")
 }
-

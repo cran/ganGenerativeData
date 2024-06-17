@@ -63,19 +63,16 @@ gdGenerate <- function(generativeDataFileName,
         } else {
             error <- append("File ", generativeModelFileName)
             error <- append(error, " could not be opened\n")
-            message(error)
-            return()
+            stop(error)
         }
     } else {
-        message("No generateModelFileName specified")
-        return()
+        stop("No generateModelFileName specified")
     }
 
     if(!is.null(generativeModelFileName) && nchar(generativeModelFileName) > 0) {
         generativeModelRead <- gdReadGenerativeModel(generativeModelFileName)
     } else {
-        message("No generateModelFileName specified")
-        return()
+        stop("No generateModelFileName specified")
     }
     
     gdTrainGenerate(generativeModelFileName, generativeDataFileName, NULL, NULL, generateParameters, generativeModelRead)

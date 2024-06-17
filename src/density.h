@@ -47,7 +47,7 @@ public:
     }
     float calculateDensityValue(vector<VpElement> nearestNeighbours) {
         float d = 0;
-        for(int i = 0; (int)i < nearestNeighbours.size(); i++) {
+        for(int i = 0; (int)i < (int)nearestNeighbours.size(); i++) {
             d += nearestNeighbours[i].getDistance() * nearestNeighbours[i].getDistance();
         }
         d = (float)nearestNeighbours.size() / d;

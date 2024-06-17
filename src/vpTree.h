@@ -38,7 +38,7 @@ struct L1Distance : public LpDistance {
             throw string(cDifferentSizes);
         }
         float d = 0.0;
-        for(int i = 0; i < a.size(); i++) {
+        for(int i = 0; i < (int)a.size(); i++) {
             d += abs(a[i] - b[i]);
         }
         return d;
@@ -55,7 +55,7 @@ struct L2Distance : public LpDistance {
             throw string(cDifferentSizes);
         }
         float d = 0.0;
-        for(int i = 0; i < a.size(); i++) {
+        for(int i = 0; i < (int)a.size(); i++) {
             d += (a[i] - b[i]) * (a[i] - b[i]);
         }
         return sqrt(d);
@@ -72,7 +72,7 @@ struct L2DistanceNan : public LpDistance {
             throw string(cDifferentSizes);
         }
         float d = 0.0;
-        for(int i = 0; i < a.size(); i++) {
+        for(int i = 0; i < (int)a.size(); i++) {
             if(isnan(a[i]) || isnan(b[i])) {
                 continue;
             }
@@ -96,7 +96,7 @@ struct L2DistanceNanIndexed : public LpDistance {
             throw string(cDifferentSizes);
         }
         float d = 0.0;
-        for(int i = 0; i < a.size(); i++) {
+        for(int i = 0; i < (int)a.size(); i++) {
             if(isnan(_distance[i])) {
                 continue;
             }
@@ -346,7 +346,7 @@ public:
         VpElementCompare vpElementCompare;
         sort(nearestNeighbors.begin(), nearestNeighbors.end(), vpElementCompare);
         
-        if(nearestNeighbors.size() > k) {
+        if((int)nearestNeighbors.size() > k) {
             nearestNeighbors.resize(k);
         }
         
@@ -377,7 +377,7 @@ public:
         float d = (*_pLpDistance)(numberVector, target);
         if(d <= _tau) {
             _unique.insert(d);
-            if(_unique.size() > k || priorityQueue.size() > cMaxNearestNeighbors) {
+            if((int)_unique.size() > k || (int)priorityQueue.size() > cMaxNearestNeighbors) {
                 float tau = priorityQueue.top().getDistance();
                 while(!priorityQueue.empty() && priorityQueue.top().getDistance() == tau) {
                     priorityQueue.pop();
@@ -407,14 +407,13 @@ public:
     }
     void linearSearch(const vector<float>& target, int k, vector<VpElement>& nearestNeighbors) {
         priority_queue<VpElement> priorityQueue;
-        float tau = numeric_limits<float>::max();
         _unique.clear();
         for(int i = 0; (int)i < _pVpTreeData->getSize(); i++) {
             vector<float> numberVector = _pVpTreeData->getNumberVector(i);
             float d = (*_pLpDistance)(numberVector, target);
             if(d <= _tau) {
                 _unique.insert(d);
-                if(_unique.size() > k) {
+                if((int)_unique.size() > k) {
                     float tau = priorityQueue.top().getDistance();
                     while(!priorityQueue.empty() && priorityQueue.top().getDistance() == tau) {
                         priorityQueue.pop();

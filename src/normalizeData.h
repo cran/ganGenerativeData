@@ -36,7 +36,7 @@ public:
             NumberColumn::SCALE_TYPE scaleType = pNumberColumn->getScaleType();
             float fMax = numeric_limits<float>::min();
             float fMin = numeric_limits<float>::max();
-            for(int i = 0; i < pNumberColumn->getValueVector().size(); i++) {
+            for(int i = 0; i < (int)pNumberColumn->getValueVector().size(); i++) {
                 float number = pNumberColumn->getValueVector()[i];
                 if(isnan(number)) {
                     continue;    
@@ -94,6 +94,7 @@ public:
                 pNumberColumn->getNormalizedValueVector()[j] = normalizedNumber;
             }
         } else if(type == Column::STRING) {
+            /*
             string invalidColumnType = cInvalidColumnPrefix + " ";
             for(int i = 0; i < pColumn->getName().length(); i++) {
                 char c = static_cast<char>(pColumn->getName()[i]);
@@ -102,9 +103,11 @@ public:
             invalidColumnType += " " + cInvalidTypeSuffix;;
                 
             throw string(invalidColumnType);
+            */
+            ;
         } else {
             string invalidColumnType = cInvalidColumnPrefix + " ";
-            for(int i = 0; i < pColumn->getName().length(); i++) {
+            for(int i = 0; i < (int)pColumn->getName().length(); i++) {
                 char c = static_cast<char>(pColumn->getName()[i]);
                 invalidColumnType += c;
             }
@@ -115,17 +118,28 @@ public:
     }
     
     vector<float> getNormalizedNumberVector(DataSource& dataSource, vector<float>& numberVector) {
-        if(dataSource.getDimension() != numberVector.size()) {
+        if(dataSource.getDimension() != (int)numberVector.size()) {
             throw string(cInvalidDimension);
         }
         
         vector<float> normalizedNumberVector;
         int j = 0;
-        for(int i = 0; i < (int)dataSource.getColumnVector().size(); i++) {
+        vector<Column*>& columnVector = dataSource.getColumnVector();
+        for(int i = 0; i < (int)columnVector.size(); i++) {
             if((dataSource.getColumnVector()[i])->getActive()) {
-                float normalizedNumber = getNormalizedNumber(dataSource.getColumnVector()[i], numberVector[j]);
-                j++;
-                normalizedNumberVector.push_back(normalizedNumber);
+                Column::COLUMN_TYPE type = columnVector[i]->getColumnType();
+                if(type == Column::NUMERICAL) {
+                    float normalizedNumber = getNormalizedNumber(columnVector[i], numberVector[j]);
+                    j++;
+                    normalizedNumberVector.push_back(normalizedNumber);
+                } else if(type == Column::NUMERICAL_ARRAY) {
+                    vector<float> columnNumberVector;
+                    columnNumberVector.insert(columnNumberVector.begin(), numberVector.begin() + j, numberVector.begin() + j + columnVector[i]->getDimension());
+                    j += columnVector[i]->getDimension();
+                    normalizedNumberVector.insert(normalizedNumberVector.end(), columnNumberVector.begin(), columnNumberVector.end());
+                } else{
+                    throw string(cInvalidColumnType);
+                }
             }
         }
         return normalizedNumberVector;

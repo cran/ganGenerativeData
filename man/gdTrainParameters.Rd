@@ -5,14 +5,17 @@
 \title{Specify parameters for training of generative model}
 \usage{
 gdTrainParameters(
-  numberOfIterations = 10000,
+  numberOfTrainingIterations = 10000,
+  numberOfInitializationIterations = 1500,
   numberOfHiddenLayerUnits = 1024,
   learningRate = 7e-05,
   dropout = 0.05
 )
 }
 \arguments{
-\item{numberOfIterations}{Number of training iterations}
+\item{numberOfTrainingIterations}{Number of training iterations}
+
+\item{numberOfInitializationIterations}{Number of initialization iterations}
 
 \item{numberOfHiddenLayerUnits}{Number of hidden layer units}
 
@@ -31,5 +34,5 @@ generative data. These parameters are passed to function gdTrain().
 }
 \examples{
 \dontrun{
-generateParameters <- gdGenerateParameters(numberOfIterations = 5000)}
+generateParameters <- gdGenerateParameters(numberOfTrainingIterations = 10000)}
 }

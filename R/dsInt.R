@@ -2,7 +2,7 @@
 # Released under the GPL (>= 2)
 
 library(Rcpp)
- 
+
 Sys.setenv("PKG_CXXFLAGS"="-std=c++17")
 sourceCpp("src/dsInt.cpp")
 
@@ -20,8 +20,7 @@ sourceCpp("src/dsInt.cpp")
 #' dsCreateWithDataFrame(iris)}
 dsCreateWithDataFrame <- function (dataFrame) {
     if(!is.data.frame(dataFrame)) {
-      message("Passed object is not a data frame\n")
-      return()
+        stop("Passed object is not a data frame\n")
     }
     columnTypes <- sapply(dataFrame, typeof)
     columnNames <- colnames(dataFrame)

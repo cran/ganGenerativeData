@@ -40,7 +40,7 @@ gdPlotProjection("gd12ddv.png",
 gdPlotParameters(250000, c(0.71), c("red", "green")),
 gdPlotDataSourceParameters(2500))
 gdPlotProjection("gd34ddv.png",
-"Generative Data with a Density Value Threshold for the Iris Dataset", c(3, 4),
+"Generative Data with a Densit(y Value Threshold for the Iris Dataset", c(3, 4),
 gdPlotParameters(250000, c(0.71), c("red", "green")),
 gdPlotDataSourceParameters(2500))}
 }

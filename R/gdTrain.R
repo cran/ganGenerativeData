@@ -13,7 +13,8 @@ source("R/gdTrainGenerate.R")
 #' Specify parameters for training of neural networks used for generation of
 #' generative data. These parameters are passed to function gdTrain().
 #'
-#' @param numberOfIterations Number of training iterations
+#' @param numberOfTrainingIterations Number of training iterations
+#' @param numberOfInitializationIterations Number of initialization iterations
 #' @param numberOfHiddenLayerUnits Number of hidden layer units
 #' @param learningRate Learning rate for training of neural networks
 #' @param dropout Value in the range of 0 to 1. Specifies the rate of hidden
@@ -25,12 +26,14 @@ source("R/gdTrainGenerate.R")
 #' 
 #' @examples
 #' \dontrun{
-#' generateParameters <- gdGenerateParameters(numberOfIterations = 5000)}
-gdTrainParameters <- function(numberOfIterations = 10000,
+#' generateParameters <- gdGenerateParameters(numberOfTrainingIterations = 10000)}
+gdTrainParameters <- function(numberOfTrainingIterations = 10000,
+                              numberOfInitializationIterations = 1500,
                               numberOfHiddenLayerUnits = 1024,
                               learningRate = 0.00007,
                               dropout = 0.05) {
-    parameters <- list(numberOfIterations = numberOfIterations,
+    parameters <- list(numberOfTrainingIterations = numberOfTrainingIterations,
+                       numberOfInitializationIterations = numberOfInitializationIterations,
                        numberOfHiddenLayerUnits = numberOfHiddenLayerUnits,
                        learningRate = learningRate,
                        dropout = dropout)
@@ -62,25 +65,29 @@ gdTrainParameters <- function(numberOfIterations = 10000,
 #'
 #' @examples
 #' \dontrun{
-#' trainParameters <- gdTrainParameters(numberOfIterations = 10000)
+#' trainParameters <- gdTrainParameters(numberOfTrainingIterations = 10000)
 #' gdTrain("gm.bin", "gd.bin", "ds.bin", c(1, 2), trainParameters)}
 gdTrain <- function(generativeModelFileName,
                     generativeDataFileName,
                     dataSourceFileName,
                     columnIndices,
-                    trainParameters = gdTrainParameters(numberOfIterations = 10000,
+                    trainParameters = gdTrainParameters(numberOfTrainingIterations = 10000,
+                                                        numberOfInitializationIterations = 1500,
                                                         numberOfHiddenLayerUnits = 1024,
                                                         learningRate = 0.00007,
                                                         dropout = 0.05)) {
-    if(trainParameters$numberOfIterations > gdGetMaxSize() / gdGetBatchSize()) {
-        message("Max number of iterations exceeded")
-        return()
+    if(trainParameters$numberOfTrainingIterations > gdGetMaxSize() / gdGetBatchSize()) {
+        stop("Max number of iterations above limit")
     }
     
     start <- Sys.time()
     
     gdReset()
     gdDataSourceRead(dataSourceFileName)
+    
+    if(gdDataSourceHasActiveStringColumn()) {
+        stop("Data source contains columns that have not type R-class numeric, R-type double.\nFor training eihter these columns have to be deactivated in the data source or\nthe software service for accelerated training of generative models with support for mixed numerical and categorical variables has to be used.")
+    }
     
     generativeDataRead <- FALSE
     if(!is.null(generativeDataFileName) && nchar(generativeDataFileName) > 0) {
@@ -98,12 +105,10 @@ gdTrain <- function(generativeModelFileName,
     if(!is.null(generativeModelFileName) && nchar(generativeModelFileName) > 0) {
         generativeModelRead <- gdReadGenerativeModel(generativeModelFileName)
     } else {
-        message("No generateModelFileName specified")
-        return()
+        stop("No generateModelFileName specified")
     }
     gdTrainGenerate(generativeModelFileName, generativeDataFileName, columnIndices, trainParameters, NULL, generativeModelRead)
     
     end <- Sys.time()
     message(round(difftime(end, start, units = "secs"), 3), " seconds")
 }
-

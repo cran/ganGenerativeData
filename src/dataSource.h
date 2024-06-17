@@ -11,6 +11,7 @@
 
 #include "numberColumn.h"
 #include "stringColumn.h"
+#include "numberArrayColumn.h"
 
 using namespace std;
 
@@ -37,7 +38,7 @@ public:
 	    _version = dataSource._version;
 	    _normalized = false;
 	  
-	    for(int i = 0; i < dataSource.getColumnVector().size(); i++) {
+	    for(int i = 0; i < (int)dataSource.getColumnVector().size(); i++) {
 		    Column::COLUMN_TYPE type = ((dataSource.getColumnVector())[i])->getColumnType();
 			if(type == Column::STRING) {
 			    const StringColumn* pStringColumn = dynamic_cast<const StringColumn*>(dataSource.getColumnVector()[i]);
@@ -55,7 +56,7 @@ public:
     DataSource(const vector<Column::COLUMN_TYPE>& columnTypes, const std::vector<wstring>& columnNames): _typeId(cDataSourceTypeId), _version(1), _normalized(false), _pDensityVector(new NumberColumn(Column::NUMERICAL, Column::LOGARITHMIC, cDensityColumn)) {
         _normalized = false;
         
-        for(int i = 0; i < columnTypes.size(); i++) {
+        for(int i = 0; i < (int)columnTypes.size(); i++) {
             Column::COLUMN_TYPE columnType = columnTypes[i];
             wstring columnName = columnNames[i];
             if(columnType == Column::STRING) {
@@ -67,14 +68,14 @@ public:
             }
         }
     }
-	~DataSource() {
-		for(int i = 0; i < _columnVector.size(); i++) {
+	virtual ~DataSource() {
+		for(int i = 0; i < (int)_columnVector.size(); i++) {
 			delete _columnVector[i];
 		}
 	}
 
     virtual void clear() {
-        for(int i = 0; i < _columnVector.size(); i++) {
+        for(int i = 0; i < (int)_columnVector.size(); i++) {
             _columnVector[i]->clear();
         }
         
@@ -90,20 +91,20 @@ public:
         return dimension;
     }
     virtual int getDimension(int i) {
-        if(i < 0 || i > _columnVector.size() - 1) {
+        if(i < 0 || i > (int)_columnVector.size() - 1) {
             throw string(cInvalidIndex);  
         }
         return _columnVector[i]->getDimension();
     }
   
     DataSource & addData(const DataSource& dataSource) {
-		for(int i = 0; i < _columnVector.size(); i++) {
+		for(int i = 0; i < (int)_columnVector.size(); i++) {
 			Column::COLUMN_TYPE type = _columnVector[i]->getColumnType();
 			if(type == Column::STRING) {
 				StringColumn* pStringColumnA = dynamic_cast<StringColumn*>(_columnVector[i]);
 				StringColumn* pStringColumnB = dynamic_cast<StringColumn*>(dataSource.getColumnVector()[i]);
 
-				for(int j = 0; j < pStringColumnB->getValueVector().size(); j++) {
+				for(int j = 0; j < (int)pStringColumnB->getValueVector().size(); j++) {
 					wstring value = pStringColumnB->getValue(j);
 					pStringColumnA->addValue(value, false);
 				}
@@ -111,7 +112,7 @@ public:
 				NumberColumn* pNumberColumnA = dynamic_cast<NumberColumn*>(_columnVector[i]);
 				NumberColumn* pNumberColumnB = dynamic_cast<NumberColumn*>(dataSource.getColumnVector()[i]);
 
-				for(int j = 0; j < pNumberColumnB->getValueVector().size(); j++) {
+				for(int j = 0; j < (int)pNumberColumnB->getValueVector().size(); j++) {
 					pNumberColumnA->addValue((pNumberColumnB->getValueVector())[j]);
 				}
 			} else {
@@ -122,13 +123,13 @@ public:
 	}
   
     DataSource & addData(const DataSource& dataSource, const vector<int>& indexVector) {
-        for(int i = 0; i < _columnVector.size(); i++) {
+        for(int i = 0; i < (int)_columnVector.size(); i++) {
             Column::COLUMN_TYPE type = _columnVector[i]->getColumnType();
             if(type == Column::STRING) {
                 StringColumn* pStringColumnA = dynamic_cast<StringColumn*>(_columnVector[i]);
                 StringColumn* pStringColumnB = dynamic_cast<StringColumn*>(dataSource.getColumnVector()[i]);
         
-                for(int j = 0; j < indexVector.size(); j++) {
+                for(int j = 0; j < (int)indexVector.size(); j++) {
         	        wstring value = pStringColumnB->getValue(indexVector[j]);
         	        pStringColumnA->addValue(value, false);
                 }
@@ -136,7 +137,7 @@ public:
                 NumberColumn* pNumberColumnA = dynamic_cast<NumberColumn*>(_columnVector[i]);
                 NumberColumn* pNumberColumnB = dynamic_cast<NumberColumn*>(dataSource.getColumnVector()[i]);
         
-                for(int j = 0; j < pNumberColumnB->getValueVector().size(); j++) {
+                for(int j = 0; j < (int)pNumberColumnB->getValueVector().size(); j++) {
                     pNumberColumnA->addValue((pNumberColumnB->getValueVector())[indexVector[j]]);
                 }
         
@@ -172,7 +173,7 @@ public:
         wss >> value;
         if(wss.fail()) {
             string invalidType = cInvalidTypePrefix + " ";
-            for(int i = 0; i < stringValue.length(); i++) {
+            for(int i = 0; i < (int)stringValue.length(); i++) {
                 char c = static_cast<char>(stringValue[i]);
                 invalidType += c;
             }
@@ -245,10 +246,9 @@ public:
         if(numberVectorIndex < 0 || numberVectorIndex > dimension - 1) {
             throw string(cInvalidIndex);
         }
-        int columnIndex = 0;
         int i = 0;
         int j = 0;
-        for(i = 0; i < _columnVector.size(); i++) {
+        for(i = 0; i < (int)_columnVector.size(); i++) {
             if(_columnVector[i]->getActive()) {
                 if(numberVectorIndex < j + _columnVector[i]->getDimension())
                 {
@@ -269,10 +269,9 @@ public:
         if(numberVectorIndex < 0 || numberVectorIndex > dimension - 1) {
             throw string(cInvalidIndex);
         }
-        int columnIndex = 0;
         int i = 0;
         int j = 0;
-        for(i = 0; i < _columnVector.size(); i++) {
+        for(i = 0; i < (int)_columnVector.size(); i++) {
             if(_columnVector[i]->getActive()) {
                 if(numberVectorIndex < j + _columnVector[i]->getDimension())
                 {   
@@ -289,6 +288,7 @@ public:
     
         wstring numberVectorIndexName = _columnVector[i]->getName();
         Column::COLUMN_TYPE type = _columnVector[i]->getColumnType();
+        /*
         if(type == Column::STRING) {
             StringColumn* pStringColumn = dynamic_cast<StringColumn*>(_columnVector[i]);
             int k = numberVectorIndex - j + 1;
@@ -299,8 +299,15 @@ public:
             }
             numberVectorIndexName += L".";
             numberVectorIndexName += inverseValueMapIter->second;
-        } else if(type == Column::NUMERICAL) {
+        } else
+        */
+        if(type == Column::NUMERICAL) {
             ;
+        } else if(type == Column::NUMERICAL_ARRAY) {
+            NumberArrayColumn* pNumberArrayColumn = dynamic_cast<NumberArrayColumn*>(_columnVector[i]);
+            int k = numberVectorIndex - j;
+            numberVectorIndexName += L".";
+            numberVectorIndexName += pNumberArrayColumn->getNumberColumnArray()[k].getName();
         } else {
             throw string(cInvalidColumnType);
         }
@@ -309,7 +316,7 @@ public:
     }
     vector<wstring> getNumbeVectorIndexNames(vector<int> numberVectorIndices) {
 	    vector<wstring> numberVextorIndexNames;
-	    for(int i = 0; i < numberVectorIndices.size(); i++) {
+	    for(int i = 0; i < (int)numberVectorIndices.size(); i++) {
 		    numberVextorIndexNames.push_back(getNumberVectorIndexName(numberVectorIndices[i]));
 	    }
 
@@ -317,7 +324,7 @@ public:
     }
     vector<wstring> getColumnNames(vector<int> indexVector) {
         vector<wstring> columnNames;
-        for(int i = 0; i < indexVector.size(); i++) {
+        for(int i = 0; i < (int)indexVector.size(); i++) {
             columnNames.push_back(_columnVector[indexVector[i]]->getName());
         }
         return columnNames;
@@ -332,7 +339,7 @@ public:
   
     int getSize() {
         int size = 0;
-        for(int i = 0; i < _columnVector.size(); i++) {
+        for(int i = 0; i < (int)_columnVector.size(); i++) {
             if(_columnVector[i]->getActive()) {
                 size = _columnVector[i]->getSize();
                 break;
@@ -345,7 +352,7 @@ public:
     int getNormalizedSize() {
         int normalizedSize = 0;
         if(_normalized) {
-            for(int i = 0; i < _columnVector.size(); i++) {
+            for(int i = 0; i < (int)_columnVector.size(); i++) {
                 if(_columnVector[i]->getActive()) {
                     normalizedSize = _columnVector[i]->getNormalizedSize();
                     break;
@@ -432,7 +439,7 @@ public:
 	}
 	void setColumnsActive(vector<int> indexVector, bool active) {
 		for(int i = 0; i < (int)indexVector.size(); i++) {
-		    if(indexVector[i] < 0 ||indexVector[i] > _columnVector.size() - 1) {
+		    if(indexVector[i] < 0 || indexVector[i] > (int)_columnVector.size() - 1) {
 		        throw string(cInvalidIndex);  
 		    }
 			(_columnVector[indexVector[i]])->setActive(active);
@@ -447,7 +454,7 @@ public:
 
 		int size = _columnVector.size();
 		InOut::Write(os, size);
-		for(int i = 0; i < _columnVector.size(); i++) {
+		for(int i = 0; i < (int)_columnVector.size(); i++) {
 			int t = static_cast<int>(_columnVector[i]->getColumnType());
 			InOut::Write(os, t);
 			_columnVector[i]->write(os);
@@ -485,6 +492,9 @@ public:
                 _columnVector[i]->read(is);
             } else if(type == Column::NUMERICAL) {
                 _columnVector[i] = new NumberColumn(type);
+                _columnVector[i]->read(is);
+            } else if(type == Column::NUMERICAL_ARRAY) {
+                _columnVector[i] = new NumberArrayColumn(type, 0);
                 _columnVector[i]->read(is);
             } else {
                 throw string(cInvalidColumnType);

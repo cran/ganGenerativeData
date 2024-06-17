@@ -9,8 +9,9 @@ gdTrain(
   generativeDataFileName,
   dataSourceFileName,
   columnIndices,
-  trainParameters = gdTrainParameters(numberOfIterations = 10000,
-    numberOfHiddenLayerUnits = 1024, learningRate = 7e-05, dropout = 0.05)
+  trainParameters = gdTrainParameters(numberOfTrainingIterations = 10000,
+    numberOfInitializationIterations = 1500, numberOfHiddenLayerUnits = 1024,
+    learningRate = 7e-05, dropout = 0.05)
 )
 }
 \arguments{
@@ -43,6 +44,6 @@ continued.
 }
 \examples{
 \dontrun{
-trainParameters <- gdTrainParameters(numberOfIterations = 10000)
+trainParameters <- gdTrainParameters(numberOfTrainingIterations = 10000)
 gdTrain("gm.bin", "gd.bin", "ds.bin", c(1, 2), trainParameters)}
 }
