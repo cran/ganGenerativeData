@@ -6,9 +6,10 @@
   Generate generative data for a data source
 }
 \description{
-Generative Adversarial Networks are applied to generate generative data for a data source. A generative model consisting of a generator and a discriminator network is trained. During iterative training the distribution of generated data is converging to that of the data source. Direct applications of generative data are the created functions for data classifying and missing data completion. Generated data can be written to a file in training and after finished training in a separate generation step. First method accumulates generative data using a dynamic model, second method generates generative data using a static model.
+Generative Adversarial Networks are applied to generate generative data for a data source. A generative model consisting of a generator and a discriminator network is trained. During iterative training the distribution of generated data is converging to that of the data source. Generated data can be written to a file in training and after finished training in a separate generation step. First method accumulates generative data using a dynamic model, second method generates generative data using a static model.
 
 Inserted images show two-dimensional projections of generative data for the iris dataset:\cr
+
 \figure{gd34d.png}
 
 \figure{gd12d.png}
@@ -130,7 +131,7 @@ The training function in the software service for accelerated training of genera
 
 \strong{\code{dsGetRow()}} Get a row in a data source.\cr
 
-\strong{2. Generation of generative data}\cr
+\strong{2. Training of generative model and generation of generative data}\cr
 
 \strong{\code{gdTrainParameters()}} Specify parameters for training of generative model.\cr
 
@@ -226,7 +227,8 @@ ds <- tempfile("ds")
 dsWrite(ds)}\dontrun{
 dsWrite("ds.bin")}
 
-# 2. Generation of generative data for the iris data source
+# 2. Training of generative model and generation of generative data for the iris
+# data source
 
 # Read data source from file "ds.bin", train a generative model in iterative
 # training steps (used number of iterations in tests is in the range of 10000 to

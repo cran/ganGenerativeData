@@ -1,4 +1,4 @@
-cd61e8eaf7d0e55174828381856b1a3d *DESCRIPTION
+7db6e1f79ec245ee7b815ddf33d77e13 *DESCRIPTION
 8ec8c7dd5b4c04d5bead36a97dbfeb02 *NAMESPACE
 254baf9a2a3ca1b8146f66317a244ee1 *R/RcppExports.R
 9938277eb6961a951e0f05937c486f8c *R/dsInt.R
@@ -25,7 +25,7 @@ fe33eb6ed767ef223b7d088fbe95e9e4 *man/dsWrite.Rd
 df9b20e700ac48766e41e767cf82d9c6 *man/figures/gd34d.png
 c59cb3bf622618b259022028a6bd504f *man/figures/gd34ddv.png
 3d3bee3abcedf5592d91f0a072c40b25 *man/figures/gd34dnn.png
-61daed6abe28dcef843bc6c494ac4cf1 *man/ganGenerativeData-package.Rd
+00b5221ba9e5c7cbeb0e693caa6ae8c1 *man/ganGenerativeData-package.Rd
 30d75cf0baf507610d1f89b61800e324 *man/gdCalculateDensityValue.Rd
 64593cd2f558ab6a1363a22137a934f6 *man/gdCalculateDensityValueQuantile.Rd
 565387af48776504f7242e2593316a51 *man/gdCalculateDensityValues.Rd
