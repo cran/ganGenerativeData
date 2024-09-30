@@ -67,6 +67,7 @@ gdGenerativeDataDataPoints <- function(percent, dimension, columnIndices, level,
     if(size > 0) {
       gdv <- array_reshape(gd[[1]], c(size, dimension))
       gdd <- array_reshape(gd[[2]], c(size))
+      
       gdvX <- gdv[,columnIndices[1]]
       gdvY <- NULL
       if(dimension == 1) {

@@ -463,14 +463,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gdCalculateDensityValueQuantile
-float gdCalculateDensityValueQuantile(float percent);
-RcppExport SEXP _ganGenerativeData_gdCalculateDensityValueQuantile(SEXP percentSEXP) {
+// gdDensityValueQuantile
+float gdDensityValueQuantile(float percent);
+RcppExport SEXP _ganGenerativeData_gdDensityValueQuantile(SEXP percentSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< float >::type percent(percentSEXP);
-    rcpp_result_gen = Rcpp::wrap(gdCalculateDensityValueQuantile(percent));
+    rcpp_result_gen = Rcpp::wrap(gdDensityValueQuantile(percent));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gdDensityValueInverseQuantile
+float gdDensityValueInverseQuantile(float densityValue);
+RcppExport SEXP _ganGenerativeData_gdDensityValueInverseQuantile(SEXP densityValueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type densityValue(densityValueSEXP);
+    rcpp_result_gen = Rcpp::wrap(gdDensityValueInverseQuantile(densityValue));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -667,7 +678,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_gdResetDensitiyValues", (DL_FUNC) &_ganGenerativeData_gdResetDensitiyValues, 0},
     {"_ganGenerativeData_gdIntCalculateDensityValues", (DL_FUNC) &_ganGenerativeData_gdIntCalculateDensityValues, 0},
     {"_ganGenerativeData_gdCalculateDensityValue", (DL_FUNC) &_ganGenerativeData_gdCalculateDensityValue, 2},
-    {"_ganGenerativeData_gdCalculateDensityValueQuantile", (DL_FUNC) &_ganGenerativeData_gdCalculateDensityValueQuantile, 1},
+    {"_ganGenerativeData_gdDensityValueQuantile", (DL_FUNC) &_ganGenerativeData_gdDensityValueQuantile, 1},
+    {"_ganGenerativeData_gdDensityValueInverseQuantile", (DL_FUNC) &_ganGenerativeData_gdDensityValueInverseQuantile, 1},
     {"_ganGenerativeData_gdBuildFileName", (DL_FUNC) &_ganGenerativeData_gdBuildFileName, 2},
     {"_ganGenerativeData_gdKNearestNeighbors", (DL_FUNC) &_ganGenerativeData_gdKNearestNeighbors, 3},
     {"_ganGenerativeData_gdComplete", (DL_FUNC) &_ganGenerativeData_gdComplete, 2},

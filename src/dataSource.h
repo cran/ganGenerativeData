@@ -446,7 +446,7 @@ public:
 		}
 	}
   
-	void write(ofstream& os, int version = 1) {
+	void write(ofstream& os, int version = 2) {
 	    InOut::Write(os, _typeId);
 	  
 		InOut::Write(os, version);
@@ -507,6 +507,14 @@ public:
             delete _pDensityVector;
             _pDensityVector = new NumberColumn(Column::NUMERICAL, cDensityColumn);
             _pDensityVector->read(is);
+            /*
+            if(_version == 1) {
+                Function f("message");
+                f("delete densityVector");
+                delete _pDensityVector;
+                _pDensityVector = new NumberColumn(Column::NUMERICAL, cDensityColumn);
+            }
+            */
         } else {
             throw string(cInvalidColumnType);
         }

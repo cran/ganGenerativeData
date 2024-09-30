@@ -15,7 +15,8 @@ const string cInvalidDensiyValue = "Invalid density value inf";
 
 class Density{
 public:
-    Density(DataSource& dataSource, VpTree& vpTree, int nNearestNeighbors, Progress* pProgress) : _dataSource(dataSource), _vpTree(vpTree), _nNearestNeighbors(nNearestNeighbors), _pProgress(pProgress) {}
+    Density(DataSource& dataSource, VpTree* vpTree, int nNearestNeighbors, Progress* pProgress) : _dataSource(dataSource), _vpTree(vpTree), _nNearestNeighbors(nNearestNeighbors), _pProgress(pProgress) {}
+    
     void calculateDensityValues() {
         vector<float>& densityVector = _dataSource.getDensityVector()->getValueVector();
         densityVector.resize(_dataSource.getNormalizedSize(), 0);
@@ -26,10 +27,11 @@ public:
             }
             
             vector<float>& numberVector = _dataSource.getNormalizedNumberVectorReference(i);
-            vector<VpElement> nearestNeighbours;
-            _vpTree.search(numberVector, _nNearestNeighbors, nearestNeighbours);
+            vector<VpElement> nearestNeighbors;
+            _vpTree->search(numberVector, _nNearestNeighbors, nearestNeighbors);
             
-            float d = calculateDensityValue(nearestNeighbours);
+            //float d = calculateDensityValue(nearestNeighbors);
+            float d = calculateKNearestNeighborDensityEstimation(nearestNeighbors, densityVector.size(), _dataSource.getDimension());
             densityVector[i] = d;
             
             if(isinf(d)) {
@@ -45,41 +47,81 @@ public:
             (*_pProgress)(_dataSource.getNormalizedSize());
         }
     }
-    float calculateDensityValue(vector<VpElement> nearestNeighbours) {
+    
+    float calculateDensityValue(vector<VpElement> nearestNeighbors) {
         float d = 0;
-        for(int i = 0; (int)i < (int)nearestNeighbours.size(); i++) {
-            d += nearestNeighbours[i].getDistance() * nearestNeighbours[i].getDistance();
+        for(int i = 0; (int)i < (int)nearestNeighbors.size(); i++) {
+            d += nearestNeighbors[i].getDistance() * nearestNeighbors[i].getDistance();
         }
-        d = (float)nearestNeighbours.size() / d;
+        d = (float)nearestNeighbors.size() / d;
         return d;
     }
+    
+    float calculateUnitSphereVolume(int dimension) {
+        return powf(M_PI, (float)dimension / 2) / tgammaf((float)dimension / 2 + 1);
+    }
+    
+    float calculateKNearestNeighborDensityEstimation(vector<VpElement> nearestNeighbors, long n, int dimension) {
+        //float c = (float)nearestNeighbors.size() / (float)n * tgammaf((float)dimension / 2 + 1) / powf(M_PI, (float)dimension / 2);
+        float c = (float)nearestNeighbors.size() / (float)n / calculateUnitSphereVolume(dimension);
+        
+        float knnDensityEstimation = 0;
+        if(nearestNeighbors.size() > 0) {
+            knnDensityEstimation = c / powf(nearestNeighbors[nearestNeighbors.size() - 1].getDistance(), (float) dimension);
+        }
+        return knnDensityEstimation;
+    }
+    
     float calculateDensityValue(vector<float>& numberVector) {
         NormalizeData normalizeData;
         vector<float> normalizedNumberVector = normalizeData.getNormalizedNumberVector(_dataSource, numberVector);
-        vector<VpElement> nearestNeighbours;
-        if(_vpTree.isBuilt()) {
-            _vpTree.search(normalizedNumberVector, _nNearestNeighbors, nearestNeighbours);    
+        vector<VpElement> nearestNeighbors;
+        if(_vpTree->isBuilt()) {
+            _vpTree->search(normalizedNumberVector, _nNearestNeighbors, nearestNeighbors);    
         } else {
-            _vpTree.linearSearch(normalizedNumberVector, _nNearestNeighbors, nearestNeighbours);    
+            _vpTree->linearSearch(normalizedNumberVector, _nNearestNeighbors, nearestNeighbors);    
         }
-        float d = calculateDensityValue(nearestNeighbours);
+        //float d = calculateDensityValue(nearestNeighbours);
+        float d = calculateKNearestNeighborDensityEstimation(nearestNeighbors, normalizedNumberVector.size(), _dataSource.getDimension());
         d = normalizeData.getNormalizedNumber(_dataSource.getDensityVector(), d, true);
         
         return d;
     }
-    float calculateQuantile(float percentage) {
+    
+    float calculateQuantile(float percent) {
         vector<float>& densityVector = _dataSource.getDensityVector()->getNormalizedValueVector();
         vector<float> dV;
         dV.reserve(densityVector.size());
         dV.insert(dV.end(), densityVector.begin(), densityVector.end());
-        int n = (int)ceil(percentage / (float)100 * (float)dV.size());
+        //int n = (int)ceil(percent / (float)100 * (float)dV.size());
+        int n = (int)floor(percent / (float)100 * (float)dV.size()) - 1;
+        if(n < 0) {
+            n = 0;
+        }
         nth_element(dV.begin(), dV.begin() + n, dV.end());
+        
         return dV[n];
+    }
+    
+    float calculateInverseQuantile(float densityValue) {
+        vector<float>& densityVector = _dataSource.getDensityVector()->getNormalizedValueVector();
+        if(densityVector.size() == 0) {
+            return 0;
+        }
+        
+        float k = 0;
+        for(int i = 0; i < (int)densityVector.size(); i++) {
+            if(densityVector[i] <= densityValue) {
+                k++;
+            }
+        }
+        
+        return (float)k / (float)densityVector.size() * 100;
     }
 
 private:
     DataSource& _dataSource;
-    VpTree& _vpTree;
+    VpTree* _vpTree;
     int _nNearestNeighbors;
     Progress* _pProgress;
 };

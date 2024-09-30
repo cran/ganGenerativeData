@@ -345,7 +345,7 @@ gdIntCalculateDensityValues <- function() {
 #' @examples
 #' \dontrun{
 #' gdRead("gd.bin")
-#' gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
+#' dv <- gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 gdCalculateDensityValue <- function(dataRecord, useSearchTree = FALSE) {
     .Call('_ganGenerativeData_gdCalculateDensityValue', PACKAGE = 'ganGenerativeData', dataRecord, useSearchTree)
 }
@@ -362,9 +362,26 @@ gdCalculateDensityValue <- function(dataRecord, useSearchTree = FALSE) {
 #' @examples
 #' \dontrun{
 #' gdRead("gd.bin")
-#' gdCalculateDensityValueQuantile(50)}
-gdCalculateDensityValueQuantile <- function(percent) {
-    .Call('_ganGenerativeData_gdCalculateDensityValueQuantile', PACKAGE = 'ganGenerativeData', percent)
+#' gdDensityValueQuantile(50)}
+gdDensityValueQuantile <- function(percent) {
+    .Call('_ganGenerativeData_gdDensityValueQuantile', PACKAGE = 'ganGenerativeData', percent)
+}
+
+#' Calculate inverse density value quantile
+#' 
+#' Calculate inverse density value quantile for a density value. 
+#'
+#' @param densityValue Normalized density value
+#'
+#' @return Percent value
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' gdRead("gd.bin")
+#' gdDensityValueInverseQuantile(0.5)}
+gdDensityValueInverseQuantile <- function(densityValue) {
+    .Call('_ganGenerativeData_gdDensityValueInverseQuantile', PACKAGE = 'ganGenerativeData', densityValue)
 }
 
 gdBuildFileName <- function(fileName, niveau) {

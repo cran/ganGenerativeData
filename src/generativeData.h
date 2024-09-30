@@ -104,6 +104,13 @@ public:
 
 		readWithoutTypeId(is);
 		
+		if(_version == 1) {
+		    Function f("message");
+		    f("Density values have to be recalculated");
+		    delete _pDensityVector;
+		    _pDensityVector = new NumberColumn(Column::NUMERICAL, Column::LOGARITHMIC , cDensityColumn);
+		}
+		
 		buildNormalizedNumberVectorVector();
 	}
     

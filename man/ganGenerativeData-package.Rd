@@ -6,13 +6,93 @@
   Generate generative data for a data source
 }
 \description{
-Generative Adversarial Networks are applied to generate generative data for a data source. A generative model consisting of a generator and a discriminator network is trained. During iterative training the distribution of generated data is converging to that of the data source. Generated data can be written to a file in training and after finished training in a separate generation step. First method accumulates generative data using a dynamic model, second method generates generative data using a static model.
+Generative Adversarial Networks are applied to generate generative data for a data source. A generative model consisting of a generator and a discriminator network is trained. During iterative training the distribution of generated data is converging to that of the data source.
+
+Generated data can be written to a file during training and after finished training in a separate generation step. First method accumulates generative data using a dynamic model, second method generates generative data using a static model.
 
 Inserted images show two-dimensional projections of generative data for the iris dataset:\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
 
 \figure{gd34d.png}
 
 \figure{gd12d.png}
+
+\if{latex}{
+\strong{Method of data evaluation:}
+
+Let \eqn{M = (R^D, d)} be the metric space with Euclidean distance \eqn{d} on \eqn{R^D}.
+Let \eqn{X} be a random vector consisting of \eqn{D} random variables and \eqn{(x_i)_{i=1}^{n}, x_i \in R^D}
+a sequence of occurrences of \eqn{X}.
+
+The \eqn{k} nearest neighbor density estimation function is defined by
+\deqn{de(x) = \frac{k}{n d^D(x_{i_k}, x) V_D}, x \in R^D}
+
+where \eqn{k} is the number of nearest neighbors, \eqn{n} is the number of occurrences,
+\eqn{x_{i_k}} is the \eqn{k}-th nearest neighbor,
+\eqn{d(x_{i_k},x)} is the Euclidean distance of \eqn{k}-th nearest neighbor to
+\eqn{x}, \eqn{V_D = \frac{\pi^{D/2}}{\Gamma(\frac{D}{2}+1)}} is the volume
+of a unit sphere and \eqn{\Gamma(x)} is the Gamma function.
+
+We calculate density values by logarithmizing and normalizing \eqn{de(x)}. 
+Next we set the density value of \eqn{x \in R^D} into relation to density values of a sequence of occurrences of \eqn{X} by computing the inverse quantile. The received percent value is then used for evaluation of \eqn{x}.
+
+In practice function \code{gdCalulcateDensityValues()} is called to calculate density values for generated generative data and
+for \eqn{x \in R^D} function \code{gdCalculateDensityValue()} and
+\code{gdDensityValueInverseQuantile()} is called to receive a percent value for evaluation of \eqn{x}.
+
+For illustration inserted images show generative data for a density value threshold for the iris dataset:\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+}
 
 \figure{gd34ddv.png}
 
@@ -59,7 +139,7 @@ For illustration inserted images show \eqn{k} nearest neighbors for a sepal widt
 \if{latex}{
 \strong{Accelerated training of generative models:}
 
-Training of generative models can be accelerated by using graphics processing units for computation. For this kind of training a software service is available. For access details contact the author of the package and see in the documentation in section Examples how training can be executed. The software service also supports trainining of generative models for mixed numerical and categorical variables.
+Training of generative models can be accelerated by using graphics processing units for computation. For this kind of training a software service is available. For access details contact the author of the package and see in the documentation in section Examples how training can be executed. The software service also supports training of generative models for mixed numerical and categorical variables.
 
 \strong{Method of data classification:}
 
@@ -157,7 +237,9 @@ The training function in the software service for accelerated training of genera
 
 \strong{\code{gdCalculateDensityValue()}} Calculate density value for a data record.\cr
 
-\strong{\code{gdCalculateDensityValueQuantile()}} Calculate density value quantile for a percent value.\cr
+\strong{\code{gdDensityValueQuantile()}} Calculate density value quantile for a percent value.\cr
+
+\strong{\code{gdDensityValueInverseQuantile()}} Calculate inverse density value quantile for a density value.\cr
 
 \strong{\code{gdKNearestNeighbors()}} Search for k nearest neighbors in generative data.\cr
 
@@ -193,7 +275,7 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 # Compiler: g++ 11.3.0 (supports C++17 standard)
 # R applications: R 4.1.2, RStudio 2022.02.2
 # Installed packages: 'Rcpp' 1.0.10, 'tensorflow' 2.11.0,
-# 'ganGenerativeData' 2.0.0
+# 'ganGenerativeData' 2.1.0
 
 # Package 'tensorflow' provides an interface to machine learning framework
 # TensorFlow. To complete the installation function install_tensorflow() has to
@@ -264,7 +346,7 @@ gdPlotDataSourceParameters(100))}
 gdPlotProjection("gd34ddv.png",
 "Generative Data with a Density Value Threshold for the Iris Dataset",
 c(3, 4),
-gdPlotParameters(50, c(0.71), c("red", "green")),
+gdPlotParameters(50, c(0.38), c("red", "green")),
 gdPlotDataSourceParameters(100))}
 
 # Get number of rows in generative data
@@ -281,7 +363,11 @@ gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 
 # Calculate density value quantile for 50 percent
 \dontrun{
-gdCalculateDensityValueQuantile(50)}
+gdDensityValueQuantile(50)}
+
+# Calculate inverse density value quantile for density value 0.5
+\dontrun{
+gdDensityValueInverseQuantile(0.5)}
 
 # Search for k nearest neighbors for a data record 
 \dontrun{

@@ -722,7 +722,7 @@ void gdIntCalculateDensityValues() {
         VpTree vpTree;
         vpTree.build(&vpGenerativeData, &l2Distance, 0);
        
-        Density density(*gdInt::pGenerativeData, vpTree, gdInt::nNearestNeighbors, &progress);
+        Density density(*gdInt::pGenerativeData, &vpTree, gdInt::nNearestNeighbors, &progress);
         density.calculateDensityValues();
          
         progress(gdInt::pGenerativeData->getNormalizedSize());
@@ -749,7 +749,7 @@ void gdIntCalculateDensityValues() {
 //' @examples
 //' \dontrun{
 //' gdRead("gd.bin")
-//' gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
+//' dv <- gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 // [[Rcpp::export]]
 float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
     try {
@@ -779,13 +779,13 @@ float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
         
         float d = 0;
         if(useSearchTree) {
-            Density density(*gdInt::pGenerativeData, *gdInt::pDensityVpTree, gdInt::nNearestNeighbors, 0);
+            Density density(*gdInt::pGenerativeData, gdInt::pDensityVpTree, gdInt::nNearestNeighbors, 0);
             d = density.calculateDensityValue(numberVector);
         } else {
             VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
             L2Distance l2Distance;
             VpTree vpTree(&vpGenerativeData, &l2Distance, 0);
-            Density density(*gdInt::pGenerativeData, vpTree, gdInt::nNearestNeighbors, 0);
+            Density density(*gdInt::pGenerativeData, &vpTree, gdInt::nNearestNeighbors, 0);
             d = density.calculateDensityValue(numberVector);
         }
         return d;
@@ -808,21 +808,58 @@ float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
 //' @examples
 //' \dontrun{
 //' gdRead("gd.bin")
-//' gdCalculateDensityValueQuantile(50)}
+//' gdDensityValueQuantile(50)}
 // [[Rcpp::export]]
-float gdCalculateDensityValueQuantile(float percent) {
+float gdDensityValueQuantile(float percent) {
     try {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
+        if(gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector().size() == 0) {
+            throw string(cNoDensities);
+        }
+        
         VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
         L2Distance l2Distance;
         VpTree vpTree(&vpGenerativeData, &l2Distance, 0);
     
-        Density density(*gdInt::pGenerativeData, vpTree, gdInt::nNearestNeighbors, 0);
+        Density density(*gdInt::pGenerativeData, &vpTree, gdInt::nNearestNeighbors, 0);
         float q = density.calculateQuantile(percent);
         return q;
+    } catch (const string& e) {
+        ::Rf_error("%s", e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+//' Calculate inverse density value quantile
+//' 
+//' Calculate inverse density value quantile for a density value. 
+//'
+//' @param densityValue Normalized density value
+//'
+//' @return Percent value
+//' @export
+//'
+//' @examples
+//' \dontrun{
+//' gdRead("gd.bin")
+//' gdDensityValueInverseQuantile(0.5)}
+// [[Rcpp::export]]
+float gdDensityValueInverseQuantile(float densityValue) {
+    try {
+        if(gdInt::pGenerativeData == 0) {
+            throw string("No generative data");
+        }
+
+        if(gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector().size() == 0) {
+            throw string(cNoDensities);
+        }
+        
+        Density density(*gdInt::pGenerativeData, 0, 0, 0);
+        return density.calculateInverseQuantile(densityValue);
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {

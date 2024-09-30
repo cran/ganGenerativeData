@@ -23,5 +23,5 @@ which is built once in the first function call.
 \examples{
 \dontrun{
 gdRead("gd.bin")
-gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
+dv <- gdCalculateDensityValue(list(6.1, 2.6, 5.6, 1.4))}
 }

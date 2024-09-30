@@ -37,7 +37,7 @@ cPort <- 3000
 #' url <- "http://xxx.xxx.xxx.xxx/gdService"
 #' accessKey <- "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 #' trainParameters <- gdTrainParameters(numberOfTrainingIterations = 10000)
-#' gdServiceTrain(url, accessKey, "gm.bin", "gd.bin", "ds.bin", trainParameters)}
+#' jobId <- gdServiceTrain(url, accessKey, "gm.bin", "gd.bin", "ds.bin", trainParameters)}
 gdServiceTrain <- function(url,
                     accessKey,
                     generativeModelFileName,
