@@ -1,4 +1,4 @@
-2259947c68da3edee2904c7c719ec65f *DESCRIPTION
+07de688a1eafda80006fc07b57e1233d *DESCRIPTION
 c62b392d0e0fcb2f8a38237a7e5d39ed *NAMESPACE
 15e65c5fd3bdecd22e91aaa916bea124 *R/RcppExports.R
 9938277eb6961a951e0f05937c486f8c *R/dsInt.R
@@ -25,7 +25,7 @@ fe33eb6ed767ef223b7d088fbe95e9e4 *man/dsWrite.Rd
 df9b20e700ac48766e41e767cf82d9c6 *man/figures/gd34d.png
 c59cb3bf622618b259022028a6bd504f *man/figures/gd34ddv.png
 3d3bee3abcedf5592d91f0a072c40b25 *man/figures/gd34dnn.png
-c6e1ad3615af232ed9889b9a87f59620 *man/ganGenerativeData-package.Rd
+de20b38571cb7888ab9eef79daba8455 *man/ganGenerativeData-package.Rd
 71a4b257c67ceef3d54a59419d544ca3 *man/gdCalculateDensityValue.Rd
 565387af48776504f7242e2593316a51 *man/gdCalculateDensityValues.Rd
 ebc78c4205c4fd6674f81b9527d972a4 *man/gdComplete.Rd
@@ -52,7 +52,7 @@ daf246d2559a7df53698b1714f020b7a *src/Makevars
 f7c2db50b50661cb36a06749619ac018 *src/RcppExports.cpp
 d59435e7463032c5240a37301fb3658b *src/column.h
 73abff058ea2c4574472ba229a065539 *src/dataSource.h
-3443e1383512682213811f061a37f345 *src/density.h
+508a3be85439f8c5bfc34bc37394af6d *src/density.h
 a1e2165bf8821a6afdde70b27a68d35f *src/dsInt.cpp
 149496e05749da503a0a1706f5559bf3 *src/gdInt.cpp
 53e568b8480a3c91f2fe747f8c8d02cc *src/generativeData.h
@@ -64,4 +64,4 @@ b5b66c4cf92b4b9c0bbcd28632c81c79 *src/numberColumn.h
 2052fe2598d8be3baf452312f3cf4a2e *src/progress.h
 e7d8ef451d8c8864dabec16ff2552780 *src/stringColumn.h
 2a8e9c83a4dac31fe7b1750f54d4e574 *src/utils.h
-375cde066e088ed7299b0ff684ee57c0 *src/vpTree.h
+47009081aae4deed2bbff6cbadb5827a *src/vpTree.h

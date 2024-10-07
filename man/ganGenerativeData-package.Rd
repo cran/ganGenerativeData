@@ -8,41 +8,9 @@
 \description{
 Generative Adversarial Networks are applied to generate generative data for a data source. A generative model consisting of a generator and a discriminator network is trained. During iterative training the distribution of generated data is converging to that of the data source.
 
-Generated data can be written to a file during training and after finished training in a separate generation step. First method accumulates generative data using a dynamic model, second method generates generative data using a static model.
+Generated data can be written to a file in training and after finished training in a separate generation step. First method accumulates generative data using a dynamic model, second method generates generative data using a static model.
 
-Inserted images show two-dimensional projections of generative data for the iris dataset:\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
+Inserted images show two-dimensional projections of generative data for the iris dataset:
 
 \figure{gd34d.png}
 
@@ -275,7 +243,7 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 # Compiler: g++ 11.3.0 (supports C++17 standard)
 # R applications: R 4.1.2, RStudio 2022.02.2
 # Installed packages: 'Rcpp' 1.0.10, 'tensorflow' 2.11.0,
-# 'ganGenerativeData' 2.1.0
+# 'ganGenerativeData' 2.1.3
 
 # Package 'tensorflow' provides an interface to machine learning framework
 # TensorFlow. To complete the installation function install_tensorflow() has to

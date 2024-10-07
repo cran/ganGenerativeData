@@ -448,6 +448,13 @@ public:
         }
         for(int i = begin; i < end; i++) {
             vector<float> numberVector = _pVpTreeData->getNumberVector(i);
+            
+            Function f("message");
+            f("numberVector");
+            for(int j = 0; j < numberVector.size(); j++) {
+                f(numberVector[j]);
+            }
+            
             vector<VpElement> nearestNeighbors;
             search(numberVector, nNearestNeighbors, nearestNeighbors);
             
@@ -455,6 +462,14 @@ public:
             linearSearch(numberVector, nNearestNeighbors, lNearestNeighbors);
             
             for(int j = 0; j < (int)nearestNeighbors.size(); j++) {
+                numberVector = _pVpTreeData->getNumberVector(nearestNeighbors[j].getIndex());
+                f("nnumberVector");
+                for(int k = 0; k < numberVector.size(); k++) {
+                    f(numberVector[k]);
+                }
+                f("distance");
+                f(nearestNeighbors[j].getDistance());
+                
                 if(nearestNeighbors[j].getDistance() != lNearestNeighbors[j].getDistance()) {
                     throw string(cNearestNeighborDifferent);
                 }

@@ -47,7 +47,7 @@ public:
             (*_pProgress)(_dataSource.getNormalizedSize());
         }
     }
-    
+    /*
     float calculateDensityValue(vector<VpElement> nearestNeighbors) {
         float d = 0;
         for(int i = 0; (int)i < (int)nearestNeighbors.size(); i++) {
@@ -56,7 +56,7 @@ public:
         d = (float)nearestNeighbors.size() / d;
         return d;
     }
-    
+    */
     float calculateUnitSphereVolume(int dimension) {
         return powf(M_PI, (float)dimension / 2) / tgammaf((float)dimension / 2 + 1);
     }
@@ -82,7 +82,8 @@ public:
             _vpTree->linearSearch(normalizedNumberVector, _nNearestNeighbors, nearestNeighbors);    
         }
         //float d = calculateDensityValue(nearestNeighbours);
-        float d = calculateKNearestNeighborDensityEstimation(nearestNeighbors, normalizedNumberVector.size(), _dataSource.getDimension());
+        vector<float>& densityVector = _dataSource.getDensityVector()->getNormalizedValueVector();
+        float d = calculateKNearestNeighborDensityEstimation(nearestNeighbors, densityVector.size(), _dataSource.getDimension());
         d = normalizeData.getNormalizedNumber(_dataSource.getDensityVector(), d, true);
         
         return d;
@@ -97,6 +98,9 @@ public:
         int n = (int)floor(percent / (float)100 * (float)dV.size()) - 1;
         if(n < 0) {
             n = 0;
+        }
+        if(n >= dV.size()) {
+            n = dV.size() - 1;
         }
         nth_element(dV.begin(), dV.begin() + n, dV.end());
         
