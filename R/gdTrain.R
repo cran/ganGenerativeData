@@ -31,7 +31,7 @@ gdTrainParameters <- function(numberOfTrainingIterations = 10000,
                               numberOfInitializationIterations = 1500,
                               numberOfHiddenLayerUnits = 1024,
                               learningRate = 0.00007,
-                              dropout = 0.05) {
+                              dropout = 0.1) {
     parameters <- list(numberOfTrainingIterations = numberOfTrainingIterations,
                        numberOfInitializationIterations = numberOfInitializationIterations,
                        numberOfHiddenLayerUnits = numberOfHiddenLayerUnits,
@@ -112,3 +112,6 @@ gdTrain <- function(generativeModelFileName,
     end <- Sys.time()
     message(round(difftime(end, start, units = "secs"), 3), " seconds")
 }
+
+
+      

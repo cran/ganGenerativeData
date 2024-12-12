@@ -98,7 +98,7 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
         generatorHiddenLayer2Dropout <- tf$nn$dropout(generatorHiddenLayer2(generatorHiddenLayer1Dropout), dropout)
         logits <- generatorLogits(generatorHiddenLayer2Dropout)
     } 
-        
+  
     loss <- function(logitsIn, labelsIn) {
         loss <- tf$reduce_mean(tf$nn$sigmoid_cross_entropy_with_logits(labels = labelsIn, logits = logitsIn))
     }
@@ -121,6 +121,12 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
         generatorVariables <- append(generatorHiddenLayer1$trainable_weights, generatorHiddenLayer2$trainable_weights)
         generatorVariables <- append(generatorVariables, generatorLogits$trainable_weights)
         generatorOptimizer$minimize(generatorLoss, generatorVariables, tape)
+        
+        loss <- list()
+        loss[[1]] <- realLoss
+        loss[[2]] <- fakeLoss
+        
+        return(loss)
     })
 
     generationCore <- tf_function(function(noise, dropout) {
@@ -138,8 +144,12 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
     trainingIteration <- function(iteration, train, step, weight, generate) {
         samples <- NULL
         noise <- NULL
+        loss <- NULL
 
         if(train) {
+            loss[[1]] = 0
+            loss[[2]] = 0
+            
             for(i in 1:cNumberOfBatchesPerIteration) {
                 samples <- array_reshape(gdDataSourceGetNormalizedDataRandom(batchSize), c(batchSize, dimension))
  
@@ -154,8 +164,14 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
                     samples <- noiseSamples + weight * (samples - noiseSamples)
                 }
                 
-                trainingCore(samples, noise, dropout)
+                l <- trainingCore(samples, noise, dropout)
+                
+                loss[[1]] <- loss[[1]] + l[[1]]
+                loss[[2]] <- loss[[2]] + l[[2]]
             }
+            
+            loss[[1]] <- loss[[1]] / cNumberOfBatchesPerIteration
+            loss[[2]] <- loss[[2]] / cNumberOfBatchesPerIteration
         }
             
         noise <- array(runif(batchSize * dimension, -1.0, 1.0), c(batchSize, dimension))
@@ -199,36 +215,39 @@ gdTrainGenerate <- function(generativeModelFileName, generativeDataFileName, col
                 }
             }
         }
+        
+        return(loss)
     }
     
     train <- function(){
         numberOfInitializationIterations <- trainParameters$numberOfInitializationIterations
         numberOfTrainingIterations <- trainParameters$numberOfTrainingIterations
+        loss <- NULL
         
         if(!generativeModelRead) {
-            message("Initialization iterations")
+            message("Initialization iteration   Discriminator loss   Generator loss")
 
             for(iteration in 1:numberOfInitializationIterations) {
                 if(iteration <= cResetIterations) {
-                    trainingIteration(iteration, TRUE, "Reset", -1, FALSE)
+                    loss <- trainingIteration(iteration, TRUE, "Reset", -1, FALSE)
                 } else {
                     weight <- (iteration - cResetIterations) / (numberOfInitializationIterations - cResetIterations)
-                    trainingIteration(iteration, TRUE, "Initialize", weight, FALSE)
+                    loss <- trainingIteration(iteration, TRUE, "Initialize", weight, FALSE)
                 }
                 
                 if(iteration %% cWriteMessageModulo == 0) {
-                    message(iteration)
+                    message(iteration, "   ", format(round(as.numeric(loss[[1]]), 6)), "   ", format(round(as.numeric(loss[[2]]), 6)))
                 }
             }
         }
         
-        message("Training iterations")
+        message("Training iteration   Discriminator loss   Generator loss")
 
         for(iteration in 1:numberOfTrainingIterations) {
-            trainingIteration(iteration, TRUE, "Training", -1, FALSE)
+            loss <- trainingIteration(iteration, TRUE, "Training", -1, FALSE)
             
             if(iteration %% cWriteMessageModulo == 0) {
-                message(iteration)
+                message(iteration, "   ", format(round(as.numeric(loss[[1]]), 6)), "   ", format(round(as.numeric(loss[[2]]), 6)))
             }
         }
         

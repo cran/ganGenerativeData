@@ -5,7 +5,8 @@
 using namespace Rcpp;
 using namespace std;
 
-#include "normalizeData.h"
+//#include "normalizeData.h"
+#include "density.h"
 
 namespace dsInt {
     DataSource* pDataSource = 0;
@@ -67,19 +68,21 @@ void dsWrite(const std::string& fileName) {
 //' dsWrite("ds.bin")
 //' dsRead("ds.bin")}
 // [[Rcpp::export]]
-void dsRead(const std::string& fileName) {
+bool dsRead(const std::string& fileName) {
     try {
         ifstream is;
         is.open(fileName.c_str(), ios::binary);
         if(!is.is_open()) {
-            throw string("File " + fileName + " could not be opened");
+            //throw string("File " + fileName + " could not be opened");
+            return false;
         }
     
         delete dsInt::pDataSource;
         dsInt::pDataSource = new DataSource();
         dsInt::pDataSource->read(is);
         is.close();
-    
+        
+        return true;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {
@@ -342,6 +345,64 @@ bool dsGetNormalized() {
         }
     
         return dsInt::pDataSource->getNormalized();
+    } catch (const string& e) {
+        ::Rf_error("%s", e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+// [[Rcpp::export]]
+void dsIntCalculateDensityValues(int nNearestNeighbors) {
+    try {
+        if(dsInt::pDataSource == 0) {
+            throw string("No dataSource");
+        }
+        
+        VpGenerativeData vpDataSource(*dsInt::pDataSource);
+        L2Distance l2Distance;
+        Progress progress(dsInt::pDataSource->getNormalizedSize());
+        VpTree vpTree;
+        vpTree.build(&vpDataSource, &l2Distance, 0);
+        
+        Density density(*dsInt::pDataSource, &vpTree, nNearestNeighbors, &progress);
+        density.calculateDensityValues();
+        
+        progress(dsInt::pDataSource->getNormalizedSize());
+    } catch (const string& e) {
+        ::Rf_error("%s", e.c_str());
+    } catch(...) {
+        ::Rf_error("C++ exception (unknown reason)");
+    }
+}
+
+//' Calculate inverse density value quantile
+//' 
+//' Calculate inverse density value quantile for a density value. 
+//'
+//' @param densityValue Normalized density value
+//'
+//' @return Percent value
+//' @export
+//'
+//' @examples
+//' \dontrun{
+//' dsRead("ds.bin")
+//' dsDensityValueInverseQuantile(0.5)}
+// [[Rcpp::export]]
+float dsDensityValueInverseQuantile(float densityValue) {
+    try {
+        if(dsInt::pDataSource == 0) {
+            throw string("No data source");
+        }
+        
+        if(dsInt::pDataSource->getDensityVector()->getNormalizedValueVector().size() == 0) {
+            throw string(cNoDensities);
+        }
+        
+        Density density(*dsInt::pDataSource, 0, 0, 0);
+        return density.calculateInverseQuantile(densityValue);
+        
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {

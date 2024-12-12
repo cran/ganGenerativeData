@@ -9,7 +9,7 @@ gdTrainParameters(
   numberOfInitializationIterations = 1500,
   numberOfHiddenLayerUnits = 1024,
   learningRate = 7e-05,
-  dropout = 0.05
+  dropout = 0.1
 )
 }
 \arguments{

@@ -22,7 +22,7 @@ using namespace std;
 
 const string cDifferentSizes = "Sizes of vectors are different";
 const string cNearestNeighborDifferent = "Nearest neighbor is different";
-int cMaxNearestNeighbors = numeric_limits<int>::max();
+const int cMaxNearestNeighbors = numeric_limits<int>::max();
 
 struct LpDistance{
     LpDistance() {}
@@ -122,6 +122,7 @@ public:
     virtual int getSize() = 0;
 };
 
+/*
 class VpGenerativeData : public VpTreeData {
 public:
     VpGenerativeData(GenerativeData& generativeData): _pGenerativeData(&generativeData) {
@@ -138,6 +139,25 @@ public:
     
 private:
     GenerativeData* _pGenerativeData;
+};
+*/
+
+class VpGenerativeData : public VpTreeData {
+public:
+    VpGenerativeData(DataSource& dataSource): _pDataSource(&dataSource) {
+    }
+    VpGenerativeData(const VpGenerativeData& vpGenerativeData): _pDataSource(vpGenerativeData._pDataSource) {
+    }
+    
+    virtual vector<float>& getNumberVector(int i) {
+        return  _pDataSource->getNormalizedNumberVectorReference(i);
+    }
+    virtual int getSize() {
+        return _pDataSource->getNormalizedSize();  
+    }
+    
+private:
+    DataSource* _pDataSource;
 };
 
 struct Distance {

@@ -21,13 +21,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // dsRead
-void dsRead(const std::string& fileName);
+bool dsRead(const std::string& fileName);
 RcppExport SEXP _ganGenerativeData_dsRead(SEXP fileNameSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type fileName(fileNameSEXP);
-    dsRead(fileName);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(dsRead(fileName));
+    return rcpp_result_gen;
 END_RCPP
 }
 // dsCreate
@@ -119,6 +120,27 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(dsGetNormalized());
+    return rcpp_result_gen;
+END_RCPP
+}
+// dsIntCalculateDensityValues
+void dsIntCalculateDensityValues(int nNearestNeighbors);
+RcppExport SEXP _ganGenerativeData_dsIntCalculateDensityValues(SEXP nNearestNeighborsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nNearestNeighbors(nNearestNeighborsSEXP);
+    dsIntCalculateDensityValues(nNearestNeighbors);
+    return R_NilValue;
+END_RCPP
+}
+// dsDensityValueInverseQuantile
+float dsDensityValueInverseQuantile(float densityValue);
+RcppExport SEXP _ganGenerativeData_dsDensityValueInverseQuantile(SEXP densityValueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type densityValue(densityValueSEXP);
+    rcpp_result_gen = Rcpp::wrap(dsDensityValueInverseQuantile(densityValue));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -645,6 +667,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ganGenerativeData_dsGetNumberOfRows", (DL_FUNC) &_ganGenerativeData_dsGetNumberOfRows, 0},
     {"_ganGenerativeData_dsGetRow", (DL_FUNC) &_ganGenerativeData_dsGetRow, 1},
     {"_ganGenerativeData_dsGetNormalized", (DL_FUNC) &_ganGenerativeData_dsGetNormalized, 0},
+    {"_ganGenerativeData_dsIntCalculateDensityValues", (DL_FUNC) &_ganGenerativeData_dsIntCalculateDensityValues, 1},
+    {"_ganGenerativeData_dsDensityValueInverseQuantile", (DL_FUNC) &_ganGenerativeData_dsDensityValueInverseQuantile, 1},
     {"_ganGenerativeData_gdReset", (DL_FUNC) &_ganGenerativeData_gdReset, 0},
     {"_ganGenerativeData_gdGetDataSourceFileName", (DL_FUNC) &_ganGenerativeData_gdGetDataSourceFileName, 0},
     {"_ganGenerativeData_gdGetGenerativeDataFileName", (DL_FUNC) &_ganGenerativeData_gdGetGenerativeDataFileName, 0},

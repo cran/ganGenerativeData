@@ -31,3 +31,40 @@ dsCreateWithDataFrame <- function (dataFrame) {
         dsAddValueRow(values);
     }
 }
+
+#' Calculate density values for data source
+#' 
+#' Read a data source from a file, calculate density values and write the data source with density values to original file.
+#' Calculated density values are used to evaluate a data source.
+#'
+#' @param dataSourceFileName Name of data source file name
+#' @param nNearestNeighbors number of used nearest neighbors
+#'
+#' @return None
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dsCalculateDensityValues("ds.bin")}
+dsCalculateDensityValues <- function(dataSourceFileName, nNearestNeighbors) {
+    start <- Sys.time()
+    
+    #dsReset()
+    if(!is.null(dataSourceFileName) && nchar(dataSourceFileName) > 0) {
+        if(!dsRead(dataSourceFileName)) {
+            error <- append("File ", dataSourceFileName)
+            error <- append(error, " could not be opened\n")
+            message(error)
+            stop(error)
+            return()
+        }
+    } else {
+        stop("No dataSourceFileName specified")
+    }
+    
+    dsIntCalculateDensityValues(nNearestNeighbors)
+    dsWrite(dataSourceFileName)
+    
+    end <- Sys.time()
+    message(round(difftime(end, start, units = "secs"), 3), " seconds")
+}

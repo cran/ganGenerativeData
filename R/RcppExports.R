@@ -36,7 +36,7 @@ dsWrite <- function(fileName) {
 #' dsWrite("ds.bin")
 #' dsRead("ds.bin")}
 dsRead <- function(fileName) {
-    invisible(.Call('_ganGenerativeData_dsRead', PACKAGE = 'ganGenerativeData', fileName))
+    .Call('_ganGenerativeData_dsRead', PACKAGE = 'ganGenerativeData', fileName)
 }
 
 dsCreate <- function(columnTypes, columnNames) {
@@ -161,6 +161,27 @@ dsGetRow <- function(index) {
 
 dsGetNormalized <- function() {
     .Call('_ganGenerativeData_dsGetNormalized', PACKAGE = 'ganGenerativeData')
+}
+
+dsIntCalculateDensityValues <- function(nNearestNeighbors) {
+    invisible(.Call('_ganGenerativeData_dsIntCalculateDensityValues', PACKAGE = 'ganGenerativeData', nNearestNeighbors))
+}
+
+#' Calculate inverse density value quantile
+#' 
+#' Calculate inverse density value quantile for a density value. 
+#'
+#' @param densityValue Normalized density value
+#'
+#' @return Percent value
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dsRead("ds.bin")
+#' dsDensityValueInverseQuantile(0.5)}
+dsDensityValueInverseQuantile <- function(densityValue) {
+    .Call('_ganGenerativeData_dsDensityValueInverseQuantile', PACKAGE = 'ganGenerativeData', densityValue)
 }
 
 gdReset <- function() {
@@ -390,7 +411,7 @@ gdBuildFileName <- function(fileName, niveau) {
 
 #' Search for k nearest neighbors
 #' 
-#' Search for k nearest neighbors in generative data for a data record.
+#' Search for k nearest neighbors in normalized generative data for a data record.
 #' When the data record contains NA values only the non-NA values are considered in search.
 #' By default a linear search is performed. When a search tree is used search is performed on a tree
 #' which is built once in the first function call.
@@ -400,7 +421,7 @@ gdBuildFileName <- function(fileName, niveau) {
 #' @param k Number of nearest neighbors
 #' @param useSearchTree Boolean value indicating if a search tree should be used. 
 #'
-#' @return A list of rows in generative data
+#' @return A list of rows in denormalized generative data
 #' @export
 #'
 #' @examples
@@ -413,7 +434,7 @@ gdKNearestNeighbors <- function(dataRecord, k = 1L, useSearchTree = FALSE) {
 
 #' Complete incomplete data record
 #' 
-#' Search for first nearest neighbor in generative data for incomplete data record containing NA values.
+#' Search for first nearest neighbor in normalized generative data for incomplete data record containing NA values.
 #' Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
 #' gdKNearestNeighbors() with parameter k equal to 1.
 #' 

@@ -7,7 +7,8 @@
 #include <queue>
 
 #include "inOut.h"
-#include "generativeData.h"
+//#include "generativeData.h"
+#include "dataSource.h"
 #include "vpTree.h"
 #include "normalizeData.h"
 

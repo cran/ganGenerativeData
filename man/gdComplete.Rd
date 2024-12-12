@@ -15,7 +15,7 @@ gdComplete(dataRecord, useSearchTree = FALSE)
 List containing completed data record
 }
 \description{
-Search for first nearest neighbor in generative data for incomplete data record containing NA values.
+Search for first nearest neighbor in normalized generative data for incomplete data record containing NA values.
 Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
 gdKNearestNeighbors() with parameter k equal to 1.
 }

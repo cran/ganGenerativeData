@@ -27,9 +27,8 @@ The \eqn{k} nearest neighbor density estimation function is defined by
 \deqn{de(x) = \frac{k}{n d^D(x_{i_k}, x) V_D}, x \in R^D}
 
 where \eqn{k} is the number of nearest neighbors, \eqn{n} is the number of occurrences,
-\eqn{x_{i_k}} is the \eqn{k}-th nearest neighbor,
-\eqn{d(x_{i_k},x)} is the Euclidean distance of \eqn{k}-th nearest neighbor to
-\eqn{x}, \eqn{V_D = \frac{\pi^{D/2}}{\Gamma(\frac{D}{2}+1)}} is the volume
+\eqn{x_{i_k}} is the \eqn{k}-th nearest neighbor to \eqn{x},
+\eqn{d(x_{i_k},x)} is the Euclidean distance, \eqn{V_D = \frac{\pi^{D/2}}{\Gamma(\frac{D}{2}+1)}} is the volume
 of a unit sphere and \eqn{\Gamma(x)} is the Gamma function.
 
 We calculate density values by logarithmizing and normalizing \eqn{de(x)}. 
@@ -74,8 +73,10 @@ Without loss of generality we consider the case of two random variables \eqn{X,Y
 In order to complete missing data for a given \eqn{X=x_0} we consider the conditional probability density function \eqn{g_{Y|X=x_0}(y)}.
 
 We compute the mean of \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} and then the limit by applying the rule of de l’Hospital
-\deqn{\lim \limits_{\epsilon \to 0} 1/2\epsilon \int \limits_{x_0-\epsilon}^{x_0+\epsilon} g_{XY}(x,y) dx=g_{Y|X=x_0}(y)}
-So the mean of \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} converges to \eqn{g_{Y|X=x_0}(y)} for \eqn{\epsilon \to 0} and the subsequence of occurrences of \eqn{G} in the interval is given by \eqn{G_{x_0,\epsilon}=((x_{i_j},y_{i_j}))} with \eqn{1<=i_j<=n,x_{i_j} \in[x_0-\epsilon,x_0+\epsilon]}.
+\deqn{\lim \limits_{\epsilon \to 0} 1/2\epsilon \int \limits_{x_0-\epsilon}^{x_0+\epsilon} g_{XY}(x,y) dx=g_{XY}(x_0,y)}
+By deviding a normalization term instead of \eqn{2\epsilon} we get
+\deqn{\lim \limits_{\epsilon \to 0} \frac{1}{\int \limits_{x_0-\epsilon}^{x_0+\epsilon} \int \limits_{-\infty}^{+\infty} g_{XY}(x,y) dydx} \int \limits_{x_0-\epsilon}^{x_0+\epsilon} g_{XY}(x,y) dx=\frac{g_{XY}(x_0,y)}{\int \limits_{-\infty}^{+\infty} g_{XY}(x_0,y) dy} = g_{Y|X=x_0}(y)}
+So the integral of \eqn{g_{XY}(x,y)} over interval \eqn{[x_0-\epsilon,x_0+\epsilon]} divided by a normalization term converges to \eqn{g_{Y|X=x_0}(y)} for \eqn{\epsilon \to 0} and the subsequence of occurrences of \eqn{G} in the interval is given by \eqn{G_{x_0,\epsilon}=((x_{i_j},y_{i_j}))} with \eqn{1<=i_j<=n,x_{i_j} \in[x_0-\epsilon,x_0+\epsilon]}.
 
 A candidate for missing \eqn{Y=y_0} for a given \eqn{X=x_0} is then \eqn{y_k} of a uniform randomly selected \eqn{(x_k,y_k)} from \eqn{G_{x_0,\epsilon}}.
 
@@ -84,14 +85,6 @@ This is applied for generated generative data as follows:
 In function \code{gdComplete()} the nearest neighbor for a given incomplete data record is searched with respect to present values and then utilized to complete the incomplete data record. Also function \code{gdKNearestNeighbors()} can be called. A nearest neighbor uniform randomly selected from returned \eqn{k} nearest neighbors can then be used for data record completion.
 
 For illustration inserted images show \eqn{k} nearest neighbors for a sepal width value:\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
-\cr
 \cr
 \cr
 \cr
@@ -150,6 +143,43 @@ For illustration inserted images show generative data for the iris dataset with 
 
 \figure{gd12cnn.png}
 }
+
+\if{latex}{
+\strong{Method of generative model evaluation:}
+
+A specific method for generative model evaluation compares the distribution of density values for generated generative data with that of the data source as follows:
+
+1. Create histograms representing distributions of density values for generative data and data source
+
+2. Compute the Kullback-Leibler divergence for created generative data and data source histogram to measure the distribution divergence.
+
+In practice the Kullback-Leibler divergence is calculated by calling functions \code{gdDensityValueInverseQuantile()} and \code{dsDensityValueInverseQuantile()} as follows:
+
+\deqn{D_{KL}(h_{gd}||h_{ds})=\sum_{i=1}^{n}h_{gd,i}log(\frac{h_{gd,i}}{h_{ds,i}})}
+\deqn{h_{gd,i}=(gdDensityValueInverseQuantile(i/n)-gdDensityValueInverseQuantile((i-1)/n))/100}
+\deqn{h_{ds,i}=(dsDensityValueInverseQuantile(i/n)-dsDensityValueInverseQuantile((i-1)/n))/100}
+where \eqn{h_{gd,i}} and \eqn{h_{ds,i}} are percent values of density values for generative data and data source lying in interval \eqn{((i-1)/n,i/n], 1<=i<=n}.
+
+For illustration inserted images show inverse quantiles and histograms for the iris dataset. For the small size iris data source density values are calculated for different \eqn{k} nearest neighbor values.
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\cr
+\figure{dviq.png}
+
+\figure{dvh.png}
+}
 }
 
 \details{
@@ -178,6 +208,10 @@ The training function in the software service for accelerated training of genera
 \strong{\code{dsGetNumberOfRows()}} Get number of rows in a data source.\cr
 
 \strong{\code{dsGetRow()}} Get a row in a data source.\cr
+
+\strong{\code{dsCalculateDensityValues()}} Read a data souce from a file, calculate density values and write the data source with density values to original file.\cr
+
+\strong{\code{dsDensityValueInverseQuantile()}} Calculate inverse density value quantile for a density value.\cr
 
 \strong{2. Training of generative model and generation of generative data}\cr
 
@@ -243,7 +277,7 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 # Compiler: g++ 11.3.0 (supports C++17 standard)
 # R applications: R 4.1.2, RStudio 2022.02.2
 # Installed packages: 'Rcpp' 1.0.10, 'tensorflow' 2.11.0,
-# 'ganGenerativeData' 2.1.3
+# 'ganGenerativeData' 2.1.4
 
 # Package 'tensorflow' provides an interface to machine learning framework
 # TensorFlow. To complete the installation function install_tensorflow() has to

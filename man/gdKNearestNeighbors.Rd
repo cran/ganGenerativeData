@@ -14,10 +14,10 @@ gdKNearestNeighbors(dataRecord, k = 1L, useSearchTree = FALSE)
 \item{useSearchTree}{Boolean value indicating if a search tree should be used.}
 }
 \value{
-A list of rows in generative data
+A list of rows in denormalized generative data
 }
 \description{
-Search for k nearest neighbors in generative data for a data record.
+Search for k nearest neighbors in normalized generative data for a data record.
 When the data record contains NA values only the non-NA values are considered in search.
 By default a linear search is performed. When a search tree is used search is performed on a tree
 which is built once in the first function call.

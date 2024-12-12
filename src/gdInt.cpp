@@ -230,7 +230,6 @@ bool gdGenerativeDataRead(const std::string& inFileName) {
         }
         
         return true;
-    
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {
@@ -880,7 +879,7 @@ std::string gdBuildFileName(const std::string& fileName, float niveau) {
 
 //' Search for k nearest neighbors
 //' 
-//' Search for k nearest neighbors in generative data for a data record.
+//' Search for k nearest neighbors in normalized generative data for a data record.
 //' When the data record contains NA values only the non-NA values are considered in search.
 //' By default a linear search is performed. When a search tree is used search is performed on a tree
 //' which is built once in the first function call.
@@ -890,7 +889,7 @@ std::string gdBuildFileName(const std::string& fileName, float niveau) {
 //' @param k Number of nearest neighbors
 //' @param useSearchTree Boolean value indicating if a search tree should be used. 
 //'
-//' @return A list of rows in generative data
+//' @return A list of rows in denormalized generative data
 //' @export
 //'
 //' @examples
@@ -1044,7 +1043,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
 
 //' Complete incomplete data record
 //' 
-//' Search for first nearest neighbor in generative data for incomplete data record containing NA values.
+//' Search for first nearest neighbor in normalized generative data for incomplete data record containing NA values.
 //' Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
 //' gdKNearestNeighbors() with parameter k equal to 1.
 //' 
