@@ -13,10 +13,11 @@ gdCalculateDensityValues(generativeDataFileName)
 None
 }
 \description{
-Read generative data from a file, calculate density values and write generative data with density values to original file.
-Calculated density values are used to classiy generative data.
-In function gdPlotParameters() density value thresholds with assigned colors can be passed
-to draw generative data for different density value ranges.
+Read generative data from a file, calculate density values and write
+generative data with density values to original file. Calculated density
+values are used to classify generative data. In function gdPlotParameters()
+density value thresholds with assigned colors can be passed to draw
+generative data for different density value ranges.
 }
 \examples{
 \dontrun{

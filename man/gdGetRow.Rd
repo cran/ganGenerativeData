@@ -10,7 +10,7 @@ gdGetRow(index)
 \item{index}{Index of row}
 }
 \value{
-List containing row in generative data
+List containing a denormalized row in normalized generative data.
 }
 \description{
 Get a row in generative data for a row index

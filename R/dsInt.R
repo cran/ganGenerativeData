@@ -24,7 +24,7 @@ dsCreateWithDataFrame <- function (dataFrame) {
     }
     columnTypes <- sapply(dataFrame, typeof)
     columnNames <- colnames(dataFrame)
-  
+
     dsCreate(columnTypes, columnNames)
     for(i in 1:nrow(dataFrame)) {
         values <- sapply(dataFrame[i,], as.character)
@@ -33,7 +33,7 @@ dsCreateWithDataFrame <- function (dataFrame) {
 }
 
 #' Calculate density values for data source
-#' 
+#'
 #' Read a data source from a file, calculate density values and write the data source with density values to original file.
 #' Calculated density values are used to evaluate a data source.
 #'
@@ -48,7 +48,7 @@ dsCreateWithDataFrame <- function (dataFrame) {
 #' dsCalculateDensityValues("ds.bin")}
 dsCalculateDensityValues <- function(dataSourceFileName, nNearestNeighbors) {
     start <- Sys.time()
-    
+
     #dsReset()
     if(!is.null(dataSourceFileName) && nchar(dataSourceFileName) > 0) {
         if(!dsRead(dataSourceFileName)) {
@@ -61,10 +61,10 @@ dsCalculateDensityValues <- function(dataSourceFileName, nNearestNeighbors) {
     } else {
         stop("No dataSourceFileName specified")
     }
-    
+
     dsIntCalculateDensityValues(nNearestNeighbors)
     dsWrite(dataSourceFileName)
-    
+
     end <- Sys.time()
     message(round(difftime(end, start, units = "secs"), 3), " seconds")
 }

@@ -7,11 +7,12 @@ Sys.setenv("PKG_CXXFLAGS"="-std=c++17")
 sourceCpp("src/gdInt.cpp")
 
 #' Calculate density values for generative data
-#' 
-#' Read generative data from a file, calculate density values and write generative data with density values to original file.
-#' Calculated density values are used to classiy generative data.
-#' In function gdPlotParameters() density value thresholds with assigned colors can be passed
-#' to draw generative data for different density value ranges.
+#'
+#' Read generative data from a file, calculate density values and write
+#' generative data with density values to original file. Calculated density
+#' values are used to classify generative data. In function gdPlotParameters()
+#' density value thresholds with assigned colors can be passed to draw
+#' generative data for different density value ranges.
 #'
 #' @param generativeDataFileName Name of generative data file name
 #'
@@ -23,7 +24,7 @@ sourceCpp("src/gdInt.cpp")
 #' gdCalculateDensityValues("gd.bin")}
 gdCalculateDensityValues <- function(generativeDataFileName) {
   start <- Sys.time()
-  
+
   gdReset()
   if(!is.null(generativeDataFileName) && nchar(generativeDataFileName) > 0) {
     if(!gdGenerativeDataRead(generativeDataFileName)) {
@@ -36,10 +37,10 @@ gdCalculateDensityValues <- function(generativeDataFileName) {
   } else {
       stop("No generateDataFileName specified")
   }
-  
+
   gdIntCalculateDensityValues()
   gdGenerativeDataWrite(generativeDataFileName)
-  
+
   end <- Sys.time()
   message(round(difftime(end, start, units = "secs"), 3), " seconds")
 }

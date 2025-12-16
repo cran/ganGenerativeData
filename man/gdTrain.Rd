@@ -34,13 +34,12 @@ function gdTrainParameters().}
 None
 }
 \description{
-Read a data source from a file, train a generative model that generates 
-generative data for the data source in iterative training steps, write
-trained generative model and generated data in training steps to a file
-in binary format. When a higher number of iterations is used the
-distribution of generated data will get closer to that of the data source.
-When a name of an existing generative model file is passed training will be
-continued.
+Read a data source from a file, train a generative model that generates
+normalized generative data for the data source in iterative training steps, write
+trained generative model and normalized generated data to a file in binary
+format. When a higher number of iterations is used the distribution of
+generated data will get closer to that of the data source. When a name of an
+existing generative model file is passed training will be continued.
 }
 \examples{
 \dontrun{

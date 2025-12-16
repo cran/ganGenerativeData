@@ -7,12 +7,12 @@
 gdComplete(dataRecord, useSearchTree = FALSE)
 }
 \arguments{
-\item{dataRecord}{List containing incomplete data record}
+\item{dataRecord}{List containing an incomplete unnormalized data record}
 
 \item{useSearchTree}{Boolean value indicating if a search tree should be used.}
 }
 \value{
-List containing completed data record
+List containing completed denormalized data record
 }
 \description{
 Search for first nearest neighbor in normalized generative data for incomplete data record containing NA values.

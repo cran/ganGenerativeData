@@ -323,7 +323,7 @@ gdGetNumberVectorIndexNames <- function(numberVectorIndices) {
 #'
 #' @param index Index of row
 #'
-#' @return List containing row in generative data
+#' @return List containing a denormalized row in normalized generative data.
 #' @export
 #'
 #' @examples
@@ -351,13 +351,13 @@ gdIntCalculateDensityValues <- function() {
 }
 
 #' Calculate density value for a data record
-#' 
-#' Calculate density value for a data record.
-#' By default for the calculation a linear search is performed on generative data.
-#' When a search tree is used search is performed on a tree for generative data
-#' which is built once in the first function call.
 #'
-#' @param dataRecord List containing a data record
+#' Calculate density value for a data record.
+#' By default for the calculation a linear search is performed on normalized
+#' generative data. When a search tree is used search is performed on a tree
+#' for generative data which is built once in the first function call.
+#'
+#' @param dataRecord List containing an unnormalized data record.
 #' @param useSearchTree Boolean value indicating if a search tree should be used.
 #'
 #' @return Normalized density value number
@@ -372,8 +372,8 @@ gdCalculateDensityValue <- function(dataRecord, useSearchTree = FALSE) {
 }
 
 #' Calculate density value quantile
-#' 
-#' Calculate density value quantile for a percent value. 
+#'
+#' Calculate density value quantile for a percent value.
 #'
 #' @param percent Percent value
 #'
@@ -389,8 +389,8 @@ gdDensityValueQuantile <- function(percent) {
 }
 
 #' Calculate inverse density value quantile
-#' 
-#' Calculate inverse density value quantile for a density value. 
+#'
+#' Calculate inverse density value quantile for a density value.
 #'
 #' @param densityValue Normalized density value
 #'
@@ -410,18 +410,18 @@ gdBuildFileName <- function(fileName, niveau) {
 }
 
 #' Search for k nearest neighbors
-#' 
+#'
 #' Search for k nearest neighbors in normalized generative data for a data record.
 #' When the data record contains NA values only the non-NA values are considered in search.
 #' By default a linear search is performed. When a search tree is used search is performed on a tree
 #' which is built once in the first function call.
-#' Building a tree is also triggered when NA values in data records change in subsequent function calls. 
-#' 
-#' @param dataRecord List containing a data record
-#' @param k Number of nearest neighbors
-#' @param useSearchTree Boolean value indicating if a search tree should be used. 
+#' Building a tree is also triggered when NA values in data records change in subsequent function calls.
 #'
-#' @return A list of rows in denormalized generative data
+#' @param dataRecord List containing an unnormalized data record
+#' @param k Number of nearest neighbors
+#' @param useSearchTree Boolean value indicating if a search tree should be used.
+#'
+#' @return A list of denormalized rows in normalized generative data
 #' @export
 #'
 #' @examples
@@ -433,15 +433,15 @@ gdKNearestNeighbors <- function(dataRecord, k = 1L, useSearchTree = FALSE) {
 }
 
 #' Complete incomplete data record
-#' 
+#'
 #' Search for first nearest neighbor in normalized generative data for incomplete data record containing NA values.
 #' Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
 #' gdKNearestNeighbors() with parameter k equal to 1.
-#' 
-#' @param dataRecord List containing incomplete data record
+#'
+#' @param dataRecord List containing an incomplete unnormalized data record
 #' @param useSearchTree Boolean value indicating if a search tree should be used.
 #'
-#' @return List containing completed data record
+#' @return List containing completed denormalized data record
 #' @export
 #'
 #' @examples

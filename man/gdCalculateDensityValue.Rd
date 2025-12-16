@@ -7,7 +7,7 @@
 gdCalculateDensityValue(dataRecord, useSearchTree = FALSE)
 }
 \arguments{
-\item{dataRecord}{List containing a data record}
+\item{dataRecord}{List containing an unnormalized data record.}
 
 \item{useSearchTree}{Boolean value indicating if a search tree should be used.}
 }
@@ -16,9 +16,9 @@ Normalized density value number
 }
 \description{
 Calculate density value for a data record.
-By default for the calculation a linear search is performed on generative data.
-When a search tree is used search is performed on a tree for generative data
-which is built once in the first function call.
+By default for the calculation a linear search is performed on normalized
+generative data. When a search tree is used search is performed on a tree
+for generative data which is built once in the first function call.
 }
 \examples{
 \dontrun{

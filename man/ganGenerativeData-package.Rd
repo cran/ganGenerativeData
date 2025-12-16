@@ -31,7 +31,7 @@ where \eqn{k} is the number of nearest neighbors, \eqn{n} is the number of occur
 \eqn{d(x_{i_k},x)} is the Euclidean distance, \eqn{V_D = \frac{\pi^{D/2}}{\Gamma(\frac{D}{2}+1)}} is the volume
 of a unit sphere and \eqn{\Gamma(x)} is the Gamma function.
 
-We calculate density values by logarithmizing and normalizing \eqn{de(x)}. 
+We calculate density values by logarithmizing and normalizing \eqn{de(x)}.
 Next we set the density value of \eqn{x \in R^D} into relation to density values of a sequence of occurrences of \eqn{X} by computing the inverse quantile. The received percent value is then used for evaluation of \eqn{x}.
 
 In practice function \code{gdCalulcateDensityValues()} is called to calculate density values for generated generative data and
@@ -273,11 +273,12 @@ Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
 \examples{
 # Environment used for execution of examples:
 
-# Operating system: Ubuntu 22.04.1
-# Compiler: g++ 11.3.0 (supports C++17 standard)
-# R applications: R 4.1.2, RStudio 2022.02.2
-# Installed packages: 'Rcpp' 1.0.10, 'tensorflow' 2.11.0,
-# 'ganGenerativeData' 2.1.4
+# Operating system: Ubuntu 24.04.3 LTS
+# Compiler: g++ 13.3.0 (supports C++17 standard)
+# Software: Python 3.12.3, TensorFlow 2.16.2
+# R environment: R 4.5.2, RStudio 2024.12.1
+# Installed packages: 'Rcpp' 1.1.0, 'tensorflow' 2.20.0,
+# 'ganGenerativeData' 2.1.5
 
 # Package 'tensorflow' provides an interface to machine learning framework
 # TensorFlow. To complete the installation function install_tensorflow() has to
@@ -296,7 +297,7 @@ library(ganGenerativeData)
 # Create a data source with iris data frame.
 dsCreateWithDataFrame(iris)
 
-# Deactivate the column with name Species and index 5 in order to exclude it in 
+# Deactivate the column with name Species and index 5 in order to exclude it in
 # trainng of generative model.
 dsDeactivateColumns(c(5))
 
@@ -341,7 +342,7 @@ c(3, 4),
 gdPlotParameters(50),
 gdPlotDataSourceParameters(100))}
 
-# Create an image showing two-dimensional projections of generative data and 
+# Create an image showing two-dimensional projections of generative data and
 # data source for column indices 3, 4 with density value threshold 0.71 and
 # write it to file "gd34ddv.png".
 \dontrun{
@@ -371,7 +372,7 @@ gdDensityValueQuantile(50)}
 \dontrun{
 gdDensityValueInverseQuantile(0.5)}
 
-# Search for k nearest neighbors for a data record 
+# Search for k nearest neighbors for a data record
 \dontrun{
 gdKNearestNeighbors(list(5.1, 3.5, 1.4, 0.2), 3)}
 

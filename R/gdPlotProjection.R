@@ -23,7 +23,7 @@ sourceCpp("src/gdInt.cpp")
 #' gdRead("gd.bin", "ds.bin")}
 gdRead <- function(generativeDataFileName, dataSourceFileName = "") {
   gdReset()
-  
+
   if(!is.null(generativeDataFileName) && nchar(generativeDataFileName) > 0) {
     if(!gdGenerativeDataRead(generativeDataFileName)) {
       error <- append("File ", generativeDataFileName)
@@ -52,7 +52,7 @@ gdPlot <- function(title, dimension, columnIndices) {
     minY <- gdGetMin(columnIndices[2])
     maxY <- gdGetMax(columnIndices[2])
   }
-  
+
   plot(c(), c(), pch = 1, main = title, cex.main = 2.5, font.main = 1, xlim = c(minX, maxX), ylim = c(minY, maxY), col = "blue", xlab = numberVectorIndexNames[1], ylab = numberVectorIndexNames[2], cex.lab = 2.5, cex.axis = 2.5)
 }
 
@@ -60,14 +60,14 @@ gdGenerativeDataDataPoints <- function(percent, dimension, columnIndices, level,
   if(percent == 0) {
     return()
   }
-  
+
   if(withDensityValues) {
     gd <- gdGenerativeDataGetDenormalizedDataRandomWithDensities(percent)
     size <- length(gd[[1]]) / dimension
     if(size > 0) {
       gdv <- array_reshape(gd[[1]], c(size, dimension))
       gdd <- array_reshape(gd[[2]], c(size))
-      
+
       gdvX <- gdv[,columnIndices[1]]
       gdvY <- NULL
       if(dimension == 1) {
@@ -103,7 +103,7 @@ gdDataSourcePoints <- function(percent, dimension, columnIndices, dsColor) {
   if(percent == 0) {
     return()
   }
-  
+
   if(gdGetDataSourceFileName() != "") {
     ds <-  gdDataSourceGetDataRandomPercent(percent)
     size <- length(ds) / dimension
@@ -129,17 +129,17 @@ gdLegend <- function(densityValues, colors, dsColor, intervalGenerativeDataParam
       gdText <- append(gdText, paste("generative data, density value >=", densityValues[i]))
       pchv <- append(pchv, 1)
     }
-    
+
     if(gdGetDataSourceFileName() != "") {
       gdText <- append(gdText, "data source")
       colors <- append(colors, dsColor)
       pchv <- append(pchv, 1)
-    } 
+    }
     legend("topleft", legend = gdText, col = colors, pch = pchv, bty = "n", horiz = FALSE, cex = 2.5)
   } else {
     gdText <- c("generative data")
     pchv <- c(1)
-    
+
     if(gdGetDataSourceFileName() != "") {
       gdText <- append(gdText, "data source")
       colors <- append(colors, dsColor)
@@ -151,11 +151,11 @@ gdLegend <- function(densityValues, colors, dsColor, intervalGenerativeDataParam
 
 gdPng <- function(outImageFileName, title, columnIndices, generativeDataParameters, dataSourceParameters, dimension) {
   png(outImageFileName, width = 2000, height = 2000, units = "px")
-  
+
   sessionPar <- par(no.readonly = TRUE)
   on.exit(par(sessionPar))
   par(mar = c(6, 6, 6, 6))
-  
+
   gdPlot(title, dimension, columnIndices)
   if(length(generativeDataParameters[[2]]) > 0) {
     gdGenerativeDataDataPoints(generativeDataParameters[[1]], dimension, columnIndices, 0, generativeDataParameters[[3]][1], TRUE, TRUE)
@@ -168,12 +168,12 @@ gdPng <- function(outImageFileName, title, columnIndices, generativeDataParamete
     gdDataSourcePoints(dataSourceParameters[[1]], dimension, columnIndices, dataSourceParameters[[2]])
   }
   gdLegend(generativeDataParameters[[2]], generativeDataParameters[[3]], dataSourceParameters[[2]])
-  
+
   dev.off()
 }
 
 #' Specify plot parameters for generative data
-#' 
+#'
 #' Specify plot parameters for generative data passed to function gdPlotProjection().
 #' When density value thresholds with assigned colors are specified generative data is drawn for density value ranges in increasing order.
 #'
@@ -181,10 +181,10 @@ gdPng <- function(outImageFileName, title, columnIndices, generativeDataParamete
 #' @param densityValueThresholds Vector of density value thresholds
 #' @param densityValueColors Vector of colors assigned to density value thresholds. The size must be the size
 #' of densityValueThresholds plus one.
-#' 
+#'
 #' @return List of plot parameters for generative data
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' gdPlotParameters(50, c(0.75), c("red", "green"))}
@@ -193,15 +193,15 @@ gdPlotParameters <- function(percent = 10, densityValueThresholds = c(), density
 }
 
 #' Specify plot parameters for data source
-#' 
+#'
 #' Specify plot parameters for data source passed to function gdPlotProjection().
 #'
 #' @param percent Percent of randomly selected rows in data source
 #' @param color Colour for data points of data source
-#' 
+#'
 #' @return List of plot parameters for data source
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' gdPlotDataSourceParameters(2500)}
@@ -223,7 +223,7 @@ gdPlotDataSourceParameters <- function(percent = 100, color = "blue") {
 #'
 #' @return None
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' gdRead("gd.bin", "ds.bin")
@@ -235,11 +235,11 @@ gdPlotDataSourceParameters <- function(percent = 100, color = "blue") {
 #' "Generative Data with a Densit(y Value Threshold for the Iris Dataset", c(3, 4),
 #' gdPlotParameters(250000, c(0.71), c("red", "green")),
 #' gdPlotDataSourceParameters(2500))}
-gdPlotProjection <- function(imageFileName, title, columnIndices, 
-  generativeDataParameters = gdPlotParameters(percent = 10, densityValueThresholds = c(), densityValueColors = c("red")), 
+gdPlotProjection <- function(imageFileName, title, columnIndices,
+  generativeDataParameters = gdPlotParameters(percent = 10, densityValueThresholds = c(), densityValueColors = c("red")),
   dataSourceParameters = gdPlotDataSourceParameters(percent = 100, color = "blue")) {
   dimension <- gdGetGenerativeDataDimension()
-  
+
   if(dimension > 1 && length(columnIndices) != 2) {
     stop("Size of vector columnIndices must be equal to two\n")
   } else if (dimension == 1 && length(columnIndices) != 1) {
@@ -249,5 +249,5 @@ gdPlotProjection <- function(imageFileName, title, columnIndices,
     stop("Size of vector gdDensityValueColors must be equal to size of vector gdDensityValues plus one\n")
   }
 
-  gdPng(imageFileName, title, columnIndices, generativeDataParameters, dataSourceParameters, dimension)  
+  gdPng(imageFileName, title, columnIndices, generativeDataParameters, dataSourceParameters, dimension)
 }

@@ -7,14 +7,14 @@
 gdKNearestNeighbors(dataRecord, k = 1L, useSearchTree = FALSE)
 }
 \arguments{
-\item{dataRecord}{List containing a data record}
+\item{dataRecord}{List containing an unnormalized data record}
 
 \item{k}{Number of nearest neighbors}
 
 \item{useSearchTree}{Boolean value indicating if a search tree should be used.}
 }
 \value{
-A list of rows in denormalized generative data
+A list of denormalized rows in normalized generative data
 }
 \description{
 Search for k nearest neighbors in normalized generative data for a data record.

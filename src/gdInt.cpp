@@ -16,21 +16,21 @@ namespace gdInt {
     GenerativeModel* pGenerativeModel = 0;
     DataSource* pDataSource = 0;
     GenerativeData* pGenerativeData = 0;
-    
+
     VpTree* pVpTree = 0;
     VpTreeData* pVpTreeData = 0;
     LpDistance* pLpDistance = 0;
-    
+
     VpTree* pDensityVpTree = 0;
     VpTreeData* pDensityVpTreeData = 0;
     LpDistance* pDensityLpDistance = 0;
-    
+
     string inGenerativeDataFileName = "";
     string inDataSourceFileName = "";
     int batchSize = 256;
     int maxSize = batchSize * 100000;
     int nNearestNeighbors = 20;
-  
+
     const string cMaxSizeExceeded = "Max size of generative data exceeded";
 }
 
@@ -51,21 +51,21 @@ void gdReset() {
         gdInt::pDataSource = 0;
         delete gdInt::pGenerativeData;
         gdInt::pGenerativeData = 0;
-        
+
         delete gdInt::pVpTree;
         gdInt::pVpTree = 0;
         delete gdInt::pVpTreeData;
         gdInt::pVpTreeData = 0;
         delete gdInt::pLpDistance;
         gdInt::pLpDistance = 0;
-        
+
         delete gdInt::pDensityVpTree;
         gdInt::pDensityVpTree = 0;
         delete gdInt::pDensityVpTreeData;
         gdInt::pDensityVpTreeData = 0;
         delete gdInt::pDensityLpDistance;
         gdInt::pDensityLpDistance = 0;
-        
+
         gdInt::inGenerativeDataFileName = "";
         gdInt::inDataSourceFileName = "";
     } catch (const string& e) {
@@ -150,10 +150,10 @@ void gdWriteWithReadingTrainedModel(const std::string& outFileName) {
         if(!os.is_open()) {
             throw string("File " + outFileName + " could not be opened");
         }
-        
+
         //delete gdInt::pGenerativeModel;
         //gdInt::pGenerativeModel = new GenerativeModel(*gdInt::pDataSource);
-        
+
         gdInt::pGenerativeModel->writeWithReadingTrainedModel(os, GetFileName()(outFileName));
         os.close();
     } catch (const string& e) {
@@ -172,13 +172,13 @@ bool gdReadGenerativeModel(const std::string& inFileName) {
             //throw string("File " + inFileName + " could not be opened");
             return false;
         }
-        
+
         delete gdInt::pGenerativeModel;
         gdInt::pGenerativeModel = new GenerativeModel();
-        
+
         gdInt::pGenerativeModel->read(is, GetFileName()(inFileName));
         is.close();
-        
+
         return true;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -196,12 +196,12 @@ void gdDataSourceRead(const std::string& inFileName) {
             throw string("File " + inFileName + " could not be opened");
         }
         gdInt::inDataSourceFileName = inFileName;
-    
+
         delete gdInt::pDataSource;
         gdInt::pDataSource = new DataSource();
         gdInt::pDataSource->read(is);
         is.close();
-    
+
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {
@@ -219,16 +219,16 @@ bool gdGenerativeDataRead(const std::string& inFileName) {
             return false;
         }
         gdInt::inGenerativeDataFileName = inFileName;
-    
+
         delete gdInt::pGenerativeData;
         gdInt::pGenerativeData = new GenerativeData();
         gdInt::pGenerativeData->read(is);
         is.close();
-    
+
         if(gdInt::pGenerativeData->getNormalizedSize() > gdInt::maxSize) {
             throw string(gdInt::cMaxSizeExceeded);
         }
-        
+
         return true;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -243,13 +243,13 @@ void gdGenerativeDataWrite(const std::string& outFileName) {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
         ofstream outFile;
         outFile.open(outFileName.c_str(), std::ios::binary);
         if(!outFile.is_open()) {
             throw string("File " + outFileName + " could not be opened");
         }
-    
+
         gdInt::pGenerativeData->DataSource::write(outFile);
         outFile.close();
     } catch (const string& e) {
@@ -279,29 +279,29 @@ void gdWriteSubset(const std::string& fileName, float percent) {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
         ofstream outFile;
         outFile.open(fileName.c_str(), std::ios::binary);
         if(!outFile.is_open()) {
             throw string("File " + fileName + " could not be opened");
         }
-    
+
         vector<int> randomIndices = RandomIndicesWithoutReplacement()(gdInt::pGenerativeData->getNormalizedSize(), percent);
         sort(randomIndices.begin(), randomIndices.end());
-    
+
         GenerativeData generativeData(dynamic_cast<DataSource&>(*gdInt::pGenerativeData));
         for(int i = 0; i < (int)randomIndices.size(); i++) {
             vector<float> normalizedNumberVector = gdInt::pGenerativeData->getNormalizedNumberVector(randomIndices[i]);
             generativeData.addValueLine(normalizedNumberVector);
         }
-        
+
         if(gdInt::pGenerativeData->getDensityVector()->getNormalizedSize() > 0) {
             generativeData.getDensityVector()->getNormalizedValueVector().resize(randomIndices.size(), 0);
             for(int i = 0; i < (int)randomIndices.size(); i++) {
                 generativeData.getDensityVector()->getNormalizedValueVector()[i] = gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector()[randomIndices[i]];
             }
         }
-                                      
+
         generativeData.DataSource::write(outFile);
         outFile.close();
     } catch (const string& e) {
@@ -317,7 +317,7 @@ void gdCreateGenerativeData() {
         if(gdInt::pDataSource == 0) {
             throw string("No datasource");
         }
-    
+
         delete gdInt::pGenerativeData;
         gdInt::pGenerativeData = new GenerativeData(*gdInt::pDataSource);
     } catch (const string& e) {
@@ -333,7 +333,7 @@ void gdCreateDataSourceFromGenerativeModel() {
         if(gdInt::pGenerativeModel == 0) {
             throw string("generative model");
         }
-        
+
         delete gdInt::pDataSource;
         gdInt::pDataSource = new DataSource(gdInt::pGenerativeModel->getDataSource());
     } catch (const string& e) {
@@ -349,7 +349,7 @@ std::vector<float> gdDataSourceGetDataRandom(int rowCount) {
         if(gdInt::pDataSource == 0) {
             throw string("No datasource");
         }
-    
+
         std::vector<float> v = gdInt::pDataSource->getDataRandom(rowCount);
         return v;
     } catch (const string& e) {
@@ -365,7 +365,7 @@ std::vector<float> gdDataSourceGetNormalizedDataRandom(int rowCount) {
         if(gdInt::pDataSource == 0) {
             throw string("No datasource");
         }
-    
+
         std::vector<float> v = gdInt::pDataSource->getNormalizedDataRandom(rowCount);
         return v;
     } catch (const string& e) {
@@ -381,7 +381,7 @@ std::vector<float> gdDataSourceGetNormalizedDataRandomReference(int rowCount) {
         if(gdInt::pDataSource == 0) {
             throw string("No datasource");
         }
-    
+
         std::vector<float> v;
         v.reserve(rowCount * gdInt::pDataSource->getDimension());
         gdInt::pDataSource->getNormalizedDataRandomReference(v, rowCount);
@@ -399,16 +399,16 @@ std::vector<float> gdDataSourceGetDataRandomPercent(float percent) {
         if(gdInt::pDataSource == 0) {
             throw string("No datasource");
         }
-    
+
         vector<int> randomIndices = RandomIndicesWithoutReplacement()(gdInt::pDataSource->getSize(), percent);
-    
+
         vector<float> dataSource;
         for(int i = 0; i < (int)randomIndices.size(); i++) {
             int index = randomIndices[i];
             vector<float> numberVector = gdInt::pDataSource->getRow(index);
             dataSource.insert(dataSource.end(), numberVector.begin(), numberVector.end());
         }
-    
+
         return dataSource;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -423,16 +423,16 @@ std::vector<float> gdGenerativeDataGetDenormalizedDataRandom(float percent) {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
         vector<int> randomIndices = RandomIndicesWithoutReplacement()(gdInt::pGenerativeData->getNormalizedSize(), percent);
-    
+
         vector<float> denormalizedGenerativeData;
         for(int i = 0; i < (int)randomIndices.size(); i++) {
             int index = randomIndices[i];
             vector<float> denormalizedNumberVector = ((DataSource*)gdInt::pGenerativeData)->getDenormalizedRow(index);
             denormalizedGenerativeData.insert(denormalizedGenerativeData.end(), denormalizedNumberVector.begin(), denormalizedNumberVector.end());
         }
-      
+
         return denormalizedGenerativeData;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -447,20 +447,20 @@ std::vector<std::vector<float>> gdGenerativeDataGetDenormalizedDataRandomWithDen
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
         if(gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector().size() == 0) {
             throw string(cNoDensities);
         }
-    
+
         vector<int> randomIndices = RandomIndicesWithoutReplacement()(gdInt::pGenerativeData->getNormalizedSize(), percent);
-    
+
         vector<float> densityVector(randomIndices.size(), 0);
         vector<float> denormalizedGenerativeDataVector;
         for(int i = 0; i < (int)randomIndices.size(); i++) {
             int index = randomIndices[i];
             vector<float> denormalizedNumberVector = ((DataSource*)gdInt::pGenerativeData)->getDenormalizedRow(index);
             denormalizedGenerativeDataVector.insert(denormalizedGenerativeDataVector.end(), denormalizedNumberVector.begin(), denormalizedNumberVector.end());
-            
+
             densityVector[i] = gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector()[index];
         }
 
@@ -481,14 +481,14 @@ int gdGetDataSourceDimension() {
         if(gdInt::pDataSource == 0) {
             throw string("No datasource");
         }
-    
+
         return gdInt::pDataSource->getDimension();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {
         ::Rf_error("C++ exception (unknown reason)");
     }
-} 
+}
 
 // [[Rcpp::export]]
 void gdAddValueRows(const std::vector<float>& valueRows) {
@@ -496,8 +496,8 @@ void gdAddValueRows(const std::vector<float>& valueRows) {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
-        gdInt::pGenerativeData->addValueLines(valueRows); 
+
+        gdInt::pGenerativeData->addValueLines(valueRows);
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
     } catch(...) {
@@ -522,7 +522,7 @@ int gdGetNumberOfRows() {
         if(gdInt::pGenerativeData == 0) {
             throw string("No gnerative data");
         }
-    
+
         return gdInt::pGenerativeData->getNormalizedSize();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -537,7 +537,7 @@ std::vector<std::wstring> gdGetColumnNames(std::vector<int>& indexVector) {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
         for(int i = 0; i < (int)indexVector.size(); i++) {
             indexVector[i] -= 1;
         }
@@ -556,7 +556,7 @@ int gdGetGenerativeDataDimension() {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
         return gdInt::pGenerativeData->getDimension();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -571,7 +571,7 @@ std::vector<std::wstring> gdGetNumberVectorIndexNames(std::vector<int>& numberVe
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
         vector<int> indexVector = numberVectorIndices;
         for(int i = 0; i < (int)indexVector.size(); i++) {
             indexVector[i] -= 1;
@@ -591,7 +591,7 @@ std::vector<std::wstring> gdGetNumberVectorIndexNames(std::vector<int>& numberVe
 //'
 //' @param index Index of row
 //'
-//' @return List containing row in generative data
+//' @return List containing a denormalized row in normalized generative data.
 //' @export
 //'
 //' @examples
@@ -604,7 +604,7 @@ List gdGetRow(int index) {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
         List list;
         vector<Column*> const & columnVector = gdInt::pGenerativeData->getColumnVector();
         for(int i = 0; i < (int)columnVector.size(); i++) {
@@ -635,13 +635,13 @@ float gdGetMax(int i) {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-    
+
         if(i - 1 < 0 || i - 1 > gdInt::pGenerativeData->getDimension() - 1) {
             throw string(cInvalidColumnIndex);
         }
         int j = gdInt::pGenerativeData->getColumnIndex(i - 1);
         vector<Column*> const& columnVector = gdInt::pGenerativeData->getColumnVector();
-    
+
         float max = 0;
         Column::COLUMN_TYPE type = columnVector[j]->getColumnType();
         if(type == Column::NUMERICAL) {
@@ -667,13 +667,13 @@ float gdGetMin(int i) {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-      
+
         if(i - 1 < 0 || i - 1 > gdInt::pGenerativeData->getDimension() - 1) {
             throw string(cInvalidColumnIndex);
         }
         int j = gdInt::pGenerativeData->getColumnIndex(i - 1);
         vector<Column*> const& columnVector = gdInt::pGenerativeData->getColumnVector();
-      
+
         float min = 0;
         Column::COLUMN_TYPE type = columnVector[j]->getColumnType();
         if(type == Column::NUMERICAL) {
@@ -699,7 +699,7 @@ void gdResetDensitiyValues() {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-        
+
         gdInt::pGenerativeData->getDensityVector()->clear();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -714,16 +714,16 @@ void gdIntCalculateDensityValues() {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-        
+
         VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
         L2Distance l2Distance;
         Progress progress(gdInt::pGenerativeData->getNormalizedSize());
         VpTree vpTree;
         vpTree.build(&vpGenerativeData, &l2Distance, 0);
-       
+
         Density density(*gdInt::pGenerativeData, &vpTree, gdInt::nNearestNeighbors, &progress);
         density.calculateDensityValues();
-         
+
         progress(gdInt::pGenerativeData->getNormalizedSize());
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -733,13 +733,13 @@ void gdIntCalculateDensityValues() {
 }
 
 //' Calculate density value for a data record
-//' 
-//' Calculate density value for a data record.
-//' By default for the calculation a linear search is performed on generative data.
-//' When a search tree is used search is performed on a tree for generative data
-//' which is built once in the first function call.
 //'
-//' @param dataRecord List containing a data record
+//' Calculate density value for a data record.
+//' By default for the calculation a linear search is performed on normalized
+//' generative data. When a search tree is used search is performed on a tree
+//' for generative data which is built once in the first function call.
+//'
+//' @param dataRecord List containing an unnormalized data record.
 //' @param useSearchTree Boolean value indicating if a search tree should be used.
 //'
 //' @return Normalized density value number
@@ -755,13 +755,13 @@ float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-        
+
         vector<float> numberVector;
         for(List::iterator iterator = dataRecord.begin(); iterator != dataRecord.end(); ++iterator) {
           float number = (float)as<double>(*iterator);
           numberVector.push_back(number);
         }
-        
+
         if(useSearchTree) {
             if(gdInt::pDensityVpTree == 0) {
                 delete gdInt::pDensityVpTree;
@@ -771,11 +771,11 @@ float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
                 gdInt::pDensityVpTreeData = new VpGenerativeData(*gdInt::pGenerativeData);
                 delete gdInt::pDensityLpDistance;
                 gdInt::pDensityLpDistance = new L2Distance;
-            
+
                 gdInt::pDensityVpTree->build(gdInt::pDensityVpTreeData, gdInt::pDensityLpDistance, &progress);
             }
         }
-        
+
         float d = 0;
         if(useSearchTree) {
             Density density(*gdInt::pGenerativeData, gdInt::pDensityVpTree, gdInt::nNearestNeighbors, 0);
@@ -794,10 +794,10 @@ float gdCalculateDensityValue(List dataRecord, bool useSearchTree = false) {
         ::Rf_error("C++ exception (unknown reason)");
     }
 }
-  
+
 //' Calculate density value quantile
-//' 
-//' Calculate density value quantile for a percent value. 
+//'
+//' Calculate density value quantile for a percent value.
 //'
 //' @param percent Percent value
 //'
@@ -818,11 +818,11 @@ float gdDensityValueQuantile(float percent) {
         if(gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector().size() == 0) {
             throw string(cNoDensities);
         }
-        
+
         VpGenerativeData vpGenerativeData(*gdInt::pGenerativeData);
         L2Distance l2Distance;
         VpTree vpTree(&vpGenerativeData, &l2Distance, 0);
-    
+
         Density density(*gdInt::pGenerativeData, &vpTree, gdInt::nNearestNeighbors, 0);
         float q = density.calculateQuantile(percent);
         return q;
@@ -834,8 +834,8 @@ float gdDensityValueQuantile(float percent) {
 }
 
 //' Calculate inverse density value quantile
-//' 
-//' Calculate inverse density value quantile for a density value. 
+//'
+//' Calculate inverse density value quantile for a density value.
 //'
 //' @param densityValue Normalized density value
 //'
@@ -856,7 +856,7 @@ float gdDensityValueInverseQuantile(float densityValue) {
         if(gdInt::pGenerativeData->getDensityVector()->getNormalizedValueVector().size() == 0) {
             throw string(cNoDensities);
         }
-        
+
         Density density(*gdInt::pGenerativeData, 0, 0, 0);
         return density.calculateInverseQuantile(densityValue);
     } catch (const string& e) {
@@ -878,18 +878,18 @@ std::string gdBuildFileName(const std::string& fileName, float niveau) {
 }
 
 //' Search for k nearest neighbors
-//' 
+//'
 //' Search for k nearest neighbors in normalized generative data for a data record.
 //' When the data record contains NA values only the non-NA values are considered in search.
 //' By default a linear search is performed. When a search tree is used search is performed on a tree
 //' which is built once in the first function call.
-//' Building a tree is also triggered when NA values in data records change in subsequent function calls. 
-//' 
-//' @param dataRecord List containing a data record
-//' @param k Number of nearest neighbors
-//' @param useSearchTree Boolean value indicating if a search tree should be used. 
+//' Building a tree is also triggered when NA values in data records change in subsequent function calls.
 //'
-//' @return A list of rows in denormalized generative data
+//' @param dataRecord List containing an unnormalized data record
+//' @param k Number of nearest neighbors
+//' @param useSearchTree Boolean value indicating if a search tree should be used.
+//'
+//' @return A list of denormalized rows in normalized generative data
 //' @export
 //'
 //' @examples
@@ -902,19 +902,19 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
         if(gdInt::pGenerativeData == 0) {
             throw string("No generative data");
         }
-        
+
         if(!(k >= 1)) {
             throw string("k must be greater than or equal to 1");
         }
-        
+
         vector<Column*>& columnVector = gdInt::pGenerativeData->getColumnVector();
         if((int)columnVector.size() != dataRecord.length()) {
             throw string("Invalid length of data record");
         }
-        
+
         vector<float> numberVector;
         int isnanCount = 0;
-        
+
         //Function f("message");
         for(int i = 0; i < (int)columnVector.size(); i++) {
             Column::COLUMN_TYPE columnType = columnVector[i]->getColumnType();
@@ -926,7 +926,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
                 }
             } else if(columnType == Column::NUMERICAL_ARRAY) {
                 NumberArrayColumn* pNumberArrayColumn = dynamic_cast<NumberArrayColumn*>(columnVector[i]);
-                
+
                 float number;
                 try {
                     number = (float)as<double>(dataRecord[i]);
@@ -934,14 +934,14 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
                 catch(...) {
                     ;
                 }
-                
+
                 wstring value;
                 if(isnan(number)) {
                     value = cNA;
                 } else {
                     value = as<wstring>(dataRecord[i]);
                 }
-  
+
                 vector<float> columnNumberVector = pNumberArrayColumn->getNormalizedNumberVector(value);
                 if(value == cNA) {
                     for (int j = 0; j < (int)columnNumberVector.size(); j++) {
@@ -954,17 +954,17 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
                 throw string(cInvalidColumnType);
             }
         }
-        
+
         if(gdInt::pGenerativeData->getDimension() != (int)numberVector.size()) {
             throw string(cInvalidDimension);
         }
         if(isnanCount == (int)columnVector.size()) {
             return dataRecord;
         }
-        
+
         NormalizeData normalizeData;
         vector<float> normalizedNumberVector = normalizeData.getNormalizedNumberVector(*gdInt::pGenerativeData, numberVector);
-        
+
         if(useSearchTree) {
             bool build = false;
             if(gdInt::pVpTree == 0) {
@@ -982,7 +982,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
                     build = true;
                 }
             }
-            
+
             if(build) {
                 delete gdInt::pVpTree;
                 gdInt::pVpTree = new VpTree();
@@ -991,11 +991,11 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
                 gdInt::pVpTreeData = new VpGenerativeData(*gdInt::pGenerativeData);
                 delete gdInt::pLpDistance;
                 gdInt::pLpDistance = new L2DistanceNanIndexed(numberVector);
-                
+
                 gdInt::pVpTree->build(gdInt::pVpTreeData, gdInt::pLpDistance, &progress);
             }
         }
-        
+
         vector<VpElement> nearestNeighbours;
         if(useSearchTree) {
             gdInt::pVpTree->search(normalizedNumberVector,  k, nearestNeighbours);
@@ -1008,9 +1008,9 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
 
         List completeDataRecordList;
         if(nearestNeighbours.size() == 0) {
-            return completeDataRecordList;  
+            return completeDataRecordList;
         }
-        
+
         for(int i = 0; i < (int) nearestNeighbours.size(); i++) {
             List completeDataRecord;
             for(int j = 0; j < (int)columnVector.size(); j++) {
@@ -1032,7 +1032,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
             }
             completeDataRecordList.insert(completeDataRecordList.end(), completeDataRecord);
         }
-        
+
         return completeDataRecordList;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1042,15 +1042,15 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
 }
 
 //' Complete incomplete data record
-//' 
+//'
 //' Search for first nearest neighbor in normalized generative data for incomplete data record containing NA values.
 //' Found row in generative data is then used to replace NA values in inccomplete data record. This function calls
 //' gdKNearestNeighbors() with parameter k equal to 1.
-//' 
-//' @param dataRecord List containing incomplete data record
+//'
+//' @param dataRecord List containing an incomplete unnormalized data record
 //' @param useSearchTree Boolean value indicating if a search tree should be used.
 //'
-//' @return List containing completed data record
+//' @return List containing completed denormalized data record
 //' @export
 //'
 //' @examples
@@ -1061,7 +1061,7 @@ List gdKNearestNeighbors(List dataRecord, int k = 1, bool useSearchTree = false)
 List gdComplete(List dataRecord, bool useSearchTree = false) {
     try {
         List nearestNeighbors = gdKNearestNeighbors(dataRecord, 1, useSearchTree);
-        
+
         if(nearestNeighbors.size() != 1) {
             throw(string(cInvalidNearestNeighborsSize));
         }
@@ -1069,7 +1069,7 @@ List gdComplete(List dataRecord, bool useSearchTree = false) {
         if(nearestNeighbor.size() != dataRecord.size()) {
             throw(string(cDifferentListSizes));
         }
-        
+
         List completedList;
         vector<Column*>& columnVector = gdInt::pGenerativeData->getColumnVector();
         if((int)columnVector.size() != dataRecord.length()) {
@@ -1094,7 +1094,7 @@ List gdComplete(List dataRecord, bool useSearchTree = false) {
                 catch(...) {
                     ;
                 }
-                
+
                 wstring value;
                 if(isnan(number)) {
                     value = cNA;
@@ -1126,7 +1126,7 @@ int gdGenerativeModelGetNumberOfTrainingIterations() {
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
        return gdInt::pGenerativeModel->getNumberOfTrainingIterations();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1141,7 +1141,7 @@ void gdGenerativeModelSetNumberOfTrainingIterations(int numberOfTrainingIteratio
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
         gdInt::pGenerativeModel->setNumberOfTrainingIterations(numberOfTrainingIterations);
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1156,7 +1156,7 @@ int gdGenerativeModelGetNumberOfInitializationIterations() {
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
         return gdInt::pGenerativeModel->getNumberOfInitializationIterations();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1171,7 +1171,7 @@ void gdGenerativeModelSetNumberOfInitializationIterations(int numberOfInitializa
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
         gdInt::pGenerativeModel->setNumberOfInitializationIterations(numberOfInitializationIterations);
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1186,7 +1186,7 @@ int gdGenerativeModelGetNumberOfHiddenLayerUnits() {
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
         return gdInt::pGenerativeModel->getNumberOfHiddenLayerUnits();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1201,7 +1201,7 @@ void gdGenerativeModelSetNumberOfHiddenLayerUnits(int numberOfHiddenLayerUnits) 
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
         gdInt::pGenerativeModel->setNumberOfHiddenLayerUnits(numberOfHiddenLayerUnits);
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1216,7 +1216,7 @@ float gdGenerativeModelGetLearningRate() {
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
         return gdInt::pGenerativeModel->getLearningRate();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1231,7 +1231,7 @@ void gdGenerativeModelSetLearningRate(float learningRate) {
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
         gdInt::pGenerativeModel->setLearningRate(learningRate);
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1246,7 +1246,7 @@ float gdGenerativeModelGetDropout() {
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
         return gdInt::pGenerativeModel->getDropout();
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1261,7 +1261,7 @@ void gdGenerativeModelSetDropout(float dropout) {
         if(gdInt::pGenerativeModel == 0) {
             throw string("No generative model");
         }
-        
+
         gdInt::pGenerativeModel->setDropout(dropout);
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
@@ -1276,7 +1276,7 @@ bool gdDataSourceHasActiveStringColumn() {
         if(gdInt::pDataSource == 0) {
             throw string("No datasource");
         }
-        
+
         bool activeStringColumn = false;
         vector<Column*> const & columnVector = gdInt::pDataSource->getColumnVector();
         for(int j = 0; j < (int)columnVector.size(); j++) {
@@ -1285,7 +1285,7 @@ bool gdDataSourceHasActiveStringColumn() {
                 activeStringColumn= true;
             }
         }
-        
+
         return activeStringColumn;
     } catch (const string& e) {
         ::Rf_error("%s", e.c_str());
